@@ -4,9 +4,11 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AccountsModule } from './features/accounts/accounts.module';
 import { TestingModule } from './features/testing/testing.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({}),
     // TODO: add env. var
     MongooseModule.forRoot('mongodb://localhost/nest-blogger-platform'),
     AccountsModule,
