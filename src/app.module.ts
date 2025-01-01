@@ -9,8 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
-    // TODO: add env. var
-    MongooseModule.forRoot('mongodb://localhost/nest-blogger-platform'),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
     AccountsModule,
     TestingModule,
   ],
