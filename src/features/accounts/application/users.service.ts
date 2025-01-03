@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Types } from 'mongoose';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import bcrypt from 'bcrypt';
 
 import { User, UserModelType } from '../domain/user.entity';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { CreateUserDto, UpdateUserDto } from '../dto/create-user-dto';
+import { UserViewDto } from '../api/user.view-dto';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +16,7 @@ export class UsersService {
     private usersRepository: UsersRepository,
   ) {}
 
-  async createUser(dto: CreateUserDto): Promise<string> {
+  async createUser(dto: CreateUserDto): Promise<UserViewDto> {
     //TODO: move to bcrypt service
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
@@ -26,22 +28,28 @@ export class UsersService {
 
     await this.usersRepository.save(user);
 
-    return user._id.toString();
+    return UserViewDto.mapToView(user);
   }
 
-  async updateUser(id: string, dto: UpdateUserDto): Promise<string> {
-    const user = await this.usersRepository.findOrNotFoundFail(id);
+  async updateUser(id: string, dto: UpdateUserDto): Promise<UserViewDto> {
+    const user = await this.UserModel.findByIdAndUpdate(id, dto, { new: true });
 
-    await this.usersRepository.save(user);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
-    return user._id.toString();
+    return UserViewDto.mapToView(user);
   }
 
-  // async deleteUser(id: string) {
-  //   const user = await this.usersRepository.findNonDeletedOrNotFoundFail(id);
-  //
-  //   user.makeDeleted();
-  //
-  //   await this.usersRepository.save(user);
-  // }
+  async deleteUser(id: Types.ObjectId): Promise<void> {
+    const deleteResult = await this.UserModel.deleteOne({ _id: id });
+
+    const isDeleted = deleteResult.deletedCount === 1;
+
+    if (isDeleted) {
+      throw new NotFoundException('User not found');
+    }
+
+    return;
+  }
 }
