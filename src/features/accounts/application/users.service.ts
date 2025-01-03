@@ -4,8 +4,7 @@ import bcrypt from 'bcrypt';
 
 import { User, UserModelType } from '../domain/user.entity';
 import { UsersRepository } from '../infrastructure/users.repository';
-import { CreateUserDto } from '../dto/create-user-dto';
-import { CreateUserInputDto } from '../api/input-dto/users.input-dto';
+import { CreateUserDto, UpdateUserDto } from '../dto/create-user-dto';
 
 @Injectable()
 export class UsersService {
@@ -30,10 +29,8 @@ export class UsersService {
     return user._id.toString();
   }
 
-  async updateUser(id: string, dto: CreateUserInputDto): Promise<string> {
+  async updateUser(id: string, dto: UpdateUserDto): Promise<string> {
     const user = await this.usersRepository.findOrNotFoundFail(id);
-
-    // user.update(dto);
 
     await this.usersRepository.save(user);
 
