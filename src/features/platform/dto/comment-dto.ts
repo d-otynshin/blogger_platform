@@ -1,7 +1,8 @@
 import { TInteraction } from './interaction-dto';
+import { Types } from 'mongoose';
 
 export type TCommentator = {
-  userId: string;
+  userId: Types.ObjectId;
   userLogin: string;
 };
 
@@ -9,7 +10,7 @@ export class CreateCommentDto {
   content: string;
   commentatorInfo: TCommentator;
   interactions: TInteraction[];
-  postId: string;
+  postId: Types.ObjectId;
   createdAt: Date;
 }
 

@@ -7,7 +7,7 @@ import { BlogsRepository } from '../infrastructure/repositories/blogs.repository
 import { BlogOutputDto } from '../api/output-dto/blog.output-dto';
 import { PostOutputDto } from '../api/output-dto/post.output-dto';
 import { Post, PostModelType } from '../domain/post.entity';
-import { CreateBlogInputDto } from '../api/input-dto/blogs.input-dto';
+import { CreatePostByBlogIdInputDto } from '../api/input-dto/blogs.input-dto';
 import { PostsRepository } from '../infrastructure/repositories/posts.repository';
 
 @Injectable()
@@ -54,7 +54,7 @@ export class BlogsService {
 
   async createPostByBlogId(
     blogId: Types.ObjectId,
-    dto: CreateBlogInputDto,
+    dto: CreatePostByBlogIdInputDto,
   ): Promise<PostOutputDto> {
     const postPojo = {
       title: dto.title,

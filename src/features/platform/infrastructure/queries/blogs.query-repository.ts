@@ -39,14 +39,14 @@ export class BlogsQueryRepository {
       });
     }
 
-    const users = await this.BlogModel.find(filter)
+    const blogs = await this.BlogModel.find(filter)
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(query.calculateSkip())
       .limit(query.pageSize);
 
     const totalCount = await this.BlogModel.countDocuments(filter);
 
-    const items = users.map(BlogOutputDto.mapToView);
+    const items = blogs.map(BlogOutputDto.mapToView);
 
     return PaginatedViewDto.mapToView({
       items,
@@ -60,6 +60,6 @@ export class BlogsQueryRepository {
     id: Types.ObjectId,
     query: GetPostsQueryParams,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
-    return this.postsQueryRepository.getAll(id, query);
+    return this.postsQueryRepository.getPostsByBlogId(id, query);
   }
 }

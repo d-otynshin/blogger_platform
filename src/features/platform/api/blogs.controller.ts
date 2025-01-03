@@ -20,7 +20,7 @@ import { BlogsQueryRepository } from '../infrastructure/queries/blogs.query-repo
 import { CreateBlogDto, UpdateBlogDto } from '../dto/blog-dto';
 import { GetPostsQueryParams } from '../infrastructure/queries/posts.query-repository';
 import { PostOutputDto } from './output-dto/post.output-dto';
-import { CreatePostDto } from '../dto/post-dto';
+import { CreatePostByBlogIdInputDto } from './input-dto/blogs.input-dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -55,7 +55,7 @@ export class BlogsController {
   @HttpCode(HttpStatus.CREATED)
   async createPostByBlogId(
     @Param('blogId') blogId: Types.ObjectId,
-    @Body() createPostDto: CreatePostDto,
+    @Body() createPostDto: CreatePostByBlogIdInputDto,
   ): Promise<PostOutputDto> {
     return this.blogsService.createPostByBlogId(blogId, createPostDto);
   }

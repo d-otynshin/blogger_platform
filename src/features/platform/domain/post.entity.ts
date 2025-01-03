@@ -1,7 +1,7 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model, Types } from 'mongoose';
 import { TInteraction } from '../dto/interaction-dto';
-import { CreateBlogInputDto } from '../api/input-dto/blogs.input-dto';
+import { CreatePostByBlogIdInputDto } from '../api/input-dto/blogs.input-dto';
 
 @Schema({ timestamps: true })
 export class Post {
@@ -28,7 +28,7 @@ export class Post {
 
   static createInstance(
     blogId: Types.ObjectId,
-    dto: CreateBlogInputDto,
+    dto: CreatePostByBlogIdInputDto,
   ): PostDocument {
     const post = new Post();
 
