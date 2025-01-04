@@ -4,6 +4,7 @@ export class CreatePostByBlogIdInputDto {
   title: string;
   shortDescription: string;
   content: string;
+  blogName: string;
 }
 
 export class CreatePostInputDto {

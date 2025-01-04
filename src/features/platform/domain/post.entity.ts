@@ -36,7 +36,7 @@ export class Post {
     post.shortDescription = dto.shortDescription;
     post.content = dto.content;
     post.blogId = blogId;
-    post.blogName = 'TEST';
+    post.blogName = dto.blogName || 'TEST';
     post.interactions = [];
 
     return post as PostDocument;

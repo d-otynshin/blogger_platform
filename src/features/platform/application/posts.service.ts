@@ -5,18 +5,23 @@ import { PostsRepository } from '../infrastructure/repositories/posts.repository
 import { PostOutputDto } from '../api/output-dto/post.output-dto';
 import { UpdatePostDto } from '../dto/post-dto';
 import { CreatePostInputDto } from '../api/input-dto/blogs.input-dto';
+import { BlogsRepository } from '../infrastructure/repositories/blogs.repository';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private PostModel: PostModelType,
     private postsRepository: PostsRepository,
+    private blogsRepository: BlogsRepository,
   ) {}
   async createPost(dto: CreatePostInputDto): Promise<PostOutputDto> {
+    const blog = await this.blogsRepository.findById(dto.blogId);
+
     const postPojo = {
       title: dto.title,
       content: dto.content,
       shortDescription: dto.shortDescription,
+      blogName: blog.name,
     };
 
     const createdPost = this.PostModel.createInstance(dto.blogId, postPojo);
