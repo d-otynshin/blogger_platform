@@ -1,9 +1,9 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument, Model } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
 import { CreateBlogDto } from '../dto/blog-dto';
 
 @Schema({ timestamps: true })
-export class Blog extends Document {
+export class Blog {
   @Prop({ type: String, required: true })
   name: string;
 

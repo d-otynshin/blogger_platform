@@ -9,8 +9,8 @@ import { Comment, CommentModelType } from '../platform/domain/comment.entity';
 export class TestingController {
   constructor(
     @InjectModel(User.name) private UserModel: UserModelType,
-    @InjectModel(Blog.name) private BlogModel: BlogModelType,
     @InjectModel(Post.name) private PostModel: PostModelType,
+    @InjectModel(Blog.name) private BlogModel: BlogModelType,
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
 
