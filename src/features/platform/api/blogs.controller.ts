@@ -57,7 +57,16 @@ export class BlogsController {
     @Param('blogId') blogId: Types.ObjectId,
     @Body() createPostDto: CreatePostByBlogIdInputDto,
   ): Promise<PostOutputDto> {
-    return this.blogsService.createPostByBlogId(blogId, createPostDto);
+    const createdPost = await this.blogsService.createPostByBlogId(
+      blogId,
+      createPostDto,
+    );
+
+    if (!createdPost) {
+      throw new NotFoundException('Blog not found');
+    }
+
+    return createdPost;
   }
 
   @Get(':id')
@@ -77,7 +86,7 @@ export class BlogsController {
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
   ): Promise<boolean> {
-    const isUpdated = this.blogsService.updateBlog(id, updateBlogDto);
+    const isUpdated = await this.blogsService.updateBlog(id, updateBlogDto);
 
     if (!isUpdated) {
       throw new NotFoundException(`Blog with ID ${id} not found`);
@@ -89,7 +98,7 @@ export class BlogsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(@Param('id') id: string): Promise<boolean> {
-    const isDeleted = this.blogsService.deleteBlogById(id);
+    const isDeleted = await this.blogsService.deleteBlogById(id);
 
     if (!isDeleted) {
       throw new NotFoundException(`Blog with ID ${id} not found`);

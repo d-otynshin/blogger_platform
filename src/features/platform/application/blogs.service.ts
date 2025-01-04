@@ -1,4 +1,4 @@
-import { Types } from 'mongoose';
+import { isValidObjectId, Types } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateBlogDto, UpdateBlogDto } from '../dto/blog-dto';
@@ -42,11 +42,11 @@ export class BlogsService {
     return true;
   }
 
-  async deleteBlogById(id: string): Promise<boolean> {
+  async deleteBlogById(id: string): Promise<boolean | null> {
     const deletedBlog = await this.BlogModel.findByIdAndDelete(id);
 
     if (!deletedBlog) {
-      throw new NotFoundException(`Blog with ID ${id} not found`);
+      return null;
     }
 
     return true;
@@ -55,7 +55,14 @@ export class BlogsService {
   async createPostByBlogId(
     blogId: Types.ObjectId,
     dto: CreatePostByBlogIdInputDto,
-  ): Promise<PostOutputDto> {
+  ): Promise<PostOutputDto | null> {
+    if (!isValidObjectId(blogId)) {
+      return null;
+    }
+
+    const blog = await this.blogsRepository.findById(blogId);
+    if (!blog) return null;
+
     const postPojo = {
       title: dto.title,
       shortDescription: dto.shortDescription,
