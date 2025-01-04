@@ -16,7 +16,7 @@ export class BlogOutputDto {
     dto.description = blog.description;
     dto.websiteUrl = blog.websiteUrl;
     dto.createdAt = blog.createdAt;
-    dto.isMembership = true;
+    dto.isMembership = false;
 
     return dto;
   }
