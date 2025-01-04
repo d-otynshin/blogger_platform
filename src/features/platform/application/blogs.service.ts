@@ -67,6 +67,7 @@ export class BlogsService {
       title: dto.title,
       shortDescription: dto.shortDescription,
       content: dto.content,
+      blogName: blog.name,
     };
 
     const createdPost = this.PostModel.createInstance(blogId, postPojo);

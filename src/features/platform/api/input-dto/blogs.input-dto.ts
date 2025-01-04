@@ -7,6 +7,8 @@ export class CreatePostByBlogIdInputDto {
   blogName: string;
 }
 
+// TODO: add extra DTO
+
 export class CreatePostInputDto {
   title: string;
   shortDescription: string;
