@@ -20,7 +20,10 @@ export class Blog {
   createdAt: Date;
 
   static createInstance(dto: CreateBlogDto): BlogDocument {
-    const blog = new Blog();
+    // instance creation
+    const blog = new this();
+
+    // instance construction
     blog.name = dto.name;
     blog.description = dto.description;
     blog.websiteUrl = dto.websiteUrl;

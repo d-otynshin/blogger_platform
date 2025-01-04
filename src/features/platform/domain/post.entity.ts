@@ -30,7 +30,7 @@ export class Post {
     blogId: Types.ObjectId,
     dto: CreatePostByBlogIdInputDto,
   ): PostDocument {
-    const post = new Post();
+    const post = new this();
 
     post.title = dto.title;
     post.shortDescription = dto.shortDescription;

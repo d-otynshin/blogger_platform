@@ -25,7 +25,7 @@ export class User {
   deletionStatus: DeletionStatus;
 
   static createInstance(dto: CreateUserDto): UserDocument {
-    const user = new this(); //UserModel!
+    const user = new this();
     user.email = dto.email;
     user.passwordHash = dto.password;
     user.login = dto.login;

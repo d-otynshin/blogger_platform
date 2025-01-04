@@ -5,7 +5,6 @@ import {
   UserDocument,
   UserModelType,
 } from '../domain/user.entity';
-import { NotFoundException } from '@nestjs/common';
 
 export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: UserModelType) {}
@@ -19,16 +18,5 @@ export class UsersRepository {
 
   async save(user: UserDocument) {
     await user.save();
-  }
-
-  async findOrNotFoundFail(id: string): Promise<UserDocument> {
-    const user = await this.findById(id);
-
-    if (!user) {
-      //TODO: replace with domain exception
-      throw new NotFoundException('user not found');
-    }
-
-    return user;
   }
 }
