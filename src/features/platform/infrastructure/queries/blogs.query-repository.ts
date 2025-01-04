@@ -35,7 +35,7 @@ export class BlogsQueryRepository {
     if (query.searchNameTerm) {
       filter.$or = filter.$or || [];
       filter.$or.push({
-        email: { $regex: query.searchNameTerm, $options: 'i' },
+        name: { $regex: query.searchNameTerm, $options: 'i' },
       });
     }
 
