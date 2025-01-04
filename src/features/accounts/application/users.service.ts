@@ -50,6 +50,6 @@ export class UsersService {
       return null;
     }
 
-    return;
+    return true;
   }
 }
