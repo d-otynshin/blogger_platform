@@ -48,7 +48,10 @@ export class BlogsController {
     @Param('blogId') blogId: Types.ObjectId,
     @Query() query: GetPostsQueryParams,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
-    return this.blogsQueryRepository.getAllPosts(blogId, query);
+    const posts = await this.blogsQueryRepository.getAllPosts(blogId, query);
+    if (!posts) throw new NotFoundException('blog not found');
+
+    return posts;
   }
 
   @Post(':blogId/posts')

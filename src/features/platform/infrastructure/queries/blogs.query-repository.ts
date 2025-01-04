@@ -60,6 +60,12 @@ export class BlogsQueryRepository {
     id: Types.ObjectId,
     query: GetPostsQueryParams,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
+    const blog = await this.BlogModel.findOne({ _id: id });
+
+    if (!blog) {
+      return null;
+    }
+
     return this.postsQueryRepository.getPostsByBlogId(id, query);
   }
 }
