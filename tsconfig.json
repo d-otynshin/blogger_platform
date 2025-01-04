@@ -18,6 +18,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
+    "jsconfigPaths": true,
     "paths": {
       "@core/*": ["src/core/*"]
     }
