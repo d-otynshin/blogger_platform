@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginatedViewDto } from '@core/dto/base.paginated.view-dto';
 import { Comment, CommentModelType } from '../../domain/comment.entity';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { GetPostsQueryParams } from './posts.query-repository';
+import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 
 export class CommentsQueryRepository {
   constructor(

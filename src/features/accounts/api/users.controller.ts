@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import {
   Body,
   Controller,
@@ -9,13 +10,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { PaginatedViewDto } from '@core/dto/base.paginated.view-dto';
 import { UserViewDto } from './user.view-dto';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { GetUsersQueryParams } from './input-dto/get-users-query-params.input-dto';
 import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input-dto/users.input-dto';
-import { Types } from 'mongoose';
+
+import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 
 @Controller('users')
 export class UsersController {

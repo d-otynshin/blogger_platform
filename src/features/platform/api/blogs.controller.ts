@@ -12,7 +12,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { PaginatedViewDto } from '@core/dto/base.paginated.view-dto';
 import { BlogsService } from '../application/blogs.service';
 import { GetBlogsQueryParams } from './input-dto/get-blogs-query-params.input-dto';
 import { BlogOutputDto } from './output-dto/blog.output-dto';
@@ -21,6 +20,7 @@ import { CreateBlogDto, UpdateBlogDto } from '../dto/blog-dto';
 import { GetPostsQueryParams } from '../infrastructure/queries/posts.query-repository';
 import { PostOutputDto } from './output-dto/post.output-dto';
 import { CreatePostByBlogIdInputDto } from './input-dto/blogs.input-dto';
+import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 
 @Controller('blogs')
 export class BlogsController {

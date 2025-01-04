@@ -1,10 +1,11 @@
 import { Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { NotFoundException } from '@nestjs/common';
-import { PaginatedViewDto } from '@core/dto/base.paginated.view-dto';
-import { BaseSortablePaginationParams } from '@core/dto/base.query-params.input-dto';
 import { PostModelType, Post } from '../../domain/post.entity';
 import { PostOutputDto } from '../../api/output-dto/post.output-dto';
+
+import { BaseSortablePaginationParams } from '../../../../core/dto/base.query-params.input-dto';
+import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 
 export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
   sortBy = 'createdAt';

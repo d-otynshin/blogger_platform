@@ -11,7 +11,6 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { PaginatedViewDto } from '@core/dto/base.paginated.view-dto';
 import {
   GetPostsQueryParams,
   PostsQueryRepository,
@@ -23,6 +22,7 @@ import { UpdatePostDto } from '../dto/post-dto';
 import { CommentsQueryRepository } from '../infrastructure/queries/comments.query-repository';
 import { Types } from 'mongoose';
 import { CommentOutputDto } from './output-dto/comment.output-dto';
+import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 
 @Controller('posts')
 export class PostsController {
