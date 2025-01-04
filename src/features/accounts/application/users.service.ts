@@ -41,15 +41,9 @@ export class UsersService {
     return UserViewDto.mapToView(user);
   }
 
-  async deleteUser(id: Types.ObjectId): Promise<boolean | null> {
+  async deleteUser(id: Types.ObjectId): Promise<boolean> {
     const deleteResult = await this.UserModel.deleteOne({ _id: id });
 
-    const isDeleted = deleteResult.deletedCount === 1;
-
-    if (isDeleted) {
-      return null;
-    }
-
-    return true;
+    return deleteResult.deletedCount === 1;
   }
 }
