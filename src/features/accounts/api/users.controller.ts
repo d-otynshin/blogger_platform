@@ -5,10 +5,10 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus,
+  HttpStatus, NotFoundException,
   Param,
   Post,
-  Query,
+  Query
 } from '@nestjs/common';
 import { UserViewDto } from './user.view-dto';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
@@ -43,6 +43,12 @@ export class UsersController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param('id') id: Types.ObjectId): Promise<void> {
-    return this.usersService.deleteUser(id);
+    const isDeleted = await this.usersService.deleteUser(id);
+
+    if (!isDeleted) {
+      throw new NotFoundException('User not found');
+    }
+
+    return;
   }
 }

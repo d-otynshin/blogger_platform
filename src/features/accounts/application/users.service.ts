@@ -41,13 +41,13 @@ export class UsersService {
     return UserViewDto.mapToView(user);
   }
 
-  async deleteUser(id: Types.ObjectId): Promise<void> {
+  async deleteUser(id: Types.ObjectId): Promise<boolean | null> {
     const deleteResult = await this.UserModel.deleteOne({ _id: id });
 
     const isDeleted = deleteResult.deletedCount === 1;
 
     if (isDeleted) {
-      throw new NotFoundException('User not found');
+      return null;
     }
 
     return;
