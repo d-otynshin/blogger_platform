@@ -1,17 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersRepository } from '../infrastructure/users.repository';
-import { LoginInputDto } from '../api/input-dto/login.input-dto';
 import { CryptoService } from './crypto.service';
 import { UserContextDto } from '../dto/auth.dto';
+import { UsersService } from './users.service';
+import { CreateUserInputDto } from '../api/input-dto/users.input-dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { User, UserModelType } from '../domain/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersRepository: UsersRepository,
-    private cryptoService: CryptoService,
+    @InjectModel(User.name) private UserModel: UserModelType,
     private jwtService: JwtService,
+    private cryptoService: CryptoService,
+    private usersService: UsersService,
+    private usersRepository: UsersRepository,
   ) {}
 
   async checkCredentials(
@@ -29,19 +34,23 @@ export class AuthService {
     return isPasswordValid ? { id: user._id.toString() } : null;
   }
 
-  async login(dto: LoginInputDto) {
-    const userContextDto = await this.checkCredentials(
-      dto.loginOrEmail,
-      dto.password,
-    );
-
-    if (!userContextDto) {
-      // TODO: change to 401 status code
-      throw new NotFoundException();
-    }
-
-    const accessToken = this.jwtService.sign({ id: userContextDto.id });
+  async login(id: string) {
+    const accessToken = this.jwtService.sign({ id });
 
     return { accessToken };
+  }
+
+  async register(createUserInputDto: CreateUserInputDto) {
+    const userViewDto = await this.usersService.createUser(createUserInputDto);
+    const confirmationCode = this.jwtService.sign({ login: userViewDto.login });
+
+    // TODO: move to usersService?
+    await this.UserModel.findByIdAndUpdate(
+      userViewDto.id,
+      { confirmationCode, isConfirmed: false },
+      { new: true, runValidators: true },
+    );
+
+    return;
   }
 }

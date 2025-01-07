@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Post,
   Put,
@@ -20,7 +19,9 @@ import { CreateBlogDto, UpdateBlogDto } from '../dto/blog-dto';
 import { GetPostsQueryParams } from '../infrastructure/queries/posts.query-repository';
 import { PostOutputDto } from './output-dto/post.output-dto';
 import { CreatePostByBlogIdInputDto } from './input-dto/blogs.input-dto';
+
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
+import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Controller('blogs')
 export class BlogsController {
@@ -49,7 +50,7 @@ export class BlogsController {
     @Query() query: GetPostsQueryParams,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
     const posts = await this.blogsQueryRepository.getAllPosts(blogId, query);
-    if (!posts) throw new NotFoundException('blog not found');
+    if (!posts) throw NotFoundDomainException.create('Blog not found');
 
     return posts;
   }
@@ -66,7 +67,7 @@ export class BlogsController {
     );
 
     if (!createdPost) {
-      throw new NotFoundException('Blog not found');
+      throw NotFoundDomainException.create('Blog not found');
     }
 
     return createdPost;
@@ -77,7 +78,7 @@ export class BlogsController {
     const blog = await this.blogsQueryRepository.getById(id);
 
     if (!blog) {
-      throw new NotFoundException(`Blog with ID ${id} not found`);
+      throw NotFoundDomainException.create(`Blog with ID ${id} not found`);
     }
 
     return blog;
@@ -92,7 +93,7 @@ export class BlogsController {
     const isUpdated = await this.blogsService.updateBlog(id, updateBlogDto);
 
     if (!isUpdated) {
-      throw new NotFoundException(`Blog with ID ${id} not found`);
+      throw NotFoundDomainException.create(`Blog with ID ${id} not found`);
     }
 
     return;
@@ -104,7 +105,7 @@ export class BlogsController {
     const isDeleted = await this.blogsService.deleteBlogById(id);
 
     if (!isDeleted) {
-      throw new NotFoundException(`Blog with ID ${id} not found`);
+      throw NotFoundDomainException.create(`Blog with ID ${id} not found`);
     }
 
     return;

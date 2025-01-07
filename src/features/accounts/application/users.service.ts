@@ -1,42 +1,48 @@
 import { Types } from 'mongoose';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import bcrypt from 'bcrypt';
-
-import { User, UserModelType } from '../domain/user.entity';
+import { User, UserDocument, UserModelType } from '../domain/user.entity';
 import { UsersRepository } from '../infrastructure/users.repository';
-import { CreateUserDto, UpdateUserDto } from '../dto/create-user-dto';
+import { UpdateUserDto } from '../dto/create-user-dto';
 import { UserViewDto } from '../api/user.view-dto';
-import { JWTService } from './jwt.service';
+import { CryptoService } from './crypto.service';
+import { JwtService } from '@nestjs/jwt';
+import { CreateUserInputDto } from '../api/input-dto/users.input-dto';
+import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
+    @InjectModel(User.name) private UserModel: UserModelType,
     private usersRepository: UsersRepository,
-    private jwtService: JWTService,
+    private cryptoService: CryptoService,
+    private jwtService: JwtService,
   ) {}
 
-  async createUser(dto: CreateUserDto): Promise<UserViewDto> {
-    const passwordHash = await this.jwtService.createPasswordHash(dto.password);
+  async createUser(dto: CreateUserInputDto): Promise<UserDocument> {
+    const passwordHash = await this.cryptoService.createPasswordHash(
+      dto.password,
+    );
+
+    const confirmationCode = this.jwtService.sign({ login: dto.login });
 
     const user = this.UserModel.createInstance({
       email: dto.email,
       login: dto.login,
       password: passwordHash,
+      confirmationCode,
     });
 
     await this.usersRepository.save(user);
 
-    return UserViewDto.mapToView(user);
+    return user;
   }
 
   async updateUser(id: string, dto: UpdateUserDto): Promise<UserViewDto> {
     const user = await this.UserModel.findByIdAndUpdate(id, dto, { new: true });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw NotFoundDomainException.create('User not found');
     }
 
     return UserViewDto.mapToView(user);

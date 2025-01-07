@@ -1,15 +1,15 @@
 import { Types } from 'mongoose';
 import {
-  Body,
-  Controller,
-  Delete,
   Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  Query,
   HttpCode,
   HttpStatus,
-  NotFoundException,
-  Param,
-  Post,
-  Query,
+  UseGuards,
+  Controller,
 } from '@nestjs/common';
 import { UserViewDto } from './user.view-dto';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
@@ -18,8 +18,11 @@ import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input-dto/users.input-dto';
 
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
+import { BasicAuthGuard } from '../guards/basic/basic-auth.guard';
+import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Controller('users')
+@UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
     private readonly usersQueryRepository: UsersQueryRepository,
@@ -38,7 +41,9 @@ export class UsersController {
   async createUser(
     @Body() createUserDto: CreateUserInputDto,
   ): Promise<UserViewDto> {
-    return this.usersService.createUser(createUserDto);
+    const userDocument = await this.usersService.createUser(createUserDto);
+
+    return UserViewDto.mapToView(userDocument);
   }
 
   @Delete(':id')
@@ -47,7 +52,7 @@ export class UsersController {
     const isDeleted = await this.usersService.deleteUser(id);
 
     if (!isDeleted) {
-      throw new NotFoundException('User not found');
+      throw NotFoundDomainException.create('User not found');
     }
 
     return;
