@@ -5,10 +5,11 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus, NotFoundException,
+  HttpStatus,
+  NotFoundException,
   Param,
   Post,
-  Query
+  Query,
 } from '@nestjs/common';
 import { UserViewDto } from './user.view-dto';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';

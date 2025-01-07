@@ -43,7 +43,7 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-// register methods
+/* register methods */
 UserSchema.loadClass(User);
 
 export type UserDocument = HydratedDocument<User>;

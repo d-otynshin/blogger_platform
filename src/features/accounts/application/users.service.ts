@@ -7,6 +7,7 @@ import { User, UserModelType } from '../domain/user.entity';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { CreateUserDto, UpdateUserDto } from '../dto/create-user-dto';
 import { UserViewDto } from '../api/user.view-dto';
+import { JWTService } from './jwt.service';
 
 @Injectable()
 export class UsersService {
@@ -14,11 +15,11 @@ export class UsersService {
     @InjectModel(User.name)
     private UserModel: UserModelType,
     private usersRepository: UsersRepository,
+    private jwtService: JWTService,
   ) {}
 
   async createUser(dto: CreateUserDto): Promise<UserViewDto> {
-    //TODO: move to bcrypt service
-    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const passwordHash = await this.jwtService.createPasswordHash(dto.password);
 
     const user = this.UserModel.createInstance({
       email: dto.email,

@@ -16,6 +16,12 @@ export class UsersRepository {
     });
   }
 
+  async findOne(loginOrEmail: string) {
+    return this.UserModel.findOne({
+      $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
+    });
+  }
+
   async save(user: UserDocument) {
     await user.save();
   }
