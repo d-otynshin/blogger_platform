@@ -1,3 +1,5 @@
+import process from 'node:process';
+
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -5,17 +7,28 @@ import { UsersRepository } from '../infrastructure/users.repository';
 import { CryptoService } from './crypto.service';
 import { UserContextDto } from '../dto/auth.dto';
 import { UsersService } from './users.service';
-import { CreateUserInputDto } from '../api/input-dto/users.input-dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserModelType } from '../domain/user.entity';
+import { emailTemplates } from '../../notifications/utils/templates';
+import { EmailService } from '../../notifications/application/email.service';
+
+import {
+  ConfirmEmailInputDto,
+  CreateUserInputDto,
+  EmailInputDto,
+  UpdatePasswordInputDto,
+} from '../api/input-dto/users.input-dto';
+
+import {
+  ForbiddenDomainException,
+  NotFoundDomainException,
+} from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private UserModel: UserModelType,
     private jwtService: JwtService,
     private cryptoService: CryptoService,
     private usersService: UsersService,
+    private emailService: EmailService,
     private usersRepository: UsersRepository,
   ) {}
 
@@ -41,15 +54,124 @@ export class AuthService {
   }
 
   async register(createUserInputDto: CreateUserInputDto) {
-    const userViewDto = await this.usersService.createUser(createUserInputDto);
-    const confirmationCode = this.jwtService.sign({ login: userViewDto.login });
+    const userDocument = await this.usersService.createUser(createUserInputDto);
 
-    // TODO: move to usersService?
-    await this.UserModel.findByIdAndUpdate(
-      userViewDto.id,
-      { confirmationCode, isConfirmed: false },
-      { new: true, runValidators: true },
+    this.emailService
+      .sendConfirmationEmail(
+        createUserInputDto.email,
+        userDocument.confirmationCode,
+        'registration',
+        emailTemplates.registrationEmail,
+      )
+      .then(() => console.log('Email sent'));
+  }
+
+  async resendEmail(resendEmailDto: EmailInputDto): Promise<void> {
+    const userDocument = await this.usersRepository.findOne(
+      resendEmailDto.email,
     );
+
+    if (!userDocument) {
+      throw NotFoundDomainException.create('User not found');
+    }
+
+    if (userDocument.isConfirmed) {
+      throw ForbiddenDomainException.create('User is already confirmed');
+    }
+
+    const updatedConfirmationCode = this.jwtService.sign({
+      login: userDocument.login,
+    });
+
+    userDocument.confirmationCode = updatedConfirmationCode;
+
+    await this.usersRepository.save(userDocument);
+
+    this.emailService
+      .sendConfirmationEmail(
+        resendEmailDto.email,
+        updatedConfirmationCode,
+        'resend',
+        emailTemplates.registrationEmail,
+      )
+      .then(() => console.log('Email sent'));
+
+    return;
+  }
+
+  async confirmEmail(confirmEmailDto: ConfirmEmailInputDto): Promise<void> {
+    const login: string = this.jwtService.decode(confirmEmailDto.code);
+
+    const userDocument = await this.usersRepository.findOne(login);
+
+    if (!userDocument) {
+      throw NotFoundDomainException.create('User not found');
+    }
+
+    if (userDocument.isConfirmed) {
+      throw ForbiddenDomainException.create('User is already confirmed');
+    }
+
+    if (confirmEmailDto.code !== userDocument.confirmationCode) {
+      throw ForbiddenDomainException.create('Confirmation code is invalid');
+    }
+
+    userDocument.isConfirmed = true;
+    await this.usersRepository.save(userDocument);
+
+    return;
+  }
+
+  async recoverPassword(passwordRecoveryDto: EmailInputDto): Promise<void> {
+    const userDocument = await this.usersRepository.findOne(
+      passwordRecoveryDto.email,
+    );
+
+    if (!userDocument) {
+      throw NotFoundDomainException.create('User not found');
+    }
+
+    const updatedConfirmationCode: string = this.jwtService.sign({
+      login: userDocument.login,
+    });
+
+    this.emailService
+      .sendConfirmationEmail(
+        passwordRecoveryDto.email,
+        updatedConfirmationCode,
+        'recover',
+        emailTemplates.passwordRecoveryEmail,
+      )
+      .then(() => console.log('Email sent'));
+
+    return;
+  }
+
+  async newPassword(updatePasswordDto: UpdatePasswordInputDto): Promise<void> {
+    const decodedRecoveryToken = await this.jwtService.verifyAsync(
+      updatePasswordDto.recoveryCode,
+      { secret: process.env.ACCESS_TOKEN_SECRET },
+    );
+
+    if (!decodedRecoveryToken) {
+      throw NotFoundDomainException.create('User not found');
+    }
+
+    const { login } = decodedRecoveryToken;
+
+    const updatedPasswordHash = await this.cryptoService.createPasswordHash(
+      updatePasswordDto.newPassword,
+    );
+
+    const userDocument = await this.usersRepository.findOne(login);
+
+    if (!userDocument) {
+      throw NotFoundDomainException.create('User not found');
+    }
+
+    userDocument.passwordHash = updatedPasswordHash;
+
+    await this.usersRepository.save(userDocument);
 
     return;
   }

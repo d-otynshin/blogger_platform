@@ -1,15 +1,15 @@
+import { Types } from 'mongoose';
 import {
-  Body,
-  Controller,
-  Delete,
   Get,
-  HttpCode,
-  HttpStatus,
-  NotFoundException,
-  Param,
   Post,
   Put,
+  Delete,
+  Body,
+  Param,
   Query,
+  HttpCode,
+  HttpStatus,
+  Controller,
 } from '@nestjs/common';
 import {
   GetPostsQueryParams,
@@ -20,9 +20,9 @@ import { PostsService } from '../application/posts.service';
 import { CreatePostInputDto } from './input-dto/blogs.input-dto';
 import { UpdatePostDto } from '../dto/post-dto';
 import { CommentsQueryRepository } from '../infrastructure/queries/comments.query-repository';
-import { Types } from 'mongoose';
 import { CommentOutputDto } from './output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
+import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Controller('posts')
 export class PostsController {
@@ -59,7 +59,7 @@ export class PostsController {
     const post = await this.postsQueryRepository.getById(id);
 
     if (!post) {
-      throw new NotFoundException(`Post with ID ${id} not found`);
+      throw NotFoundDomainException.create(`Post with ID ${id} not found`);
     }
 
     return post;
@@ -74,7 +74,7 @@ export class PostsController {
     const isUpdated = await this.postsService.updatePost(id, updatePostDto);
 
     if (!isUpdated) {
-      throw new NotFoundException(`Post with ID ${id} not found`);
+      throw NotFoundDomainException.create(`Post with ID ${id} not found`);
     }
 
     return;
@@ -86,7 +86,7 @@ export class PostsController {
     const isDeleted = await this.postsService.deletePostById(id);
 
     if (!isDeleted) {
-      throw new NotFoundException(`Post with ID ${id} not found`);
+      throw NotFoundDomainException.create(`Post with ID ${id} not found`);
     }
 
     return;

@@ -8,7 +8,7 @@ async function bootstrap() {
 
   appSetup(app);
 
-  const PORT = process.env.PORT ?? 5005; // TODO: move to configService.
+  const PORT = process.env.PORT ?? 5005;
 
   await app.listen(PORT, () => {
     console.log('Server is running on port ' + PORT);
