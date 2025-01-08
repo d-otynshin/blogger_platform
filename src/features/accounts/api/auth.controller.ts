@@ -10,7 +10,7 @@ import {
 import { AuthService } from '../application/auth.service';
 import { LocalAuthGuard } from '../guards/local/local-auth.guard';
 import { UserContextDto } from '../dto/auth.dto';
-import { MeViewDto } from './user.view-dto';
+import { MeViewDto } from './output-dto/user.view-dto';
 import { JwtAuthGuard } from '../guards/bearer/jwt-auth.guard';
 import { AuthQueryRepository } from '../infrastructure/auth.query-repository';
 import {

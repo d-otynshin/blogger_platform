@@ -11,7 +11,7 @@ import {
   UseGuards,
   Controller,
 } from '@nestjs/common';
-import { UserViewDto } from './user.view-dto';
+import { UserViewDto } from './output-dto/user.view-dto';
 import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { GetUsersQueryParams } from './input-dto/get-users-query-params.input-dto';
 import { UsersService } from '../application/users.service';

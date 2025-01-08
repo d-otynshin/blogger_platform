@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { MeViewDto } from '../api/user.view-dto';
+import { MeViewDto } from '../api/output-dto/user.view-dto';
 import { UsersRepository } from './users.repository';
 
 @Injectable()

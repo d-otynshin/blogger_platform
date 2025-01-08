@@ -11,6 +11,8 @@ import { AuthController } from './api/auth.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { CryptoService } from './application/crypto.service';
 import { EmailService } from '../notifications/application/email.service';
+import { AuthService } from './application/auth.service';
+import { AuthQueryRepository } from './infrastructure/auth.query-repository';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { EmailService } from '../notifications/application/email.service';
     UsersService,
     UsersRepository,
     UsersQueryRepository,
+    AuthService,
+    AuthQueryRepository,
     EmailService,
   ],
   exports: [MongooseModule],

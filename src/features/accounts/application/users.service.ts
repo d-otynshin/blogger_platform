@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, UserModelType } from '../domain/user.entity';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { UpdateUserDto } from '../dto/create-user-dto';
-import { UserViewDto } from '../api/user.view-dto';
+import { UserViewDto } from '../api/output-dto/user.view-dto';
 import { CryptoService } from './crypto.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserInputDto } from '../api/input-dto/users.input-dto';
