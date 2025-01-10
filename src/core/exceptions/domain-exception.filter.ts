@@ -12,7 +12,11 @@ export class DomainExceptionsFilter extends BaseExceptionFilter {
   ): void {
     response
       .status(this.calculateHttpCode(exception))
-      .json(this.getDefaultHttpBody(request.url, exception));
+      .json(
+        this.formatErrorMessage(
+          this.getDefaultHttpBody(request.url, exception),
+        ),
+      );
   }
 
   calculateHttpCode(exception: DomainException) {

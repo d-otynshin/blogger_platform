@@ -22,7 +22,7 @@ import { BasicAuthGuard } from '../guards/basic/basic-auth.guard';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Controller('users')
-@UseGuards(BasicAuthGuard)
+// @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
     private readonly usersQueryRepository: UsersQueryRepository,

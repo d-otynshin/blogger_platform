@@ -8,7 +8,7 @@ export enum DomainExceptionCode {
 export class ErrorExtension {
   constructor(
     public message: string,
-    public key: string | null = null,
+    public field: string | null = null,
   ) {}
 }
 

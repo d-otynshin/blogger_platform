@@ -1,6 +1,6 @@
 import { Catch, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { BaseExceptionFilter } from './base-exception.filter';
+import { BaseExceptionFilter, HttpResponseBody } from './base-exception.filter';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -11,18 +11,23 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
-      response.status(status).json({
-        ...this.getDefaultHttpBody(request.url, exception),
-        path: null,
-        message: 'Some error occurred',
-      });
+      response.status(status).json(
+        this.formatErrorMessage({
+          ...this.getDefaultHttpBody(request.url, exception),
+          path: null,
+          message: 'Some error occurred',
+        }),
+      );
 
-      console.error(exception);
       return;
     }
 
     response
       .status(status)
-      .json(this.getDefaultHttpBody(request.url, exception));
+      .json(
+        this.formatErrorMessage(
+          this.getDefaultHttpBody(request.url, exception),
+        ),
+      );
   }
 }

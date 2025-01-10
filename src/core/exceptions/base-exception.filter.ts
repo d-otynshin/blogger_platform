@@ -32,4 +32,13 @@ export abstract class BaseExceptionFilter implements ExceptionFilter {
         exception instanceof DomainException ? exception.extensions : [],
     };
   }
+
+  formatErrorMessage(errorInfo: HttpResponseBody) {
+    const message = errorInfo.message;
+    const extensions = errorInfo.extensions;
+
+    return {
+      errorsMessages: extensions.length ? extensions : [message],
+    };
+  }
 }

@@ -12,7 +12,7 @@ export class BasicAuthGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Basic ')) {
-      throw UnauthorizedDomainException.create('');
+      throw UnauthorizedDomainException.create('Authentication failed');
     }
 
     const base64Credentials = authHeader.split(' ')[1];
