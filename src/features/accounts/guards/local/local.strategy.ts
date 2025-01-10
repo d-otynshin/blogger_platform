@@ -8,7 +8,6 @@ import { UnauthorizedDomainException } from '../../../../core/exceptions/domain-
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
-    debugger;
     super({ usernameField: 'loginOrEmail' });
   }
 
@@ -16,7 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     debugger;
     const user = await this.authService.checkCredentials(username, password);
     if (!user) {
-      throw UnauthorizedDomainException.create('Unauthorized');
+      throw UnauthorizedDomainException.create('Authentication failed');
     }
 
     return user;

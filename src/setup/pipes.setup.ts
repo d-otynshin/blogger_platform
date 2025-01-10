@@ -41,6 +41,8 @@ export function pipesSetup(app: INestApplication) {
       exceptionFactory: (errors) => {
         const formattedErrors = errorFormatter(errors);
 
+        console.log(formattedErrors);
+
         throw new BadRequestDomainException(formattedErrors);
       },
     }),
