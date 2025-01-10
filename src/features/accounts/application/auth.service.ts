@@ -99,8 +99,8 @@ export class AuthService {
     }
 
     if (userDocument.isConfirmed) {
-      throw ForbiddenDomainException.create(
-        'User is already confirmed',
+      throw BadRequestDomainException.create(
+        'Email is already confirmed',
         'email',
       );
     }
@@ -131,15 +131,21 @@ export class AuthService {
     const userDocument = await this.usersRepository.findOne(login);
 
     if (!userDocument) {
-      throw NotFoundDomainException.create('User not found');
+      throw NotFoundDomainException.create('User not found', 'code');
     }
 
     if (userDocument.isConfirmed) {
-      throw ForbiddenDomainException.create('User is already confirmed');
+      throw ForbiddenDomainException.create(
+        'User is already confirmed',
+        'email',
+      );
     }
 
     if (confirmEmailDto.code !== userDocument.confirmationCode) {
-      throw ForbiddenDomainException.create('Confirmation code is invalid');
+      throw ForbiddenDomainException.create(
+        'Confirmation code is invalid',
+        'code',
+      );
     }
 
     userDocument.isConfirmed = true;

@@ -47,7 +47,7 @@ export class AuthController {
     return this.authQueryRepository.me(user.id);
   }
 
-  @HttpCode(HttpStatus.ACCEPTED)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration')
   async register(
     @Body() createUserInputDto: CreateUserInputDto,

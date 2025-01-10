@@ -15,7 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     debugger;
     const user = await this.authService.checkCredentials(username, password);
     if (!user) {
-      throw UnauthorizedDomainException.create('Authentication failed');
+      throw UnauthorizedDomainException.create('Authentication failed', 'user');
     }
 
     return user;
