@@ -17,6 +17,8 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         message: 'Some error occurred',
       });
 
+      console.error(exception);
+
       return;
     }
 

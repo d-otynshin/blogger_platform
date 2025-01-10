@@ -1,20 +1,19 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { deleteAllData } from './helpers/delete-all-data';
-
-import { JwtService } from '@nestjs/jwt';
-import { delay } from './helpers/delay';
-import { UsersTestManager } from './helpers/users-test.manager';
-import { initSettings } from './helpers/init';
 import process from 'node:process';
+import request from 'supertest';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { deleteAllData } from './helpers/delete-all-data';
+import { delay } from './helpers/delay';
+import { initSettings } from './helpers/init';
+import { UsersTestManager } from './helpers/users-test.manager';
 import { CreateUserDto } from '../features/accounts/dto/create-user-dto';
 import { CreateUserInputDto } from '../features/accounts/api/input-dto/users.input-dto';
-import { PaginatedViewDto } from '../core/dto/base.paginated.view-dto';
 import {
   MeViewDto,
   UserViewDto,
 } from '../features/accounts/api/output-dto/user.view-dto';
 import { EmailService } from '../features/notifications/application/email.service';
+import { PaginatedViewDto } from '../core/dto/base.paginated.view-dto';
 
 describe('users', () => {
   let app: INestApplication;
@@ -48,15 +47,13 @@ describe('users', () => {
       email: 'email@email.em',
     };
 
-    const response = await userTestManger.createUser(body);
+    const userViewDto: UserViewDto = await userTestManger.createUser(body);
 
-    expect(response).toEqual({
+    expect(userViewDto).toEqual({
       login: body.login,
       email: body.email,
       id: expect.any(String),
       createdAt: expect.any(String),
-      firstName: expect.any(String),
-      lastName: null,
     });
   });
 
@@ -76,7 +73,11 @@ describe('users', () => {
   it('should return users info while "me" request with correct accessTokens', async () => {
     const tokens = await userTestManger.createAndLoginSeveralUsers(1);
 
-    const responseBody = await userTestManger.me(tokens[0].accessToken);
+    const responseBody: MeViewDto = await userTestManger.me(
+      tokens[0].accessToken,
+    );
+
+    console.log(responseBody);
 
     expect(responseBody).toEqual({
       login: expect.anything(),

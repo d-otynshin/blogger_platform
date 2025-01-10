@@ -13,6 +13,8 @@ import { CryptoService } from './application/crypto.service';
 import { EmailService } from '../notifications/application/email.service';
 import { AuthService } from './application/auth.service';
 import { AuthQueryRepository } from './infrastructure/auth.query-repository';
+import { JwtStrategy } from './guards/bearer/jwt.strategy';
+import { LocalStrategy } from './guards/local/local.strategy';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { AuthQueryRepository } from './infrastructure/auth.query-repository';
     AuthService,
     AuthQueryRepository,
     EmailService,
+    JwtStrategy,
+    LocalStrategy,
   ],
   exports: [MongooseModule],
 })
