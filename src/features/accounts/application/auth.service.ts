@@ -59,9 +59,10 @@ export class AuthService {
       createUserInputDto.email,
     );
 
-    if (!userDocumentByEmail) {
+    if (userDocumentByEmail) {
       throw BadRequestDomainException.create(
         'User with this email already exists',
+        'email',
       );
     }
 
@@ -69,9 +70,10 @@ export class AuthService {
       createUserInputDto.login,
     );
 
-    if (!userDocumentByLogin) {
+    if (userDocumentByLogin) {
       throw BadRequestDomainException.create(
         'User with this login already exists',
+        'login',
       );
     }
 
@@ -93,11 +95,14 @@ export class AuthService {
     );
 
     if (!userDocument) {
-      throw BadRequestDomainException.create('User not found');
+      throw BadRequestDomainException.create('User not found', 'email');
     }
 
     if (userDocument.isConfirmed) {
-      throw ForbiddenDomainException.create('User is already confirmed');
+      throw ForbiddenDomainException.create(
+        'User is already confirmed',
+        'email',
+      );
     }
 
     const updatedConfirmationCode = this.jwtService.sign({
