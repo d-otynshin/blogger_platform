@@ -131,7 +131,7 @@ export class AuthService {
     const userDocument = await this.usersRepository.findOne(login);
 
     if (!userDocument) {
-      throw NotFoundDomainException.create('User not found', 'code');
+      throw BadRequestDomainException.create('User not found', 'code');
     }
 
     if (userDocument.isConfirmed) {
