@@ -21,6 +21,16 @@ export class BasicAuthGuard implements CanActivate {
     );
     const [username, password] = credentials.split(':');
 
-    return username === this.validUsername && password === this.validPassword;
+    const isValid =
+      username === this.validUsername && password === this.validPassword;
+
+    if (!isValid) {
+      throw UnauthorizedDomainException.create(
+        'Invalid Credentials',
+        'usernameOrPassword',
+      );
+    }
+
+    return isValid;
   }
 }
