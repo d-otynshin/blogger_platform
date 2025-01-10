@@ -1,10 +1,6 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { UnauthorizedDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { ForbiddenDomainException } from '../../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class BasicAuthGuard implements CanActivate {
@@ -16,7 +12,7 @@ export class BasicAuthGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Basic ')) {
-      throw UnauthorizedDomainException.create('Unauthorized 1');
+      throw ForbiddenDomainException.create('');
     }
 
     const base64Credentials = authHeader.split(' ')[1];

@@ -18,6 +18,7 @@ import {
 } from '../api/input-dto/users.input-dto';
 
 import {
+  BadRequestDomainException,
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
@@ -54,6 +55,26 @@ export class AuthService {
   }
 
   async register(createUserInputDto: CreateUserInputDto) {
+    const userDocumentByEmail = await this.usersRepository.findOne(
+      createUserInputDto.email,
+    );
+
+    if (!userDocumentByEmail) {
+      throw BadRequestDomainException.create(
+        'User with this email already exists',
+      );
+    }
+
+    const userDocumentByLogin = await this.usersRepository.findOne(
+      createUserInputDto.login,
+    );
+
+    if (!userDocumentByLogin) {
+      throw BadRequestDomainException.create(
+        'User with this login already exists',
+      );
+    }
+
     const userDocument = await this.usersService.createUser(createUserInputDto);
 
     this.emailService
@@ -72,7 +93,7 @@ export class AuthService {
     );
 
     if (!userDocument) {
-      throw NotFoundDomainException.create('User not found');
+      throw BadRequestDomainException.create('User not found');
     }
 
     if (userDocument.isConfirmed) {
