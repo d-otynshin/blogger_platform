@@ -111,20 +111,25 @@ export class AuthService {
 
     await this.usersRepository.save(userDocument);
 
-    this.emailService
-      .sendConfirmationEmail(
-        resendEmailDto.email,
-        updatedConfirmationCode,
-        'resend',
-        emailTemplates.registrationEmail,
-      )
-      .then(() => console.log('Email sent'));
+    await this.emailService.sendConfirmationEmail(
+      resendEmailDto.email,
+      updatedConfirmationCode,
+      'resend',
+      emailTemplates.registrationEmail,
+    );
 
     return;
   }
 
   async confirmEmail(confirmEmailDto: ConfirmEmailInputDto): Promise<void> {
-    const login: string = this.jwtService.decode(confirmEmailDto.code);
+    const parsedCode: { login: string } = this.jwtService.decode(
+      confirmEmailDto.code,
+    );
+    if (!parsedCode) {
+      throw BadRequestDomainException.create('Invalid code token', 'code');
+    }
+
+    const { login } = parsedCode;
 
     const userDocument = await this.usersRepository.findOne(login);
 
@@ -165,14 +170,12 @@ export class AuthService {
       login: userDocument.login,
     });
 
-    this.emailService
-      .sendConfirmationEmail(
-        passwordRecoveryDto.email,
-        updatedConfirmationCode,
-        'recover',
-        emailTemplates.passwordRecoveryEmail,
-      )
-      .then(() => console.log('Email sent'));
+    await this.emailService.sendConfirmationEmail(
+      passwordRecoveryDto.email,
+      updatedConfirmationCode,
+      'recover',
+      emailTemplates.passwordRecoveryEmail,
+    );
 
     return;
   }
