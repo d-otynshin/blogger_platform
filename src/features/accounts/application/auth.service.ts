@@ -138,9 +138,9 @@ export class AuthService {
     }
 
     if (userDocument.isConfirmed) {
-      throw ForbiddenDomainException.create(
+      throw BadRequestDomainException.create(
         'User is already confirmed',
-        'email',
+        'code',
       );
     }
 
