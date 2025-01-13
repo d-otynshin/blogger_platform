@@ -22,7 +22,6 @@ export class CreatePostByBlogIdInputDto {
   @Length(contentConstraints.minLength, contentConstraints.maxLength)
   content: string;
 
-  @IsString()
   blogName: string;
 }
 
