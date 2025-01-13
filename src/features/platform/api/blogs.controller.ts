@@ -28,7 +28,6 @@ import { NotFoundDomainException } from '../../../core/exceptions/domain-excepti
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
 
 @Controller('blogs')
-@UseGuards(BasicAuthGuard)
 export class BlogsController {
   constructor(
     private readonly blogsService: BlogsService,
@@ -42,6 +41,7 @@ export class BlogsController {
   }
 
   @Post()
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async createBlog(
     @Body() createBlogDto: CreateBlogDto,
@@ -61,6 +61,7 @@ export class BlogsController {
   }
 
   @Post(':blogId/posts')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async createPostByBlogId(
     @Param('blogId') blogId: Types.ObjectId,
@@ -90,6 +91,7 @@ export class BlogsController {
   }
 
   @Put(':id')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param('id') id: string,

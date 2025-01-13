@@ -29,7 +29,6 @@ import { NotFoundDomainException } from '../../../core/exceptions/domain-excepti
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
 
 @Controller('posts')
-@UseGuards(BasicAuthGuard)
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,
@@ -44,6 +43,7 @@ export class PostsController {
   }
 
   @Post()
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async createPost(
     @Body() createPostDto: CreatePostInputDto,
@@ -71,6 +71,7 @@ export class PostsController {
   }
 
   @Put(':id')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param('id') id: string,
@@ -86,6 +87,7 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(@Param('id') id: string): Promise<boolean> {
     const isDeleted = await this.postsService.deletePostById(id);
