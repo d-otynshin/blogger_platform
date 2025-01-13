@@ -19,7 +19,7 @@ import { BlogsQueryRepository } from '../infrastructure/queries/blogs.query-repo
 import { CreateBlogDto, UpdateBlogDto } from '../dto/blog-dto';
 import { GetPostsQueryParams } from '../infrastructure/queries/posts.query-repository';
 import { PostOutputDto } from './output-dto/post.output-dto';
-import { CreatePostByBlogIdInputDto } from './input-dto/blogs.input-dto';
+import { CreatePostByBlogIdInputDto } from './input-dto/posts.input-dto';
 
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
@@ -107,6 +107,7 @@ export class BlogsController {
   }
 
   @Delete(':id')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(@Param('id') id: string): Promise<boolean> {
     const isDeleted = await this.blogsService.deleteBlogById(id);

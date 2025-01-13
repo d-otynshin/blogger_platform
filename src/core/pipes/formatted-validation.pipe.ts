@@ -34,7 +34,6 @@ export const formattedValidationPipe = new ValidationPipe({
   stopAtFirstError: true,
   exceptionFactory: (errors) => {
     const formattedErrors = errorFormatter(errors);
-    console.log(formattedErrors);
 
     throw new BadRequestDomainException(formattedErrors);
   },

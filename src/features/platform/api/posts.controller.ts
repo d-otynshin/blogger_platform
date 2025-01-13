@@ -18,7 +18,7 @@ import {
 } from '../infrastructure/queries/posts.query-repository';
 import { PostOutputDto } from './output-dto/post.output-dto';
 import { PostsService } from '../application/posts.service';
-import { CreatePostInputDto } from './input-dto/blogs.input-dto';
+import { CreatePostInputDto } from './input-dto/posts.input-dto';
 import { UpdatePostDto } from '../dto/post-dto';
 import { CommentsQueryRepository } from '../infrastructure/queries/comments.query-repository';
 import { CommentOutputDto } from './output-dto/comment.output-dto';

@@ -1,17 +1,39 @@
-import { Types } from 'mongoose';
+import { IsString, IsUrl, Length } from 'class-validator';
+import { CreateBlogDto, UpdateBlogDto } from '../../dto/blog-dto';
+import {
+  descriptionConstraints,
+  nameConstraints,
+  websiteUrlConstraints,
+} from '../../domain/blog.entity';
 
-export class CreatePostByBlogIdInputDto {
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogName: string;
+export class CreateBlogInputDto implements CreateBlogDto {
+  @IsString()
+  @Length(nameConstraints.minLength, nameConstraints.maxLength)
+  name: string;
+
+  @IsString()
+  @Length(descriptionConstraints.minLength, descriptionConstraints.maxLength)
+  description: string;
+
+  @IsString()
+  @IsUrl()
+  @Length(websiteUrlConstraints.minLength, websiteUrlConstraints.maxLength)
+  websiteUrl: string;
 }
 
-// TODO: add extra DTO
+// TODO: refactor blog inputs
 
-export class CreatePostInputDto {
-  title: string;
-  shortDescription: string;
-  content: string;
-  blogId: Types.ObjectId;
+export class UpdateBlogInputDto implements UpdateBlogDto {
+  @IsString()
+  @Length(nameConstraints.minLength, nameConstraints.maxLength)
+  name: string;
+
+  @IsString()
+  @Length(descriptionConstraints.minLength, descriptionConstraints.maxLength)
+  description: string;
+
+  @IsString()
+  @IsUrl()
+  @Length(websiteUrlConstraints.minLength, websiteUrlConstraints.maxLength)
+  websiteUrl: string;
 }

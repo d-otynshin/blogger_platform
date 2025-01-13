@@ -1,14 +1,15 @@
 import { isValidObjectId, Types } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateBlogDto, UpdateBlogDto } from '../dto/blog-dto';
+import { UpdateBlogDto } from '../dto/blog-dto';
 import { Blog, BlogModelType } from '../domain/blog.entity';
 import { BlogsRepository } from '../infrastructure/repositories/blogs.repository';
 import { BlogOutputDto } from '../api/output-dto/blog.output-dto';
 import { PostOutputDto } from '../api/output-dto/post.output-dto';
 import { Post, PostModelType } from '../domain/post.entity';
-import { CreatePostByBlogIdInputDto } from '../api/input-dto/blogs.input-dto';
+import { CreatePostByBlogIdInputDto } from '../api/input-dto/posts.input-dto';
 import { PostsRepository } from '../infrastructure/repositories/posts.repository';
+import { CreateBlogInputDto, UpdateBlogInputDto } from '../api/input-dto/blogs.input-dto';
 
 @Injectable()
 export class BlogsService {
@@ -18,7 +19,7 @@ export class BlogsService {
     private blogsRepository: BlogsRepository,
     private postsRepository: PostsRepository,
   ) {}
-  async createBlog(dto: CreateBlogDto): Promise<BlogOutputDto> {
+  async createBlog(dto: CreateBlogInputDto): Promise<BlogOutputDto> {
     const createdBlog = this.BlogModel.createInstance({
       name: dto.name,
       description: dto.description,
@@ -30,7 +31,7 @@ export class BlogsService {
     return BlogOutputDto.mapToView(createdBlog);
   }
 
-  async updateBlog(id: string, dto: UpdateBlogDto): Promise<boolean> {
+  async updateBlog(id: string, dto: UpdateBlogInputDto): Promise<boolean> {
     const updatedBlog = await this.BlogModel.findByIdAndUpdate(id, dto, {
       new: true,
     });

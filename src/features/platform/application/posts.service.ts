@@ -4,7 +4,7 @@ import { Post, PostModelType } from '../domain/post.entity';
 import { PostsRepository } from '../infrastructure/repositories/posts.repository';
 import { PostOutputDto } from '../api/output-dto/post.output-dto';
 import { UpdatePostDto } from '../dto/post-dto';
-import { CreatePostInputDto } from '../api/input-dto/blogs.input-dto';
+import { CreatePostInputDto } from '../api/input-dto/posts.input-dto';
 import { BlogsRepository } from '../infrastructure/repositories/blogs.repository';
 
 @Injectable()

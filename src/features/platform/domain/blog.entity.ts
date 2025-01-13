@@ -2,6 +2,21 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { CreateBlogDto } from '../dto/blog-dto';
 
+export const nameConstraints = {
+  minLength: 1,
+  maxLength: 15,
+};
+
+export const descriptionConstraints = {
+  minLength: 1,
+  maxLength: 500,
+};
+
+export const websiteUrlConstraints = {
+  minLength: 1,
+  maxLength: 100,
+};
+
 @Schema({ timestamps: true })
 export class Blog {
   @Prop({ type: String, required: true })
@@ -20,10 +35,8 @@ export class Blog {
   createdAt: Date;
 
   static createInstance(dto: CreateBlogDto): BlogDocument {
-    // instance creation
     const blog = new this();
 
-    // instance construction
     blog.name = dto.name;
     blog.description = dto.description;
     blog.websiteUrl = dto.websiteUrl;

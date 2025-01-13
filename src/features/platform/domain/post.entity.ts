@@ -1,7 +1,22 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model, Types } from 'mongoose';
 import { TInteraction } from '../dto/interaction-dto';
-import { CreatePostByBlogIdInputDto } from '../api/input-dto/blogs.input-dto';
+import { CreatePostByBlogIdInputDto } from '../api/input-dto/posts.input-dto';
+
+export const titleConstraints = {
+  minLength: 1,
+  maxLength: 30,
+};
+
+export const shortDescriptionConstraints = {
+  minLength: 1,
+  maxLength: 100,
+};
+
+export const contentConstraints = {
+  minLength: 1,
+  maxLength: 1000,
+};
 
 @Schema({ timestamps: true })
 export class Post {
