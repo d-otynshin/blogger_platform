@@ -16,11 +16,15 @@ import { PostsController } from './api/posts.controller';
 import { PostsRepository } from './infrastructure/repositories/posts.repository';
 import { PostsQueryRepository } from './infrastructure/queries/posts.query-repository';
 
+import { AccountsModule } from '../accounts/accounts.module';
+import { BasicAuthGuard } from '../accounts/guards/basic/basic-auth.guard';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
+    AccountsModule,
   ],
   controllers: [BlogsController, PostsController],
   providers: [
@@ -31,6 +35,7 @@ import { PostsQueryRepository } from './infrastructure/queries/posts.query-repos
     PostsRepository,
     PostsQueryRepository,
     CommentsQueryRepository,
+    BasicAuthGuard,
   ],
   exports: [MongooseModule],
 })

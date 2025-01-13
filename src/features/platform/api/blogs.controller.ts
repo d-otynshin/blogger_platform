@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { BlogsService } from '../application/blogs.service';
@@ -23,7 +24,11 @@ import { CreatePostByBlogIdInputDto } from './input-dto/blogs.input-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
+/* From Accounts module */
+import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
+
 @Controller('blogs')
+@UseGuards(BasicAuthGuard)
 export class BlogsController {
   constructor(
     private readonly blogsService: BlogsService,

@@ -16,9 +16,9 @@ import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 import { GetUsersQueryParams } from './input-dto/get-users-query-params.input-dto';
 import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input-dto/users.input-dto';
+import { BasicAuthGuard } from '../guards/basic/basic-auth.guard';
 
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
-import { BasicAuthGuard } from '../guards/basic/basic-auth.guard';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Controller('users')

@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Controller,
+  UseGuards,
 } from '@nestjs/common';
 import {
   GetPostsQueryParams,
@@ -24,7 +25,11 @@ import { CommentOutputDto } from './output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
+/* From Accounts module */
+import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
+
 @Controller('posts')
+@UseGuards(BasicAuthGuard)
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,

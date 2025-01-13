@@ -15,6 +15,7 @@ import { AuthService } from './application/auth.service';
 import { AuthQueryRepository } from './infrastructure/auth.query-repository';
 import { JwtStrategy } from './guards/bearer/jwt.strategy';
 import { LocalStrategy } from './guards/local/local.strategy';
+import { BasicAuthGuard } from './guards/basic/basic-auth.guard';
 
 @Module({
   imports: [
@@ -34,9 +35,10 @@ import { LocalStrategy } from './guards/local/local.strategy';
     AuthService,
     AuthQueryRepository,
     EmailService,
+    BasicAuthGuard,
     JwtStrategy,
     LocalStrategy,
   ],
-  exports: [MongooseModule],
+  exports: [MongooseModule, BasicAuthGuard],
 })
 export class AccountsModule {}
