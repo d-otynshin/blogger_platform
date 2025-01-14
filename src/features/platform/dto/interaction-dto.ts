@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 export enum LikeStatus {
   None = 'None',
   Like = 'Like',
@@ -5,8 +7,8 @@ export enum LikeStatus {
 }
 
 export type TInteraction = {
-  userId: string;
-  login: string;
+  userId: Types.ObjectId;
+  login: Types.ObjectId;
   action: LikeStatus.Like | LikeStatus.Dislike;
   addedAt: Date;
 };

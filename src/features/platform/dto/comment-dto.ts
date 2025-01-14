@@ -17,3 +17,11 @@ export class CreateCommentDto {
 export class UpdateCommentDto {
   content: string;
 }
+
+export type TLikeStatus = 'None' | 'Like' | 'Dislike';
+
+export class CommentInteractionDto {
+  commentId: Types.ObjectId;
+  userId: Types.ObjectId;
+  action: TLikeStatus;
+}

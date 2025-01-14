@@ -1,7 +1,8 @@
+import { Types } from 'mongoose';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-class UserContextDto {
-  id: string;
+export class UserContextDto {
+  id: Types.ObjectId;
 }
 
 export const ExtractUserFromRequest = createParamDecorator(

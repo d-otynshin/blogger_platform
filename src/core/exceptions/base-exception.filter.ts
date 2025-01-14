@@ -12,9 +12,13 @@ export type HttpResponseBody = {
 };
 
 export abstract class BaseExceptionFilter implements ExceptionFilter {
-  abstract onCatch(exception: any, response: Response, request: Request): void;
+  abstract onCatch(
+    exception: unknown,
+    response: Response,
+    request: Request,
+  ): void;
 
-  catch(exception: any, host: ArgumentsHost): any {
+  catch(exception: unknown, host: ArgumentsHost): any {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
