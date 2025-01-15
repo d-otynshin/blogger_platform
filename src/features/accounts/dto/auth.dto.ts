@@ -7,4 +7,5 @@ export class LoginDto {
 
 export class UserContextDto {
   id: Types.ObjectId;
+  login: string;
 }

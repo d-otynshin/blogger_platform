@@ -39,16 +39,19 @@ export class AuthService {
     loginOrEmail: string,
     password: string,
   ): Promise<UserContextDto | null> {
-    const user = await this.usersRepository.findOne(loginOrEmail);
-    if (!user) return null;
+    const userDocument = await this.usersRepository.findOne(loginOrEmail);
+    if (!userDocument) return null;
 
     const isPasswordValid = await this.cryptoService.comparePasswords({
       password: password,
-      hash: user.passwordHash,
+      hash: userDocument.passwordHash,
     });
 
     return isPasswordValid
-      ? { id: user._id.toString() as unknown as Types.ObjectId }
+      ? {
+          id: userDocument._id.toString() as unknown as Types.ObjectId,
+          login: userDocument.login,
+        }
       : null;
   }
 

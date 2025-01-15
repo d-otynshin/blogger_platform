@@ -49,6 +49,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
 
     const accessToken = this.accessTokenContext.sign({
       id: userDocument._id,
+      login: userDocument.login,
     });
 
     const refreshToken = this.refreshTokenContext.sign({

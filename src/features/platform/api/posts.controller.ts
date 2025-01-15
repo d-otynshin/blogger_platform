@@ -117,7 +117,7 @@ export class PostsController {
     @ExtractUserFromRequest() user: UserContextDto,
   ): Promise<void> {
     return this.commandBus.execute(
-      new UpdateLikePostCommand(id, user.id, postInteractionDto),
+      new UpdateLikePostCommand(id, user.id, user.login, postInteractionDto),
     );
   }
 }
