@@ -1,24 +1,27 @@
 import * as process from 'node:process';
+
 import { Module } from '@nestjs/common';
-import { JwtModule, JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CommandBus } from '@nestjs/cqrs';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+
 import { UsersService } from './application/users.service';
-import { UsersController } from './api/users.controller';
-import { User, UserSchema } from './domain/user.entity';
-import { UsersRepository } from './infrastructure/users.repository';
-import { UsersQueryRepository } from './infrastructure/users.query-repository';
-import { AuthController } from './api/auth.controller';
-import { NotificationsModule } from '../notifications/notifications.module';
 import { CryptoService } from './application/crypto.service';
-import { EmailService } from '../notifications/application/email.service';
 import { AuthService } from './application/auth.service';
+import { UsersController } from './api/users.controller';
+import { AuthController } from './api/auth.controller';
+import { UsersQueryRepository } from './infrastructure/users.query-repository';
+import { UsersRepository } from './infrastructure/users.repository';
 import { AuthQueryRepository } from './infrastructure/auth.query-repository';
+import { User, UserSchema } from './domain/user.entity';
 import { JwtStrategy } from './guards/bearer/jwt.strategy';
 import { LocalStrategy } from './guards/local/local.strategy';
 import { BasicAuthGuard } from './guards/basic/basic-auth.guard';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { EmailService } from '../notifications/application/email.service';
 import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
-  REFRESH_TOKEN_STRATEGY_INJECT_TOKEN
+  REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from './constants/auth-token.inject-constants';
 
 const services = [CryptoService, UsersService, AuthService, EmailService];
@@ -45,6 +48,7 @@ const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
     ...services,
     ...repositories,
     ...guards,
+    CommandBus,
     {
       provide: ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
       useFactory: (): JwtService => {

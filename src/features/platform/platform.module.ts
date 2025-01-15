@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CommandBus } from '@nestjs/cqrs';
 
 import { Blog, BlogSchema } from './domain/blog.entity';
 import { BlogsService } from './application/blogs.service';
@@ -36,6 +37,7 @@ import { BasicAuthGuard } from '../accounts/guards/basic/basic-auth.guard';
     PostsQueryRepository,
     CommentsQueryRepository,
     BasicAuthGuard,
+    CommandBus,
   ],
   exports: [MongooseModule],
 })
