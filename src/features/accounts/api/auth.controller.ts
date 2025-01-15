@@ -36,7 +36,6 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
-  @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
     @Res() res: Response,
@@ -58,6 +57,7 @@ export class AuthController {
     };
 
     res.cookie('refreshToken', refreshToken, cookieConfig);
+    res.status(HttpStatus.OK).json({ accessToken });
 
     return { accessToken };
   }
