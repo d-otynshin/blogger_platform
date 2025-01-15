@@ -16,17 +16,18 @@ import { PostsService } from './application/posts.service';
 import { PostsController } from './api/posts.controller';
 import { PostsRepository } from './infrastructure/repositories/posts.repository';
 import { PostsQueryRepository } from './infrastructure/queries/posts.query-repository';
+import { CommentsRepository } from './infrastructure/repositories/comments.repository';
 
 import { AccountsModule } from '../accounts/accounts.module';
 import { BasicAuthGuard } from '../accounts/guards/basic/basic-auth.guard';
-
+/* Use Cases */
 import { CreateInteractionCommentUseCase } from './application/use-cases/comments/create-interaction-comment.use-case';
 import { DeleteCommentUseCase } from './application/use-cases/comments/delete-comment.use-case';
 import { UpdateCommentLikeUseCase } from './application/use-cases/comments/update-comment-like.use-case';
 import { UpdateCommentUseCase } from './application/use-cases/comments/update-comment.use-case';
 import { UpdateInteractionCommentUseCase } from './application/use-cases/comments/update-interaction-comment.use-case';
 import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like-post.use-case';
-import { CommentsRepository } from './infrastructure/repositories/comments.repository';
+import { CreateInteractionPostUseCase } from './application/use-cases/posts/create-interaction-post.use-case';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { CommentsRepository } from './infrastructure/repositories/comments.repos
     UpdateInteractionCommentUseCase,
     /* Post Command Handlers */
     UpdateLikePostUseCase,
+    CreateInteractionPostUseCase,
   ],
   exports: [MongooseModule],
 })
