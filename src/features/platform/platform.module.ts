@@ -19,6 +19,7 @@ import { PostsQueryRepository } from './infrastructure/queries/posts.query-repos
 
 import { AccountsModule } from '../accounts/accounts.module';
 import { BasicAuthGuard } from '../accounts/guards/basic/basic-auth.guard';
+
 import { CreateInteractionCommentUseCase } from './application/use-cases/comments/create-interaction-comment.use-case';
 import { DeleteCommentUseCase } from './application/use-cases/comments/delete-comment.use-case';
 import { UpdateCommentLikeUseCase } from './application/use-cases/comments/update-comment-like.use-case';
@@ -29,6 +30,7 @@ import { CommentsRepository } from './infrastructure/repositories/comments.repos
 
 @Module({
   imports: [
+    // TODO: should import here?
     CqrsModule,
     AccountsModule,
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),

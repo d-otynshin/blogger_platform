@@ -17,7 +17,6 @@ import { BlogsService } from '../application/blogs.service';
 import { GetBlogsQueryParams } from './input-dto/helpers/get-blogs-query-params.input-dto';
 import { BlogOutputDto } from './output-dto/blog.output-dto';
 import { BlogsQueryRepository } from '../infrastructure/queries/blogs.query-repository';
-import { CreateBlogDto, UpdateBlogDto } from '../dto/blog-dto';
 import { GetPostsQueryParams } from '../infrastructure/queries/posts.query-repository';
 import { PostOutputDto } from './output-dto/post.output-dto';
 import { CreatePostByBlogIdInputDto } from './input-dto/posts.input-dto';
@@ -27,6 +26,7 @@ import { NotFoundDomainException } from '../../../core/exceptions/domain-excepti
 
 /* From Accounts module */
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
+import { CreateBlogInputDto, UpdateBlogInputDto } from './input-dto/blogs.input-dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -47,7 +47,7 @@ export class BlogsController {
   @HttpCode(HttpStatus.CREATED)
   // TODO: move to separate command
   async createBlog(
-    @Body() createBlogDto: CreateBlogDto,
+    @Body() createBlogDto: CreateBlogInputDto,
   ): Promise<BlogOutputDto> {
     return this.blogsService.createBlog(createBlogDto);
   }
@@ -101,7 +101,7 @@ export class BlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param('id') id: string,
-    @Body() updateBlogDto: UpdateBlogDto,
+    @Body() updateBlogDto: UpdateBlogInputDto,
   ): Promise<boolean> {
     // TODO: move to separate command
     const isUpdated = await this.blogsService.updateBlog(id, updateBlogDto);
