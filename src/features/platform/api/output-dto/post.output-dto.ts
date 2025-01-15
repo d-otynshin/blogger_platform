@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
+import { isBefore } from 'date-fns';
 import { PostDocument } from '../../domain/post.entity';
-import { LikeStatus, TInteraction } from '../../dto/interaction-dto';
+import { LikeStatus, TInteractionView } from '../../dto/interaction-dto';
 
 export class PostOutputDto {
   id: string;
@@ -15,10 +16,30 @@ export class PostOutputDto {
     likesCount: number;
     dislikesCount: number;
     myStatus: LikeStatus;
-    newestLikes: TInteraction[];
+    newestLikes: TInteractionView[];
   };
 
-  static mapToView(post: PostDocument): PostOutputDto {
+  static mapToView(post: PostDocument, userId?: Types.ObjectId): PostOutputDto {
+    let myStatus = LikeStatus.None;
+
+    if (userId) {
+      const myInteraction = post.interactions.find(
+        (interaction) => interaction.userId === userId,
+      );
+
+      myStatus = myInteraction?.action || LikeStatus.None;
+    }
+
+    const newestLikes = post.interactions
+      .filter((interaction) => interaction.action === LikeStatus.Like)
+      .sort((likeA, likeB) => (isBefore(likeA.addedAt, likeB.addedAt) ? 1 : -1))
+      .slice(0, 3)
+      .map((like) => ({
+        addedAt: like.addedAt,
+        userId: like.userId,
+        login: like.login,
+      }));
+
     const dto = new PostOutputDto();
 
     dto.id = post._id.toString();
@@ -33,8 +54,8 @@ export class PostOutputDto {
     dto.extendedLikesInfo = {
       likesCount: post.interactions.length,
       dislikesCount: post.interactions.length,
-      myStatus: LikeStatus.None,
-      newestLikes: [],
+      myStatus,
+      newestLikes,
     };
 
     return dto;

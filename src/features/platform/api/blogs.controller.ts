@@ -26,7 +26,12 @@ import { NotFoundDomainException } from '../../../core/exceptions/domain-excepti
 
 /* From Accounts module */
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
-import { CreateBlogInputDto, UpdateBlogInputDto } from './input-dto/blogs.input-dto';
+import {
+  CreateBlogInputDto,
+  UpdateBlogInputDto,
+} from './input-dto/blogs.input-dto';
+import { ExtractUserIfExistsFromRequest } from '../../../core/decorators/extract-user-from-request';
+import { UserContextDto } from '../../accounts/dto/auth.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -57,8 +62,16 @@ export class BlogsController {
   async getAllPosts(
     @Param('blogId') blogId: Types.ObjectId,
     @Query() query: GetPostsQueryParams,
+    @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
-    const posts = await this.blogsQueryRepository.getAllPosts(blogId, query);
+    const userId = user?.id;
+
+    const posts = await this.blogsQueryRepository.getAllPosts(
+      blogId,
+      query,
+      userId,
+    );
+
     if (!posts) throw NotFoundDomainException.create('Blog not found');
 
     return posts;

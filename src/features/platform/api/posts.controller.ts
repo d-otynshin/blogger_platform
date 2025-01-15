@@ -34,6 +34,7 @@ import { CommentsQueryRepository } from '../infrastructure/queries/comments.quer
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import {
   ExtractUserFromRequest,
+  ExtractUserIfExistsFromRequest,
   UserContextDto,
 } from '../../../core/decorators/extract-user-from-request';
 
@@ -54,8 +55,11 @@ export class PostsController {
   @Get()
   async getAll(
     @Query() query: GetPostsQueryParams,
+    @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
-    return this.postsQueryRepository.getAllPosts(query);
+    const userId = user?.id;
+
+    return this.postsQueryRepository.getAllPosts(query, userId);
   }
 
   @Post()
@@ -71,8 +75,15 @@ export class PostsController {
   async getAllPosts(
     @Param('postId') postId: Types.ObjectId,
     @Query() query: GetPostsQueryParams,
+    @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
-    return this.commentsQueryRepository.getCommentsByPostId(postId, query);
+    const userId = user?.id;
+
+    return this.commentsQueryRepository.getCommentsByPostId(
+      postId,
+      query,
+      userId,
+    );
   }
 
   @Get(':id')

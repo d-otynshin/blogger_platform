@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { LikeStatus } from '../../dto/interaction-dto';
 import { CommentDocument } from '../../domain/comment.entity';
 import { TCommentator } from '../../dto/comment-dto';
@@ -13,7 +14,20 @@ export class CommentOutputDto {
     myStatus: LikeStatus;
   };
 
-  static mapToView(comment: CommentDocument): CommentOutputDto {
+  static mapToView(
+    comment: CommentDocument,
+    userId?: Types.ObjectId,
+  ): CommentOutputDto {
+    let myStatus = LikeStatus.None;
+
+    if (userId) {
+      const myInteraction = comment.interactions.find(
+        (interaction) => interaction.userId === userId,
+      );
+
+      myStatus = myInteraction?.action || LikeStatus.None;
+    }
+
     const dto = new CommentOutputDto();
 
     dto.id = comment._id.toString();
@@ -23,7 +37,7 @@ export class CommentOutputDto {
     dto.likesInfo = {
       likesCount: comment.interactions.length,
       dislikesCount: comment.interactions.length,
-      myStatus: LikeStatus.None,
+      myStatus,
     };
 
     return dto;

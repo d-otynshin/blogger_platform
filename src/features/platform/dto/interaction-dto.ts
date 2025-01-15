@@ -9,7 +9,7 @@ export enum LikeStatus {
 export type TInteraction = {
   userId: Types.ObjectId;
   login: string;
-  action: Omit<LikeStatus, 'None'>;
+  action: LikeStatus;
   addedAt: Date;
 };
 
@@ -18,3 +18,5 @@ export type TLikeInfo = {
   dislikesCount: number;
   myStatus: LikeStatus;
 };
+
+export type TInteractionView = Omit<TInteraction, 'action'>;

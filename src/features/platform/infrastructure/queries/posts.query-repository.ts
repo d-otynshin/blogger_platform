@@ -14,18 +14,19 @@ export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
 export class PostsQueryRepository {
   constructor(@InjectModel(Post.name) private PostModel: PostModelType) {}
 
-  async getById(id: string): Promise<PostOutputDto> {
+  async getById(id: string, userId?: Types.ObjectId): Promise<PostOutputDto> {
     const post = await this.PostModel.findOne({ _id: id });
 
     if (!post) {
       throw new NotFoundException('post not found');
     }
 
-    return PostOutputDto.mapToView(post);
+    return PostOutputDto.mapToView(post, userId);
   }
 
   async getAllPosts(
     query: GetPostsQueryParams,
+    userId?: Types.ObjectId,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
     const posts = await this.PostModel.find({})
       .sort({ [query.sortBy]: query.sortDirection })
@@ -34,7 +35,7 @@ export class PostsQueryRepository {
 
     const totalCount = await this.PostModel.countDocuments({});
 
-    const items = posts.map(PostOutputDto.mapToView);
+    const items = posts.map((post) => PostOutputDto.mapToView(post, userId));
 
     return PaginatedViewDto.mapToView({
       items,
@@ -47,6 +48,7 @@ export class PostsQueryRepository {
   async getPostsByBlogId(
     blogId: Types.ObjectId,
     query: GetPostsQueryParams,
+    userId?: Types.ObjectId,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
     const posts = await this.PostModel.find({ blogId })
       .sort({ [query.sortBy]: query.sortDirection })
@@ -55,7 +57,7 @@ export class PostsQueryRepository {
 
     const totalCount = await this.PostModel.countDocuments({ blogId });
 
-    const items = posts.map(PostOutputDto.mapToView);
+    const items = posts.map((post) => PostOutputDto.mapToView(post, userId));
 
     return PaginatedViewDto.mapToView({
       items,
