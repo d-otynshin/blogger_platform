@@ -20,12 +20,12 @@ export const ExtractUserFromRequest = createParamDecorator(
 );
 
 export const ExtractUserIfExistsFromRequest = createParamDecorator(
-  (_: unknown, context: ExecutionContext): UserContextDto => {
+  (_: unknown, context: ExecutionContext): UserContextDto | null => {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
     if (!user) {
-      throw new Error('There is no user in the request object!');
+      return null;
     }
 
     return user;
