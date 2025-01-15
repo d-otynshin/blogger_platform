@@ -1,4 +1,4 @@
-import { TInteraction } from './interaction-dto';
+import { LikeStatus, TInteraction } from './interaction-dto';
 import { Types } from 'mongoose';
 
 export type TCommentator = {
@@ -18,10 +18,9 @@ export class UpdateCommentDto {
   content: string;
 }
 
-export type TLikeStatus = 'None' | 'Like' | 'Dislike';
-
 export class CommentInteractionDto {
+  login: string;
   commentId: Types.ObjectId;
   userId: Types.ObjectId;
-  action: TLikeStatus;
+  action: Omit<LikeStatus, 'None'>;
 }

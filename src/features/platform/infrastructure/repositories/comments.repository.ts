@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentDocument, CommentModelType } from '../../domain/comment.entity';
 import { TInteraction } from '../../dto/interaction-dto';
-import { PostDocument } from '../../domain/post.entity';
 
 @Injectable()
 export class CommentsRepository {

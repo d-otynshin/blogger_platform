@@ -5,6 +5,7 @@ import {
   shortDescriptionConstraints,
   titleConstraints,
 } from '../../domain/post.entity';
+import { LikeStatus } from '../../dto/interaction-dto';
 
 export class CreatePostByBlogIdInputDto {
   @IsString()
@@ -44,4 +45,9 @@ export class CreatePostInputDto {
 
   @IsString()
   blogId: Types.ObjectId;
+}
+
+export class PostInteractionInputDto {
+  @IsString()
+  likeStatus: LikeStatus.Like | LikeStatus.Dislike;
 }

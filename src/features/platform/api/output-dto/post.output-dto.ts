@@ -10,6 +10,7 @@ export class PostOutputDto {
   blogId: Types.ObjectId;
   blogName: string;
   createdAt: Date;
+
   extendedLikesInfo: {
     likesCount: number;
     dislikesCount: number;
@@ -28,6 +29,7 @@ export class PostOutputDto {
     dto.blogName = post.blogName;
     dto.shortDescription = post.shortDescription;
     dto.createdAt = post.createdAt;
+
     dto.extendedLikesInfo = {
       likesCount: post.interactions.length,
       dislikesCount: post.interactions.length,

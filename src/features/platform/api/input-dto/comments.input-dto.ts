@@ -8,5 +8,5 @@ export class CommentsInputDto {
 
 export class CommentInteractionInputDto {
   @IsString()
-  likeStatus: LikeStatus;
+  likeStatus: LikeStatus.Like | LikeStatus.Dislike;
 }

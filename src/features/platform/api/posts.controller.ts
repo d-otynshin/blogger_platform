@@ -12,21 +12,35 @@ import {
   Controller,
   UseGuards,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+
 import {
   GetPostsQueryParams,
   PostsQueryRepository,
 } from '../infrastructure/queries/posts.query-repository';
+
 import { PostOutputDto } from './output-dto/post.output-dto';
+import { CommentOutputDto } from './output-dto/comment.output-dto';
+
 import { PostsService } from '../application/posts.service';
-import { CreatePostInputDto } from './input-dto/posts.input-dto';
+import {
+  CreatePostInputDto,
+  PostInteractionInputDto,
+} from './input-dto/posts.input-dto';
 import { UpdatePostDto } from '../dto/post-dto';
 import { CommentsQueryRepository } from '../infrastructure/queries/comments.query-repository';
-import { CommentOutputDto } from './output-dto/comment.output-dto';
+
+/* From core module */
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
-import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
+import {
+  ExtractUserFromRequest,
+  UserContextDto,
+} from '../../../core/decorators/extract-user-from-request';
 
 /* From Accounts module */
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
+import { JwtAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
+import { UpdateLikePostCommand } from '../application/use-cases/posts/update-like-post.use-case';
 
 @Controller('posts')
 export class PostsController {
@@ -34,7 +48,9 @@ export class PostsController {
     private readonly postsService: PostsService,
     private readonly postsQueryRepository: PostsQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
+
   @Get()
   async getAll(
     @Query() query: GetPostsQueryParams,
@@ -61,13 +77,7 @@ export class PostsController {
 
   @Get(':id')
   async getById(@Param('id') id: string): Promise<PostOutputDto> {
-    const post = await this.postsQueryRepository.getById(id);
-
-    if (!post) {
-      throw NotFoundDomainException.create(`Post with ID ${id} not found`);
-    }
-
-    return post;
+    return this.postsQueryRepository.getById(id);
   }
 
   @Put(':id')
@@ -76,26 +86,27 @@ export class PostsController {
   async updateBlog(
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
-  ): Promise<boolean> {
-    const isUpdated = await this.postsService.updatePost(id, updatePostDto);
-
-    if (!isUpdated) {
-      throw NotFoundDomainException.create(`Post with ID ${id} not found`);
-    }
-
-    return;
+  ): Promise<void> {
+    return this.postsService.updatePost(id, updatePostDto);
   }
 
   @Delete(':id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteBlog(@Param('id') id: string): Promise<boolean> {
-    const isDeleted = await this.postsService.deletePostById(id);
+  async deleteBlog(@Param('id') id: string): Promise<void> {
+    return this.postsService.deletePostById(id);
+  }
 
-    if (!isDeleted) {
-      throw NotFoundDomainException.create(`Post with ID ${id} not found`);
-    }
-
-    return;
+  @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateLikePost(
+    @Param('id') id: Types.ObjectId,
+    @Body() postInteractionDto: PostInteractionInputDto,
+    @ExtractUserFromRequest() user: UserContextDto,
+  ): Promise<void> {
+    return this.commandBus.execute(
+      new UpdateLikePostCommand(id, user.id, postInteractionDto),
+    );
   }
 }

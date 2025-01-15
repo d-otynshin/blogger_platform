@@ -9,12 +9,12 @@ import {
   Controller,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { UpdateCommentCommand } from '../application/use-cases/update-comment.use-case';
+import { UpdateCommentCommand } from '../application/use-cases/comments/update-comment.use-case';
 import {
   CommentInteractionInputDto,
   CommentsInputDto,
 } from './input-dto/comments.input-dto';
-import { DeleteCommentCommand } from '../application/use-cases/delete-comment.use-case';
+import { DeleteCommentCommand } from '../application/use-cases/comments/delete-comment.use-case';
 import { CommentsService } from '../application/comments.service';
 import {
   ExtractUserFromRequest,
@@ -54,6 +54,7 @@ export class CommentsController {
     const isUpdated = await this.commentsService.interact({
       commentId: id,
       userId: user.id,
+      login: user.login,
       action: interactionDto.likeStatus,
     });
 

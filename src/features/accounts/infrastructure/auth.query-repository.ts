@@ -7,7 +7,7 @@ import { UsersRepository } from './users.repository';
 export class AuthQueryRepository {
   constructor(private usersRepository: UsersRepository) {}
 
-  async me(id: string): Promise<MeViewDto> {
+  async me(id: Types.ObjectId): Promise<MeViewDto> {
     const userDocument = await this.usersRepository.findById(
       new Types.ObjectId(id),
     );

@@ -8,8 +8,8 @@ export enum LikeStatus {
 
 export type TInteraction = {
   userId: Types.ObjectId;
-  login: Types.ObjectId;
-  action: LikeStatus.Like | LikeStatus.Dislike;
+  login: string;
+  action: Omit<LikeStatus, 'None'>;
   addedAt: Date;
 };
 

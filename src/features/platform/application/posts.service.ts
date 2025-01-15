@@ -31,7 +31,7 @@ export class PostsService {
     return PostOutputDto.mapToView(createdPost);
   }
 
-  async updatePost(id: string, dto: UpdatePostDto): Promise<boolean> {
+  async updatePost(id: string, dto: UpdatePostDto): Promise<void> {
     const updatedPost = await this.PostModel.findByIdAndUpdate(id, dto, {
       new: true,
     });
@@ -40,16 +40,16 @@ export class PostsService {
       throw new NotFoundException(`Post with id ${id} not found`);
     }
 
-    return true;
+    return;
   }
 
-  async deletePostById(id: string): Promise<boolean> {
+  async deletePostById(id: string): Promise<void> {
     const deletedBlog = await this.PostModel.findByIdAndDelete(id);
 
     if (!deletedBlog) {
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
 
-    return true;
+    return;
   }
 }

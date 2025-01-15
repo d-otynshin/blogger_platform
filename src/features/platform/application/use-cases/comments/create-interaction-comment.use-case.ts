@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModelType } from '../../domain/comment.entity';
-import { CommentInteractionDto } from '../../dto/comment-dto';
-import { CommentsRepository } from '../../infrastructure/repositories/comments.repository';
-import { BadRequestDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { Comment, CommentModelType } from '../../../domain/comment.entity';
+import { CommentInteractionDto } from '../../../dto/comment-dto';
+import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
+import { TInteraction } from '../../../dto/interaction-dto';
 
 export class CreateInteractionCommentCommand {
   constructor(public dto: CommentInteractionDto) {}
@@ -15,14 +15,14 @@ export class CreateInteractionCommentUseCase
 {
   constructor(
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
-    private commentsRepository: CommentsRepository,
   ) {}
 
   async execute({ dto }: CreateInteractionCommentCommand) {
-    const createdInteraction = {
-      id: dto.userId,
+    const createdInteraction: TInteraction = {
+      userId: dto.userId,
+      login: dto.login,
       action: dto.action,
-      updatedAt: new Date(),
+      addedAt: new Date(),
     };
 
     const commentDocument = await this.CommentModel.findByIdAndUpdate(
@@ -30,8 +30,6 @@ export class CreateInteractionCommentUseCase
       { $push: { interactions: createdInteraction } },
       { new: true },
     );
-
-    await this.commentsRepository.save(commentDocument);
 
     if (!commentDocument) {
       // TODO: update error details

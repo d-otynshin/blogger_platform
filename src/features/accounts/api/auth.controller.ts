@@ -1,12 +1,15 @@
+import { Response } from 'express';
 import {
   Get,
   Post,
+  Res,
   Body,
   Controller,
   UseGuards,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
 import { AuthService } from '../application/auth.service';
 import { LocalAuthGuard } from '../guards/local/local-auth.guard';
 import { UserContextDto } from '../dto/auth.dto';
@@ -24,21 +27,42 @@ import {
   ExtractUserFromRequest,
   ExtractUserIfExistsFromRequest,
 } from '../../../core/decorators/extract-user-from-request';
+import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
+import { LoginInputDto } from './input-dto/login.input-dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly authQueryRepository: AuthQueryRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
-    @ExtractUserIfExistsFromRequest() user: UserContextDto,
+    @Res() res: Response,
+    @Body() loginDto: LoginInputDto,
   ): Promise<{ accessToken: string }> {
-    return this.authService.login(user.id);
+    const { accessToken, refreshToken } = await this.commandBus.execute(
+      new LoginUserCommand(loginDto),
+    );
+
+    const EXPIRATION_TIME = {
+      ACCESS: 10 * 1000,
+      REFRESH: 20000,
+    };
+
+    const cookieConfig = {
+      httpOnly: true,
+      secure: true,
+      maxAge: EXPIRATION_TIME.REFRESH,
+    };
+
+    res.cookie('refreshToken', refreshToken, cookieConfig);
+
+    return { accessToken };
   }
 
   @UseGuards(JwtAuthGuard)

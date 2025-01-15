@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModelType } from '../../domain/comment.entity';
-import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { Comment, CommentModelType } from '../../../domain/comment.entity';
+import { NotFoundDomainException } from '../../../../../core/exceptions/domain-exceptions';
 
 export class DeleteCommentCommand {
   constructor(public id: Types.ObjectId) {}

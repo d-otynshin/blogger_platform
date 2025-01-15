@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { TInteraction } from '../dto/interaction-dto';
 import { CommentsRepository } from '../infrastructure/repositories/comments.repository';
 import { CommentInteractionDto } from '../dto/comment-dto';
-import { CreateInteractionCommentCommand } from './use-cases/create-interaction-comment.use-case';
-import { UpdateInteractionCommentCommand } from './use-cases/update-interaction-comment.use-case';
+import { CreateInteractionCommentCommand } from './use-cases/comments/create-interaction-comment.use-case';
+import { UpdateInteractionCommentCommand } from './use-cases/comments/update-interaction-comment.use-case';
 
 @Injectable()
 export class CommentsService {

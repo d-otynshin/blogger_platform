@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { BlogsService } from '../application/blogs.service';
-import { GetBlogsQueryParams } from './input-dto/get-blogs-query-params.input-dto';
+import { GetBlogsQueryParams } from './input-dto/helpers/get-blogs-query-params.input-dto';
 import { BlogOutputDto } from './output-dto/blog.output-dto';
 import { BlogsQueryRepository } from '../infrastructure/queries/blogs.query-repository';
 import { CreateBlogDto, UpdateBlogDto } from '../dto/blog-dto';
@@ -34,6 +34,7 @@ export class BlogsController {
     private readonly blogsQueryRepository: BlogsQueryRepository,
   ) {}
   @Get()
+  // TODO: move to separate command
   async getAll(
     @Query() query: GetBlogsQueryParams,
   ): Promise<PaginatedViewDto<BlogOutputDto[]>> {
@@ -43,6 +44,7 @@ export class BlogsController {
   @Post()
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  // TODO: move to separate command
   async createBlog(
     @Body() createBlogDto: CreateBlogDto,
   ): Promise<BlogOutputDto> {
@@ -50,6 +52,7 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
+  // TODO: move to separate command
   async getAllPosts(
     @Param('blogId') blogId: Types.ObjectId,
     @Query() query: GetPostsQueryParams,
@@ -63,6 +66,7 @@ export class BlogsController {
   @Post(':blogId/posts')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  // TODO: move to separate command
   async createPostByBlogId(
     @Param('blogId') blogId: Types.ObjectId,
     @Body() createPostDto: CreatePostByBlogIdInputDto,
@@ -80,6 +84,7 @@ export class BlogsController {
   }
 
   @Get(':id')
+  // TODO: move to separate command
   async getById(@Param('id') id: string): Promise<BlogOutputDto> {
     const blog = await this.blogsQueryRepository.getById(id);
 
@@ -97,6 +102,7 @@ export class BlogsController {
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
   ): Promise<boolean> {
+    // TODO: move to separate command
     const isUpdated = await this.blogsService.updateBlog(id, updateBlogDto);
 
     if (!isUpdated) {
@@ -109,6 +115,7 @@ export class BlogsController {
   @Delete(':id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
+  // TODO: move to separate command
   async deleteBlog(@Param('id') id: string): Promise<boolean> {
     const isDeleted = await this.blogsService.deleteBlogById(id);
 

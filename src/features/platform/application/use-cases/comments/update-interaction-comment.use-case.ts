@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModelType } from '../../domain/comment.entity';
-import { CommentInteractionDto } from '../../dto/comment-dto';
-import { BadRequestDomainException } from '../../../../core/exceptions/domain-exceptions';
-import { CommentsRepository } from '../../infrastructure/repositories/comments.repository';
+import { Comment, CommentModelType } from '../../../domain/comment.entity';
+import { CommentInteractionDto } from '../../../dto/comment-dto';
+import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
+import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 
 export class UpdateInteractionCommentCommand {
   constructor(public dto: CommentInteractionDto) {}

@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Types } from 'mongoose';
-import { CommentsInputDto } from '../../api/input-dto/comments.input-dto';
+import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModelType } from '../../domain/comment.entity';
-import { BadRequestDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { Comment, CommentModelType } from '../../../domain/comment.entity';
+import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
 
 export class UpdateCommentCommand {
   constructor(

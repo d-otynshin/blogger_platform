@@ -1,12 +1,13 @@
 import process from 'node:process';
+import { Types } from 'mongoose';
 
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { UsersRepository } from '../infrastructure/users.repository';
 import { CryptoService } from './crypto.service';
-import { UserContextDto } from '../dto/auth.dto';
 import { UsersService } from './users.service';
+import { UsersRepository } from '../infrastructure/users.repository';
+import { UserContextDto } from '../dto/auth.dto';
 import { emailTemplates } from '../../notifications/utils/templates';
 import { EmailService } from '../../notifications/application/email.service';
 
@@ -17,6 +18,7 @@ import {
   UpdatePasswordInputDto,
 } from '../api/input-dto/users.input-dto';
 
+/* From Core */
 import {
   BadRequestDomainException,
   ForbiddenDomainException,
@@ -45,7 +47,9 @@ export class AuthService {
       hash: user.passwordHash,
     });
 
-    return isPasswordValid ? { id: user._id.toString() } : null;
+    return isPasswordValid
+      ? { id: user._id.toString() as unknown as Types.ObjectId }
+      : null;
   }
 
   async login(id: string) {

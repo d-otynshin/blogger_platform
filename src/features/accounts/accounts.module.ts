@@ -1,6 +1,6 @@
 import * as process from 'node:process';
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersService } from './application/users.service';
 import { UsersController } from './api/users.controller';
@@ -16,6 +16,20 @@ import { AuthQueryRepository } from './infrastructure/auth.query-repository';
 import { JwtStrategy } from './guards/bearer/jwt.strategy';
 import { LocalStrategy } from './guards/local/local.strategy';
 import { BasicAuthGuard } from './guards/basic/basic-auth.guard';
+import {
+  ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
+  REFRESH_TOKEN_STRATEGY_INJECT_TOKEN
+} from './constants/auth-token.inject-constants';
+
+const services = [CryptoService, UsersService, AuthService, EmailService];
+
+const repositories = [
+  UsersRepository,
+  UsersQueryRepository,
+  AuthQueryRepository,
+];
+
+const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
 
 @Module({
   imports: [
@@ -28,16 +42,33 @@ import { BasicAuthGuard } from './guards/basic/basic-auth.guard';
   ],
   controllers: [UsersController, AuthController],
   providers: [
-    CryptoService,
-    UsersService,
-    UsersRepository,
-    UsersQueryRepository,
-    AuthService,
-    AuthQueryRepository,
-    EmailService,
-    BasicAuthGuard,
-    JwtStrategy,
-    LocalStrategy,
+    ...services,
+    ...repositories,
+    ...guards,
+    {
+      provide: ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
+      useFactory: (): JwtService => {
+        return new JwtService({
+          secret: process.env.ACCESS_TOKEN_SECRET,
+          signOptions: { expiresIn: '5m' },
+        });
+      },
+      inject: [
+        /*TODO: inject configService. will be in the following lessons*/
+      ],
+    },
+    {
+      provide: REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
+      useFactory: (): JwtService => {
+        return new JwtService({
+          secret: process.env.REFRESH_TOKEN_SECRET, //TODO: move to env. will be in the following lessons
+          signOptions: { expiresIn: '10m' },
+        });
+      },
+      inject: [
+        /*TODO: inject configService. will be in the following lessons*/
+      ],
+    },
   ],
   exports: [MongooseModule, BasicAuthGuard],
 })
