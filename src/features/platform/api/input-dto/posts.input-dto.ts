@@ -1,25 +1,26 @@
 import { Types } from 'mongoose';
-import { IsString, Length } from 'class-validator';
+import { Length } from 'class-validator';
 import {
   contentConstraints,
   shortDescriptionConstraints,
   titleConstraints,
 } from '../../domain/post.entity';
 import { LikeStatus } from '../../dto/interaction-dto';
+import { IsTrimmed } from '../../../../core/decorators/is-trimmed';
 
 export class CreatePostByBlogIdInputDto {
-  @IsString()
+  @IsTrimmed()
   @Length(titleConstraints.minLength, titleConstraints.maxLength)
   title: string;
 
-  @IsString()
+  @IsTrimmed()
   @Length(
     shortDescriptionConstraints.minLength,
     shortDescriptionConstraints.maxLength,
   )
   shortDescription: string;
 
-  @IsString()
+  @IsTrimmed()
   @Length(contentConstraints.minLength, contentConstraints.maxLength)
   content: string;
 
@@ -28,26 +29,26 @@ export class CreatePostByBlogIdInputDto {
 
 // TODO: add extra DTO?
 export class CreatePostInputDto {
-  @IsString()
+  @IsTrimmed()
   @Length(titleConstraints.minLength, titleConstraints.maxLength)
   title: string;
 
-  @IsString()
+  @IsTrimmed()
   @Length(
     shortDescriptionConstraints.minLength,
     shortDescriptionConstraints.maxLength,
   )
   shortDescription: string;
 
-  @IsString()
+  @IsTrimmed()
   @Length(contentConstraints.minLength, contentConstraints.maxLength)
   content: string;
 
-  @IsString()
+  @IsTrimmed()
   blogId: Types.ObjectId;
 }
 
 export class PostInteractionInputDto {
-  @IsString()
+  @IsTrimmed()
   likeStatus: LikeStatus.Like | LikeStatus.Dislike;
 }

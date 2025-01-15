@@ -1,12 +1,12 @@
-import { IsString } from 'class-validator';
 import { LikeStatus } from '../../dto/interaction-dto';
+import { IsTrimmed } from '../../../../core/decorators/is-trimmed';
 
 export class CommentsInputDto {
-  @IsString()
+  @IsTrimmed()
   content: string;
 }
 
 export class CommentInteractionInputDto {
-  @IsString()
+  @IsTrimmed()
   likeStatus: LikeStatus.Like | LikeStatus.Dislike;
 }

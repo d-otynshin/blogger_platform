@@ -1,21 +1,22 @@
-import { IsString, IsUrl, Length } from 'class-validator';
+import { IsUrl, Length } from 'class-validator';
 import { CreateBlogDto, UpdateBlogDto } from '../../dto/blog-dto';
 import {
   descriptionConstraints,
   nameConstraints,
   websiteUrlConstraints,
 } from '../../domain/blog.entity';
+import { IsTrimmed } from '../../../../core/decorators/is-trimmed';
 
 export class CreateBlogInputDto implements CreateBlogDto {
-  @IsString()
+  @IsTrimmed()
   @Length(nameConstraints.minLength, nameConstraints.maxLength)
   name: string;
 
-  @IsString()
+  @IsTrimmed()
   @Length(descriptionConstraints.minLength, descriptionConstraints.maxLength)
   description: string;
 
-  @IsString()
+  @IsTrimmed()
   @IsUrl()
   @Length(websiteUrlConstraints.minLength, websiteUrlConstraints.maxLength)
   websiteUrl: string;
@@ -24,15 +25,15 @@ export class CreateBlogInputDto implements CreateBlogDto {
 // TODO: refactor blog inputs
 
 export class UpdateBlogInputDto implements UpdateBlogDto {
-  @IsString()
+  @IsTrimmed()
   @Length(nameConstraints.minLength, nameConstraints.maxLength)
   name: string;
 
-  @IsString()
+  @IsTrimmed()
   @Length(descriptionConstraints.minLength, descriptionConstraints.maxLength)
   description: string;
 
-  @IsString()
+  @IsTrimmed()
   @IsUrl()
   @Length(websiteUrlConstraints.minLength, websiteUrlConstraints.maxLength)
   websiteUrl: string;
