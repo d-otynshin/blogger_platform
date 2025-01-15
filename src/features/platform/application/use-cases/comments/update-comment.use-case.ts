@@ -13,7 +13,7 @@ export class UpdateCommentCommand {
 }
 
 @CommandHandler(UpdateCommentCommand)
-export class CreateCommentUseCase
+export class UpdateCommentUseCase
   implements ICommandHandler<UpdateCommentCommand>
 {
   constructor(

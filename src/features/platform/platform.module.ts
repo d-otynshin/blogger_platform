@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CommandBus } from '@nestjs/cqrs';
+import { CqrsModule } from '@nestjs/cqrs';
 
 import { Blog, BlogSchema } from './domain/blog.entity';
 import { BlogsService } from './application/blogs.service';
@@ -19,13 +19,20 @@ import { PostsQueryRepository } from './infrastructure/queries/posts.query-repos
 
 import { AccountsModule } from '../accounts/accounts.module';
 import { BasicAuthGuard } from '../accounts/guards/basic/basic-auth.guard';
+import { CreateInteractionCommentUseCase } from './application/use-cases/comments/create-interaction-comment.use-case';
+import { DeleteCommentUseCase } from './application/use-cases/comments/delete-comment.use-case';
+import { UpdateCommentLikeUseCase } from './application/use-cases/comments/update-comment-like.use-case';
+import { UpdateCommentUseCase } from './application/use-cases/comments/update-comment.use-case';
+import { UpdateInteractionCommentUseCase } from './application/use-cases/comments/update-interaction-comment.use-case';
+import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like-post.use-case';
 
 @Module({
   imports: [
+    CqrsModule,
+    AccountsModule,
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
-    AccountsModule,
   ],
   controllers: [BlogsController, PostsController],
   providers: [
@@ -36,8 +43,16 @@ import { BasicAuthGuard } from '../accounts/guards/basic/basic-auth.guard';
     PostsRepository,
     PostsQueryRepository,
     CommentsQueryRepository,
+    /* Guards */
     BasicAuthGuard,
-    CommandBus,
+    /* Comment Command Handlers */
+    DeleteCommentUseCase,
+    UpdateCommentUseCase,
+    UpdateCommentLikeUseCase,
+    CreateInteractionCommentUseCase,
+    UpdateInteractionCommentUseCase,
+    /* Post Command Handlers */
+    UpdateLikePostUseCase,
   ],
   exports: [MongooseModule],
 })
