@@ -22,5 +22,5 @@ export class CommentInteractionDto {
   login: string;
   commentId: Types.ObjectId;
   userId: Types.ObjectId;
-  action: Omit<LikeStatus, 'None'>;
+  action: LikeStatus;
 }
