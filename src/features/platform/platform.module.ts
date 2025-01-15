@@ -25,6 +25,7 @@ import { UpdateCommentLikeUseCase } from './application/use-cases/comments/updat
 import { UpdateCommentUseCase } from './application/use-cases/comments/update-comment.use-case';
 import { UpdateInteractionCommentUseCase } from './application/use-cases/comments/update-interaction-comment.use-case';
 import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like-post.use-case';
+import { CommentsRepository } from './infrastructure/repositories/comments.repository';
 
 @Module({
   imports: [
@@ -42,6 +43,8 @@ import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like
     PostsService,
     PostsRepository,
     PostsQueryRepository,
+    /* Comments */
+    CommentsRepository,
     CommentsQueryRepository,
     /* Guards */
     BasicAuthGuard,
