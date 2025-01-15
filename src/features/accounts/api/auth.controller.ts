@@ -23,10 +23,7 @@ import {
   UpdatePasswordInputDto,
 } from './input-dto/users.input-dto';
 
-import {
-  ExtractUserFromRequest,
-  ExtractUserIfExistsFromRequest,
-} from '../../../core/decorators/extract-user-from-request';
+import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
 import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { LoginInputDto } from './input-dto/login.input-dto';
 
@@ -46,7 +43,7 @@ export class AuthController {
     @Body() loginDto: LoginInputDto,
   ): Promise<{ accessToken: string }> {
     const { accessToken, refreshToken } = await this.commandBus.execute(
-      new LoginUserCommand(loginDto),
+      new LoginUserCommand(loginDto.loginOrEmail, loginDto.password),
     );
 
     const EXPIRATION_TIME = {

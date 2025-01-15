@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -24,18 +25,21 @@ export class UsersService {
       dto.password,
     );
 
-    const confirmationCode = this.jwtService.sign({ login: dto.login });
+    const confirmationCode = this.jwtService.sign(
+      { login: dto.login },
+      { secret: process.env.ACCESS_TOKEN_SECRET },
+    );
 
-    const user = this.UserModel.createInstance({
+    const userDocument = this.UserModel.createInstance({
       email: dto.email,
       login: dto.login,
       password: passwordHash,
       confirmationCode,
     });
 
-    await this.usersRepository.save(user);
+    await this.usersRepository.save(userDocument);
 
-    return user;
+    return userDocument;
   }
 
   async updateUser(id: string, dto: UpdateUserDto): Promise<UserViewDto> {

@@ -19,6 +19,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         }),
       );
 
+      console.error(exception);
       return;
     }
 

@@ -97,7 +97,7 @@ export class PostsController {
     return this.postsService.deletePostById(id);
   }
 
-  @Put(':id')
+  @Put(':id/like-status')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateLikePost(

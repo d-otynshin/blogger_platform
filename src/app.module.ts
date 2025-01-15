@@ -7,9 +7,11 @@ import { AccountsModule } from './features/accounts/accounts.module';
 import { TestingModule } from './features/testing/testing.module';
 import { PlatformModule } from './features/platform/platform.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [
+    CqrsModule,
     ConfigModule.forRoot({}),
     MongooseModule.forRoot(process.env.MONGODB_URI),
     AccountsModule,

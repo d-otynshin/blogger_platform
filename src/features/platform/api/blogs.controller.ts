@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import {
   Body,
   Controller,
@@ -11,7 +12,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { Types } from 'mongoose';
+
 import { BlogsService } from '../application/blogs.service';
 import { GetBlogsQueryParams } from './input-dto/helpers/get-blogs-query-params.input-dto';
 import { BlogOutputDto } from './output-dto/blog.output-dto';

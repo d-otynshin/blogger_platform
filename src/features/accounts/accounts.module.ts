@@ -2,7 +2,7 @@ import * as process from 'node:process';
 
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, CqrsModule } from '@nestjs/cqrs';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
 import { UsersService } from './application/users.service';
@@ -23,6 +23,7 @@ import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from './constants/auth-token.inject-constants';
+import { LoginUserUseCase } from './application/use-cases/login-user.use-case';
 
 const services = [CryptoService, UsersService, AuthService, EmailService];
 
@@ -36,6 +37,7 @@ const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
 
 @Module({
   imports: [
+    CqrsModule,
     JwtModule.register({
       secret: process.env.ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: '10m' },
@@ -48,6 +50,7 @@ const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
     ...services,
     ...repositories,
     ...guards,
+    LoginUserUseCase,
     CommandBus,
     {
       provide: ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
@@ -73,7 +76,8 @@ const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
         /*TODO: inject configService. will be in the following lessons*/
       ],
     },
+    LoginUserUseCase,
   ],
-  exports: [MongooseModule, BasicAuthGuard],
+  exports: [MongooseModule, BasicAuthGuard, LoginUserUseCase],
 })
 export class AccountsModule {}

@@ -17,7 +17,10 @@ export class LoginResponseDto {
 }
 
 export class LoginUserCommand {
-  constructor(public dto: { loginOrEmail: string; password: string }) {}
+  constructor(
+    public loginOrEmail: string,
+    public password: string,
+  ) {}
 }
 
 @CommandHandler(LoginUserCommand)
@@ -32,9 +35,12 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     private commandBus: CommandBus,
   ) {}
 
-  async execute({ dto }: LoginUserCommand): Promise<LoginResponseDto> {
+  async execute({
+    loginOrEmail,
+    password,
+  }: LoginUserCommand): Promise<LoginResponseDto> {
     const userDocument: UserDocument = await this.commandBus.execute(
-      new ValidateUserCommand(dto.loginOrEmail, dto.password),
+      new ValidateUserCommand(loginOrEmail, password),
     );
 
     if (!userDocument) {
