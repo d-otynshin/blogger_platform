@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { Post, PostModelType } from '../../../domain/post.entity';
-import { PostsRepository } from '../../../infrastructure/repositories/posts.repository';
 import { PostInteractionInputDto } from '../../../api/input-dto/posts.input-dto';
 
 import {
@@ -27,7 +26,6 @@ export class UpdateLikePostUseCase
 {
   constructor(
     @InjectModel(Post.name) private PostModel: PostModelType,
-    private postsRepository: PostsRepository,
     private commandBus: CommandBus,
   ) {}
 

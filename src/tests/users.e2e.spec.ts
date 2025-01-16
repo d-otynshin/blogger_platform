@@ -28,6 +28,7 @@ describe('users', () => {
         }),
       ),
     );
+
     app = result.app;
     userTestManger = result.userTestManger;
   });
@@ -76,8 +77,6 @@ describe('users', () => {
     const responseBody: MeViewDto = await userTestManger.me(
       tokens[0].accessToken,
     );
-
-    console.log(responseBody);
 
     expect(responseBody).toEqual({
       login: expect.anything(),

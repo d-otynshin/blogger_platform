@@ -52,8 +52,12 @@ export class PostOutputDto {
     dto.createdAt = post.createdAt;
 
     dto.extendedLikesInfo = {
-      likesCount: post.interactions.length,
-      dislikesCount: post.interactions.length,
+      likesCount: post.interactions.filter(
+        (interaction) => interaction.action === LikeStatus.Like,
+      ).length,
+      dislikesCount: post.interactions.filter(
+        (interaction) => interaction.action === LikeStatus.Dislike,
+      ).length,
       myStatus,
       newestLikes,
     };

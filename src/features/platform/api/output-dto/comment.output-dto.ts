@@ -35,8 +35,12 @@ export class CommentOutputDto {
     dto.commentatorInfo = comment.commentatorInfo;
     dto.createdAt = comment.createdAt;
     dto.likesInfo = {
-      likesCount: comment.interactions.length,
-      dislikesCount: comment.interactions.length,
+      likesCount: comment.interactions.filter(
+        (interaction) => interaction.action === LikeStatus.Like,
+      ).length,
+      dislikesCount: comment.interactions.filter(
+        (interaction) => interaction.action === LikeStatus.Dislike,
+      ).length,
       myStatus,
     };
 
