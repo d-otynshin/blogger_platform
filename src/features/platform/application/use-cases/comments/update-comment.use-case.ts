@@ -4,8 +4,8 @@ import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentModelType } from '../../../domain/comment.entity';
 import {
-  BadRequestDomainException,
   ForbiddenDomainException,
+  NotFoundDomainException,
 } from '../../../../../core/exceptions/domain-exceptions';
 
 export class UpdateCommentCommand {
@@ -28,7 +28,7 @@ export class UpdateCommentUseCase
     const commentDocument = await this.CommentModel.findById(id);
 
     if (!commentDocument) {
-      throw BadRequestDomainException.create('Invalid comment', 'content');
+      throw NotFoundDomainException.create('Invalid comment', 'content');
     }
 
     if (commentDocument.commentatorInfo.userId !== userId) {
