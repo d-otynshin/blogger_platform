@@ -10,6 +10,15 @@ export class CommentsQueryRepository {
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
 
+  async getCommentById(
+    commentId: Types.ObjectId,
+    userId?: Types.ObjectId,
+  ): Promise<CommentOutputDto> {
+    const commentDocument = await this.CommentModel.findById(commentId);
+
+    return CommentOutputDto.mapToView(commentDocument, userId);
+  }
+
   async getCommentsByPostId(
     postId: Types.ObjectId,
     query: GetPostsQueryParams,
