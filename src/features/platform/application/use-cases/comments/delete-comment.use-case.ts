@@ -19,7 +19,7 @@ export class DeleteCommentUseCase
   async execute({ id }: DeleteCommentCommand) {
     const deleteResult = await this.CommentModel.deleteOne(id);
 
-    if (deleteResult.deletedCount === 0) {
+    if (deleteResult.deletedCount !== 1) {
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }
 

@@ -24,7 +24,7 @@ import {
   UserContextDto,
 } from '../../../core/decorators/extract-user-from-request';
 import { BadRequestDomainException } from '../../../core/exceptions/domain-exceptions';
-import { JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
+import { JwtAuthGuard, JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
 import { CommentsQueryRepository } from '../infrastructure/queries/comments.query-repository';
 import { CommentOutputDto } from './output-dto/comment.output-dto';
 
@@ -64,6 +64,7 @@ export class CommentsController {
   }
 
   @Put(':id/like-status')
+  @UseGuards(JwtAuthGuard)
   async interactComment(
     @Param('id') id: Types.ObjectId,
     @Body() interactionDto: CommentInteractionInputDto,

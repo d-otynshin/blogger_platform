@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { IsNotEmpty, Length } from 'class-validator';
+import { IsIn, IsNotEmpty, Length } from 'class-validator';
 import {
   contentConstraints,
   shortDescriptionConstraints,
@@ -73,5 +73,6 @@ export class UpdatePostInputDto {
 export class PostInteractionInputDto {
   @IsTrimmed()
   @IsNotEmpty()
+  @IsIn([LikeStatus.Like, LikeStatus.Dislike])
   likeStatus: LikeStatus.Like | LikeStatus.Dislike;
 }
