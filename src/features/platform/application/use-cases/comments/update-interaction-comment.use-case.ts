@@ -20,7 +20,7 @@ export class UpdateInteractionCommentUseCase
 
   async execute({ dto }: UpdateInteractionCommentCommand) {
     const commentDocument = await this.CommentModel.findOneAndUpdate(
-      { id: dto.commentId, 'interactions.id': dto.userId },
+      { _id: dto.commentId, 'interactions.userId': dto.userId },
       {
         $set: {
           'interactions.$.updatedAt': new Date(),
@@ -29,6 +29,9 @@ export class UpdateInteractionCommentUseCase
       },
       { new: true },
     );
+
+    console.log(commentDocument);
+    console.log('updated');
 
     await this.commentsRepository.save(commentDocument);
 

@@ -74,20 +74,11 @@ export class CommentsController {
     @ExtractUserFromRequest() user: UserContextDto,
   ): Promise<void> {
     // TODO: move to separate command handler
-    const isUpdated = await this.commentsService.interact({
+    return this.commentsService.interact({
       commentId: id,
       userId: user.id,
       login: user.login,
       action: interactionDto.likeStatus,
     });
-
-    if (!isUpdated) {
-      throw BadRequestDomainException.create(
-        'Invalid interaction',
-        'like-status',
-      );
-    }
-
-    return;
   }
 }

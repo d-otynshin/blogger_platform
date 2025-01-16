@@ -13,11 +13,11 @@ export class CommentsService {
     private commandBus: CommandBus,
   ) {}
 
-  async interact(dto: CommentInteractionDto): Promise<boolean> {
+  async interact(dto: CommentInteractionDto): Promise<null | void> {
     const interactions = await this.commentsRepository.getInteractions(
       dto.commentId,
     );
-    if (!interactions) return false;
+    if (!interactions) return null;
 
     const interaction = interactions.find(
       (interaction: TInteraction): boolean => interaction.userId === dto.userId,
@@ -28,7 +28,7 @@ export class CommentsService {
     }
 
     if (interaction.action === dto.action) {
-      return true;
+      return;
     }
 
     return this.commandBus.execute(new UpdateInteractionCommentCommand(dto));
