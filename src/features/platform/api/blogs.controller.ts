@@ -32,6 +32,7 @@ import {
 } from './input-dto/blogs.input-dto';
 import { ExtractUserIfExistsFromRequest } from '../../../core/decorators/extract-user-from-request';
 import { UserContextDto } from '../../accounts/dto/auth.dto';
+import { JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -58,6 +59,7 @@ export class BlogsController {
   }
 
   @Get(':blogId/posts')
+  @UseGuards(JwtOptionalAuthGuard)
   // TODO: move to separate command
   async getAllPosts(
     @Param('blogId') blogId: Types.ObjectId,
