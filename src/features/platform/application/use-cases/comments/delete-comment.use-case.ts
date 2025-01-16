@@ -23,6 +23,7 @@ export class DeleteCommentUseCase
   ) {}
 
   async execute({ id, userId }: DeleteCommentCommand) {
+    // TODO: create decorator?
     if (!Types.ObjectId.isValid(id)) {
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }

@@ -7,6 +7,7 @@ import {
 } from '../../domain/post.entity';
 import { LikeStatus } from '../../dto/interaction-dto';
 import { IsTrimmed } from '../../../../core/decorators/is-trimmed';
+import { IsObjectId } from '../../../../core/decorators/is-objectid';
 
 export class CreatePostByBlogIdInputDto {
   @IsTrimmed()
@@ -46,6 +47,7 @@ export class CreatePostInputDto {
 
   @IsTrimmed()
   @IsNotEmpty()
+  @IsObjectId()
   blogId: Types.ObjectId;
 }
 
@@ -67,6 +69,7 @@ export class UpdatePostInputDto {
 
   @IsTrimmed()
   @IsNotEmpty()
+  @IsObjectId()
   blogId: Types.ObjectId;
 }
 
