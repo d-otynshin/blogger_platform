@@ -6,9 +6,6 @@ import { TInteraction } from '../dto/interaction-dto';
 @Schema({ timestamps: true })
 export class Comment {
   @Prop({ type: String, required: true })
-  title: string;
-
-  @Prop({ type: String, required: true })
   postId: Types.ObjectId;
 
   @Prop({ type: String, required: true })
@@ -20,7 +17,7 @@ export class Comment {
   @Prop({ type: Object, required: true })
   commentatorInfo: TCommentator;
 
-  @Prop({ type: [Object], required: true })
+  @Prop({ type: [Object], required: false })
   interactions: TInteraction[];
 
   static createInstance(dto: {
@@ -33,7 +30,7 @@ export class Comment {
     comment.content = dto.content;
     comment.postId = dto.postId;
     comment.interactions = [];
-    comment.commentatorInfo = null;
+    comment.commentatorInfo = dto.commentatorInfo;
     comment.createdAt = new Date();
 
     return comment as CommentDocument;
