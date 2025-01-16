@@ -4,18 +4,24 @@ import { Comment, CommentModelType } from '../../domain/comment.entity';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { GetPostsQueryParams } from './posts.query-repository';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
+import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { Post, PostModelType } from '../../domain/post.entity';
 
 export class CommentsQueryRepository {
   constructor(
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
+    @InjectModel(Post.name) private PostModel: PostModelType,
   ) {}
 
   async getCommentById(
     commentId: Types.ObjectId,
     userId?: Types.ObjectId,
   ): Promise<CommentOutputDto> {
-    console.log('query repository', commentId);
     const commentDocument = await this.CommentModel.findById(commentId);
+
+    if (!commentDocument) {
+      throw NotFoundDomainException.create('Comment not found', 'id');
+    }
 
     return CommentOutputDto.mapToView(commentDocument, userId);
   }
@@ -25,6 +31,11 @@ export class CommentsQueryRepository {
     query: GetPostsQueryParams,
     userId?: Types.ObjectId,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
+    const postDocument = await this.PostModel.findById(postId);
+    if (!postDocument) {
+      throw NotFoundDomainException.create('Post not found', 'postId');
+    }
+
     const comments = await this.CommentModel.find({ postId })
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(query.calculateSkip())
