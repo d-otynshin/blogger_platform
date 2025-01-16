@@ -20,10 +20,10 @@ import { CommentsRepository } from './infrastructure/repositories/comments.repos
 
 import { AccountsModule } from '../accounts/accounts.module';
 import { BasicAuthGuard } from '../accounts/guards/basic/basic-auth.guard';
+
 /* Use Cases */
 import { CreateInteractionCommentUseCase } from './application/use-cases/comments/create-interaction-comment.use-case';
 import { DeleteCommentUseCase } from './application/use-cases/comments/delete-comment.use-case';
-import { UpdateCommentLikeUseCase } from './application/use-cases/comments/update-comment-like.use-case';
 import { UpdateCommentUseCase } from './application/use-cases/comments/update-comment.use-case';
 import { UpdateInteractionCommentUseCase } from './application/use-cases/comments/update-interaction-comment.use-case';
 import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like-post.use-case';
@@ -54,7 +54,6 @@ import { CreateInteractionPostUseCase } from './application/use-cases/posts/crea
     /* Comment Command Handlers */
     DeleteCommentUseCase,
     UpdateCommentUseCase,
-    UpdateCommentLikeUseCase,
     CreateInteractionCommentUseCase,
     UpdateInteractionCommentUseCase,
     /* Post Command Handlers */

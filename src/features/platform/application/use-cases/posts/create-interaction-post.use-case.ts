@@ -23,17 +23,17 @@ export class CreateInteractionPostUseCase
       addedAt: new Date(),
     };
 
-    const commentDocument = await this.PostModel.findByIdAndUpdate(
+    const postDocument = await this.PostModel.findByIdAndUpdate(
       dto.postId,
       { $push: { interactions: createdInteraction } },
       { new: true },
     );
 
-    if (!commentDocument) {
+    if (!postDocument) {
       // TODO: update error details
       throw BadRequestDomainException.create('Invalid post', 'content');
     }
 
-    return createdInteraction;
+    return;
   }
 }

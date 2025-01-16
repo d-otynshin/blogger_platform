@@ -6,9 +6,11 @@ import { Post, PostModelType } from '../../../domain/post.entity';
 import { PostsRepository } from '../../../infrastructure/repositories/posts.repository';
 import { PostInteractionInputDto } from '../../../api/input-dto/posts.input-dto';
 
-import { NotFoundDomainException } from '../../../../../core/exceptions/domain-exceptions';
+import {
+  ForbiddenDomainException,
+  NotFoundDomainException,
+} from '../../../../../core/exceptions/domain-exceptions';
 import { CreateInteractionPostCommand } from './create-interaction-post.use-case';
-import { TInteraction } from '../../../dto/interaction-dto';
 
 export class UpdateLikePostCommand {
   constructor(
@@ -43,7 +45,7 @@ export class UpdateLikePostUseCase
     );
 
     if (!interaction) {
-      const createdInteraction: TInteraction = await this.commandBus.execute(
+      await this.commandBus.execute(
         new CreateInteractionPostCommand({
           postId,
           userId,
@@ -52,18 +54,24 @@ export class UpdateLikePostUseCase
         }),
       );
 
-      postDocument.interactions.push(createdInteraction);
-    } else {
-      // Update the existing one with the new like status
-      postDocument.interactions.push({
-        ...interaction,
-        addedAt: new Date(),
-        action: dto.likeStatus,
-      });
+      return;
     }
 
-    // Save the updated post document to the database
-    await this.postsRepository.save(postDocument);
+    // Verify that the user is authorized to update the comment
+    if (interaction.userId !== userId) {
+      throw ForbiddenDomainException.create('Forbidden', 'userId');
+    }
+
+    // Update the existing one with the new like status
+    await this.PostModel.findOneAndUpdate(
+      { id: postId, 'interactions.userId': userId },
+      {
+        $set: {
+          'interactions.$.addedAt': new Date(),
+          'interactions.$.action': dto.likeStatus,
+        },
+      },
+    );
 
     return;
   }

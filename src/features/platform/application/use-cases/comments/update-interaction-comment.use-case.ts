@@ -33,7 +33,6 @@ export class UpdateInteractionCommentUseCase
     await this.commentsRepository.save(commentDocument);
 
     if (!commentDocument) {
-      // TODO: update error details
       throw BadRequestDomainException.create('Invalid comment', 'content');
     }
 
