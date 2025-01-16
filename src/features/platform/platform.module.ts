@@ -29,6 +29,8 @@ import { UpdateInteractionCommentUseCase } from './application/use-cases/comment
 import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like-post.use-case';
 import { CreateInteractionPostUseCase } from './application/use-cases/posts/create-interaction-post.use-case';
 import { CreateCommentUseCase } from './application/use-cases/comments/create-comment.use-case';
+import { CommentsController } from './api/comments.controller';
+import { CommentsService } from './application/comments.service';
 
 @Module({
   imports: [
@@ -39,7 +41,7 @@ import { CreateCommentUseCase } from './application/use-cases/comments/create-co
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
   ],
-  controllers: [BlogsController, PostsController],
+  controllers: [BlogsController, PostsController, CommentsController],
   providers: [
     BlogsService,
     BlogsRepository,
@@ -48,6 +50,7 @@ import { CreateCommentUseCase } from './application/use-cases/comments/create-co
     PostsRepository,
     PostsQueryRepository,
     /* Comments */
+    CommentsService,
     CommentsRepository,
     CommentsQueryRepository,
     /* Guards */

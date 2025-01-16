@@ -14,6 +14,7 @@ export class CommentsQueryRepository {
     commentId: Types.ObjectId,
     userId?: Types.ObjectId,
   ): Promise<CommentOutputDto> {
+    console.log('query repository', commentId);
     const commentDocument = await this.CommentModel.findById(commentId);
 
     return CommentOutputDto.mapToView(commentDocument, userId);
