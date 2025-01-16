@@ -62,7 +62,7 @@ export class UpdateLikePostUseCase
 
     // Update the existing one with the new like status
     await this.PostModel.findOneAndUpdate(
-      { id: postId, 'interactions.userId': userId },
+      { _id: postId, 'interactions.userId': userId },
       {
         $set: {
           'interactions.$.addedAt': new Date(),
