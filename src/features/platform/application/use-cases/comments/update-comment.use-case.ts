@@ -1,7 +1,7 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Types } from 'mongoose';
-import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { InjectModel } from '@nestjs/mongoose';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { Comment, CommentModelType } from '../../../domain/comment.entity';
 import {
   ForbiddenDomainException,

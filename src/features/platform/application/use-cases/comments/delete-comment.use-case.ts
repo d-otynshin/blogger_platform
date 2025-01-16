@@ -9,7 +9,7 @@ import {
 
 export class DeleteCommentCommand {
   constructor(
-    public id: Types.ObjectId,
+    public id: string,
     public userId: Types.ObjectId,
   ) {}
 }
@@ -23,7 +23,11 @@ export class DeleteCommentUseCase
   ) {}
 
   async execute({ id, userId }: DeleteCommentCommand) {
-    const commentDocument = await this.CommentModel.findById(id);
+    if (!Types.ObjectId.isValid(id)) {
+      throw NotFoundDomainException.create('Comment not found', 'commentId');
+    }
+
+    const commentDocument = await this.CommentModel.findOne({ _id: id });
     if (!commentDocument) {
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }
