@@ -5,7 +5,7 @@ import { CommentsRepository } from '../infrastructure/repositories/comments.repo
 import { CommentInteractionDto } from '../dto/comment-dto';
 import { CreateInteractionCommentCommand } from './use-cases/comments/create-interaction-comment.use-case';
 import { UpdateInteractionCommentCommand } from './use-cases/comments/update-interaction-comment.use-case';
-import { ForbiddenDomainException } from '../../../core/exceptions/domain-exceptions';
+import { ForbiddenDomainException, NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class CommentsService {
@@ -18,7 +18,9 @@ export class CommentsService {
     const interactions = await this.commentsRepository.getInteractions(
       dto.commentId,
     );
-    if (!interactions) return null;
+    if (!interactions) {
+      throw NotFoundDomainException.create('No interactions found.');
+    }
 
     const interaction = interactions.find(
       (interaction: TInteraction): boolean => interaction.userId === dto.userId,

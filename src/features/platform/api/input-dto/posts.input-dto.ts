@@ -73,6 +73,6 @@ export class UpdatePostInputDto {
 export class PostInteractionInputDto {
   @IsTrimmed()
   @IsNotEmpty()
-  @IsIn([LikeStatus.Like, LikeStatus.Dislike])
+  @IsIn([LikeStatus.Like, LikeStatus.Dislike, LikeStatus.None])
   likeStatus: LikeStatus.Like | LikeStatus.Dislike;
 }

@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentDocument, CommentModelType } from '../../domain/comment.entity';
 import { TInteraction } from '../../dto/interaction-dto';
+import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class CommentsRepository {
@@ -14,7 +15,7 @@ export class CommentsRepository {
     const commentDocument = await this.CommentModel.findOne({ _id: id });
 
     if (!commentDocument) {
-      return null;
+      throw NotFoundDomainException.create('No comment found');
     }
 
     return commentDocument.interactions;
