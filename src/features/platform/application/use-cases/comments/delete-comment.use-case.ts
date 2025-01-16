@@ -2,10 +2,16 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentModelType } from '../../../domain/comment.entity';
-import { NotFoundDomainException } from '../../../../../core/exceptions/domain-exceptions';
+import {
+  ForbiddenDomainException,
+  NotFoundDomainException,
+} from '../../../../../core/exceptions/domain-exceptions';
 
 export class DeleteCommentCommand {
-  constructor(public id: Types.ObjectId) {}
+  constructor(
+    public id: Types.ObjectId,
+    public userId: Types.ObjectId,
+  ) {}
 }
 
 @CommandHandler(DeleteCommentCommand)
@@ -16,7 +22,16 @@ export class DeleteCommentUseCase
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
 
-  async execute({ id }: DeleteCommentCommand) {
+  async execute({ id, userId }: DeleteCommentCommand) {
+    const commentDocument = await this.CommentModel.findById(id);
+    if (!commentDocument) {
+      throw NotFoundDomainException.create('Comment not found', 'commentId');
+    }
+
+    if (commentDocument.commentatorInfo.userId !== userId) {
+      throw ForbiddenDomainException.create('Forbidden');
+    }
+
     const deleteResult = await this.CommentModel.deleteOne({ _id: id });
 
     if (deleteResult.deletedCount !== 1) {

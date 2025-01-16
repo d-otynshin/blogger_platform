@@ -3,12 +3,16 @@ import { Types } from 'mongoose';
 import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentModelType } from '../../../domain/comment.entity';
-import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
+import {
+  BadRequestDomainException,
+  ForbiddenDomainException,
+} from '../../../../../core/exceptions/domain-exceptions';
 
 export class UpdateCommentCommand {
   constructor(
     public id: Types.ObjectId,
     public dto: CommentsInputDto,
+    public userId: Types.ObjectId,
   ) {}
 }
 
@@ -20,14 +24,18 @@ export class UpdateCommentUseCase
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
   ) {}
 
-  async execute({ id, dto }: UpdateCommentCommand) {
-    const commentDocument = await this.CommentModel.findByIdAndUpdate(id, dto, {
-      new: true,
-    });
+  async execute({ id, dto, userId }: UpdateCommentCommand) {
+    const commentDocument = await this.CommentModel.findById(id);
 
     if (!commentDocument) {
       throw BadRequestDomainException.create('Invalid comment', 'content');
     }
+
+    if (commentDocument.commentatorInfo.userId !== userId) {
+      throw ForbiddenDomainException.create('Forbidden');
+    }
+
+    await this.CommentModel.findByIdAndUpdate(id, dto);
 
     return;
   }

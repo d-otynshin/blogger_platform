@@ -5,6 +5,7 @@ import { CommentsRepository } from '../infrastructure/repositories/comments.repo
 import { CommentInteractionDto } from '../dto/comment-dto';
 import { CreateInteractionCommentCommand } from './use-cases/comments/create-interaction-comment.use-case';
 import { UpdateInteractionCommentCommand } from './use-cases/comments/update-interaction-comment.use-case';
+import { ForbiddenDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class CommentsService {
@@ -29,6 +30,10 @@ export class CommentsService {
 
     if (interaction.action === dto.action) {
       return;
+    }
+
+    if (interaction.userId !== dto.userId) {
+      throw ForbiddenDomainException.create('Forbidden');
     }
 
     return this.commandBus.execute(new UpdateInteractionCommentCommand(dto));

@@ -52,18 +52,26 @@ export class CommentsController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateComment(
     @Param('id') id: Types.ObjectId,
     @Body() commentsDto: CommentsInputDto,
+    @ExtractUserFromRequest() user: UserContextDto,
   ): Promise<void> {
-    return this.commandBus.execute(new UpdateCommentCommand(id, commentsDto));
+    return this.commandBus.execute(
+      new UpdateCommentCommand(id, commentsDto, user.id),
+    );
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteComment(@Param('id') id: Types.ObjectId): Promise<void> {
-    return this.commandBus.execute(new DeleteCommentCommand(id));
+  async deleteComment(
+    @Param('id') id: Types.ObjectId,
+    @ExtractUserFromRequest() user: UserContextDto,
+  ): Promise<void> {
+    return this.commandBus.execute(new DeleteCommentCommand(id, user.id));
   }
 
   @Put(':id/like-status')
