@@ -40,7 +40,7 @@ import {
 
 /* From Accounts module */
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
-import { JwtAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
+import { JwtAuthGuard, JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
 import { UpdateLikePostCommand } from '../application/use-cases/posts/update-like-post.use-case';
 
 @Controller('posts')
@@ -53,6 +53,7 @@ export class PostsController {
   ) {}
 
   @Get()
+  @UseGuards(JwtOptionalAuthGuard)
   async getAll(
     @Query() query: GetPostsQueryParams,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
@@ -72,6 +73,7 @@ export class PostsController {
   }
 
   @Get(':postId/comments')
+  @UseGuards(JwtOptionalAuthGuard)
   async getAllPosts(
     @Param('postId') postId: Types.ObjectId,
     @Query() query: GetPostsQueryParams,
@@ -87,8 +89,14 @@ export class PostsController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<PostOutputDto> {
-    return this.postsQueryRepository.getById(id);
+  @UseGuards(JwtOptionalAuthGuard)
+  async getById(
+    @Param('id') id: Types.ObjectId,
+    @ExtractUserIfExistsFromRequest() user: UserContextDto,
+  ): Promise<PostOutputDto> {
+    const userId = user?.id;
+
+    return this.postsQueryRepository.getById(id, userId);
   }
 
   @Put(':id')
