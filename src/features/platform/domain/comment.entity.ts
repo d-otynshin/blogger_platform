@@ -28,7 +28,7 @@ export class Comment {
     commentatorInfo: { userId: Types.ObjectId; userLogin: string };
     postId: Types.ObjectId;
   }): CommentDocument {
-    const comment = new Comment();
+    const comment = new this();
 
     comment.content = dto.content;
     comment.postId = dto.postId;

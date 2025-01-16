@@ -5,6 +5,7 @@ import { Comment, CommentModelType } from '../../../domain/comment.entity';
 import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
 import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { UserContextDto } from '../../../../accounts/dto/auth.dto';
+import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 
 export class CreateCommentCommand {
   constructor(
@@ -20,6 +21,7 @@ export class CreateCommentUseCase
 {
   constructor(
     @InjectModel(Comment.name) private CommentModel: CommentModelType,
+    private commentsRepository: CommentsRepository,
   ) {}
 
   async execute({ user, postId, dto }: CreateCommentCommand) {
@@ -36,6 +38,8 @@ export class CreateCommentUseCase
       // TODO: update error details
       throw BadRequestDomainException.create('Invalid comment', 'content');
     }
+
+    await this.commentsRepository.save(commentDocument);
 
     return commentDocument;
   }
