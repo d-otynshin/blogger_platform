@@ -67,6 +67,7 @@ export class CommentsController {
   }
 
   @Put(':id/like-status')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtAuthGuard)
   async interactComment(
     @Param('id') id: Types.ObjectId,
