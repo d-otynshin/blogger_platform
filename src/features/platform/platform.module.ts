@@ -17,6 +17,9 @@ import { PostsController } from './api/posts.controller';
 import { PostsRepository } from './infrastructure/repositories/posts.repository';
 import { PostsQueryRepository } from './infrastructure/queries/posts.query-repository';
 import { CommentsRepository } from './infrastructure/repositories/comments.repository';
+import { CommentsController } from './api/comments.controller';
+import { CommentsService } from './application/comments.service';
+import { IsBlogExistConstraint } from './api/input-dto/helpers/validate-blog-id';
 
 import { AccountsModule } from '../accounts/accounts.module';
 import { BasicAuthGuard } from '../accounts/guards/basic/basic-auth.guard';
@@ -29,8 +32,6 @@ import { UpdateInteractionCommentUseCase } from './application/use-cases/comment
 import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like-post.use-case';
 import { CreateInteractionPostUseCase } from './application/use-cases/posts/create-interaction-post.use-case';
 import { CreateCommentUseCase } from './application/use-cases/comments/create-comment.use-case';
-import { CommentsController } from './api/comments.controller';
-import { CommentsService } from './application/comments.service';
 
 @Module({
   imports: [
@@ -64,6 +65,8 @@ import { CommentsService } from './application/comments.service';
     /* Post Command Handlers */
     UpdateLikePostUseCase,
     CreateInteractionPostUseCase,
+    /* Constraints */
+    IsBlogExistConstraint,
   ],
   exports: [MongooseModule],
 })
