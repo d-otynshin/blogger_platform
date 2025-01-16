@@ -6,6 +6,7 @@ import { CommentInteractionDto } from '../dto/comment-dto';
 import { CreateInteractionCommentCommand } from './use-cases/comments/create-interaction-comment.use-case';
 import { UpdateInteractionCommentCommand } from './use-cases/comments/update-interaction-comment.use-case';
 import { ForbiddenDomainException, NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class CommentsService {
@@ -15,9 +16,15 @@ export class CommentsService {
   ) {}
 
   async interact(dto: CommentInteractionDto): Promise<null | void> {
+    // TODO: create decorator?
+    if (!Types.ObjectId.isValid(dto.commentId)) {
+      throw NotFoundDomainException.create('Comment not found', 'commentId');
+    }
+
     const interactions = await this.commentsRepository.getInteractions(
       dto.commentId,
     );
+
     if (!interactions) {
       throw NotFoundDomainException.create('No interactions found.');
     }

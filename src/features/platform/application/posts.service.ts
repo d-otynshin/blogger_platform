@@ -6,6 +6,7 @@ import { PostOutputDto } from '../api/output-dto/post.output-dto';
 import { UpdatePostDto } from '../dto/post-dto';
 import { CreatePostInputDto } from '../api/input-dto/posts.input-dto';
 import { BlogsRepository } from '../infrastructure/repositories/blogs.repository';
+import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class PostsService {
@@ -16,6 +17,9 @@ export class PostsService {
   ) {}
   async createPost(dto: CreatePostInputDto): Promise<PostOutputDto> {
     const blog = await this.blogsRepository.findById(dto.blogId);
+    if (!blog) {
+      throw NotFoundDomainException.create('Blog not found', 'blogId');
+    }
 
     const postPojo = {
       title: dto.title,
