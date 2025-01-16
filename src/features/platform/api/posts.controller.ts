@@ -47,6 +47,7 @@ import {
 import { UpdateLikePostCommand } from '../application/use-cases/posts/update-like-post.use-case';
 import { CommentsInputDto } from './input-dto/comments.input-dto';
 import { CreateCommentCommand } from '../application/use-cases/comments/create-comment.use-case';
+import { CommentDocument } from '../domain/comment.entity';
 
 @Controller('posts')
 export class PostsController {
@@ -101,9 +102,11 @@ export class PostsController {
     @Body() createCommentDto: CommentsInputDto,
     @ExtractUserFromRequest() user: UserContextDto,
   ) {
-    return this.commandBus.execute(
+    const commentDocument: CommentDocument = await this.commandBus.execute(
       new CreateCommentCommand(postId, createCommentDto, user),
     );
+
+    return CommentOutputDto.mapToView(commentDocument);
   }
 
   @Get(':id')

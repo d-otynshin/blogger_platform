@@ -37,6 +37,6 @@ export class CreateCommentUseCase
       throw BadRequestDomainException.create('Invalid comment', 'content');
     }
 
-    return;
+    return commentDocument;
   }
 }
