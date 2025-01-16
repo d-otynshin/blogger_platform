@@ -28,6 +28,7 @@ import { UpdateCommentUseCase } from './application/use-cases/comments/update-co
 import { UpdateInteractionCommentUseCase } from './application/use-cases/comments/update-interaction-comment.use-case';
 import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like-post.use-case';
 import { CreateInteractionPostUseCase } from './application/use-cases/posts/create-interaction-post.use-case';
+import { CreateCommentUseCase } from './application/use-cases/comments/create-comment.use-case';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { CreateInteractionPostUseCase } from './application/use-cases/posts/crea
     UpdateCommentUseCase,
     CreateInteractionCommentUseCase,
     UpdateInteractionCommentUseCase,
+    CreateCommentUseCase,
     /* Post Command Handlers */
     UpdateLikePostUseCase,
     CreateInteractionPostUseCase,

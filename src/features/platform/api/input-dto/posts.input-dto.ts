@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { Length } from 'class-validator';
+import { IsNotEmpty, Length } from 'class-validator';
 import {
   contentConstraints,
   shortDescriptionConstraints,
@@ -45,10 +45,33 @@ export class CreatePostInputDto {
   content: string;
 
   @IsTrimmed()
+  @IsNotEmpty()
+  blogId: Types.ObjectId;
+}
+
+export class UpdatePostInputDto {
+  @IsTrimmed()
+  @Length(titleConstraints.minLength, titleConstraints.maxLength)
+  title: string;
+
+  @IsTrimmed()
+  @Length(
+    shortDescriptionConstraints.minLength,
+    shortDescriptionConstraints.maxLength,
+  )
+  shortDescription: string;
+
+  @IsTrimmed()
+  @Length(contentConstraints.minLength, contentConstraints.maxLength)
+  content: string;
+
+  @IsTrimmed()
+  @IsNotEmpty()
   blogId: Types.ObjectId;
 }
 
 export class PostInteractionInputDto {
   @IsTrimmed()
+  @IsNotEmpty()
   likeStatus: LikeStatus.Like | LikeStatus.Dislike;
 }

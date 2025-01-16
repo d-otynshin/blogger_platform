@@ -26,8 +26,8 @@ import { PostsService } from '../application/posts.service';
 import {
   CreatePostInputDto,
   PostInteractionInputDto,
+  UpdatePostInputDto,
 } from './input-dto/posts.input-dto';
-import { UpdatePostDto } from '../dto/post-dto';
 import { CommentsQueryRepository } from '../infrastructure/queries/comments.query-repository';
 
 /* From core module */
@@ -40,8 +40,13 @@ import {
 
 /* From Accounts module */
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
-import { JwtAuthGuard, JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
+import {
+  JwtAuthGuard,
+  JwtOptionalAuthGuard,
+} from '../../accounts/guards/bearer/jwt-auth.guard';
 import { UpdateLikePostCommand } from '../application/use-cases/posts/update-like-post.use-case';
+import { CommentsInputDto } from './input-dto/comments.input-dto';
+import { CreateCommentCommand } from '../application/use-cases/comments/create-comment.use-case';
 
 @Controller('posts')
 export class PostsController {
@@ -88,6 +93,19 @@ export class PostsController {
     );
   }
 
+  @Put(':postId/comments')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  async createComment(
+    @Param('postId') postId: Types.ObjectId,
+    @Body() createCommentDto: CommentsInputDto,
+    @ExtractUserFromRequest() user: UserContextDto,
+  ) {
+    return this.commandBus.execute(
+      new CreateCommentCommand(postId, createCommentDto, user),
+    );
+  }
+
   @Get(':id')
   @UseGuards(JwtOptionalAuthGuard)
   async getById(
@@ -104,7 +122,7 @@ export class PostsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param('id') id: string,
-    @Body() updatePostDto: UpdatePostDto,
+    @Body() updatePostDto: UpdatePostInputDto,
   ): Promise<void> {
     return this.postsService.updatePost(id, updatePostDto);
   }
