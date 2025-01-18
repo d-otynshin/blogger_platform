@@ -68,7 +68,7 @@ const guards = [
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.ACCESS_TOKEN_SECRET,
-          signOptions: { expiresIn: '5s' },
+          signOptions: { expiresIn: '10s' },
         });
       },
       inject: [
