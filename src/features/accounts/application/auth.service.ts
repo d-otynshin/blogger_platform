@@ -104,9 +104,10 @@ export class AuthService {
       );
     }
 
-    const updatedConfirmationCode = this.jwtService.sign({
-      login: userDocument.login,
-    });
+    const updatedConfirmationCode = this.jwtService.sign(
+      { login: userDocument.login },
+      { secret: process.env.ACCESS_TOKEN_SECRET },
+    );
 
     userDocument.confirmationCode = updatedConfirmationCode;
 
