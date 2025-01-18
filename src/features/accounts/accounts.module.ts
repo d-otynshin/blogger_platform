@@ -28,7 +28,7 @@ import { SecurityController } from './api/security.controller';
 import { ThrottlerBehindProxyGuard } from './guards/limiter/throttler-behind-proxy.guard';
 import { SecurityRepository } from './infrastructure/repositories/security.repository';
 import { Session, SessionSchema } from './domain/session.entity';
-import { JwtRefreshGuard } from './guards/bearer/jwt-auth.guard';
+import { JwtRefreshStrategy } from './guards/bearer/jwt-refresh.strategy';
 
 const services = [CryptoService, UsersService, AuthService, EmailService];
 
@@ -43,7 +43,7 @@ const guards = [
   LocalStrategy,
   BasicAuthGuard,
   JwtStrategy,
-  JwtRefreshGuard,
+  JwtRefreshStrategy,
   ThrottlerBehindProxyGuard,
 ];
 
