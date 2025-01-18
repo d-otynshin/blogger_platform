@@ -30,6 +30,7 @@ import { LoginInputDto } from './input-dto/login.input-dto';
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.use-case';
 import { RefreshTokenDto } from '../dto/session-dto';
 import { SecurityRepository } from '../infrastructure/repositories/security.repository';
+import { JwtRefreshValidationGuard } from '../guards/bearer/jwt-refresh-validation.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -120,6 +121,7 @@ export class AuthController {
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtRefreshGuard)
+  @UseGuards(JwtRefreshValidationGuard)
   async refreshToken(@Req() req: Request, @Res() res: Response): Promise<void> {
     const refreshToken = req.cookies['refreshToken'];
 
@@ -145,6 +147,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtRefreshGuard)
+  @UseGuards(JwtRefreshValidationGuard)
   async logout(
     @ExtractUserFromRequest() decodedToken: RefreshTokenDto,
     @Res() res: Response,

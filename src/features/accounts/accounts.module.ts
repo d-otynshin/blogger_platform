@@ -31,6 +31,7 @@ import { Session, SessionSchema } from './domain/session.entity';
 import { JwtRefreshStrategy } from './guards/bearer/jwt-refresh.strategy';
 import { SecurityQueryRepository } from './infrastructure/queries/security.query-repository';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+import { JwtRefreshValidationGuard } from './guards/bearer/jwt-refresh-validation.guard';
 
 const services = [CryptoService, UsersService, AuthService, EmailService];
 
@@ -45,6 +46,7 @@ const repositories = [
 const guards = [
   LocalStrategy,
   BasicAuthGuard,
+  JwtRefreshValidationGuard,
   JwtStrategy,
   JwtRefreshStrategy,
   ThrottlerBehindProxyGuard,
