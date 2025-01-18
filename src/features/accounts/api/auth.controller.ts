@@ -133,7 +133,6 @@ export class AuthController {
     const cookieConfig = {
       httpOnly: true,
       secure: true,
-      maxAge: 20000,
     };
 
     res.cookie('refreshToken', updatedRefreshToken, cookieConfig);

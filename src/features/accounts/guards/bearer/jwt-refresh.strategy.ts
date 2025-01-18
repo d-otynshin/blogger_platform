@@ -15,7 +15,9 @@ export class JwtRefreshStrategy extends PassportStrategy(
   constructor(private readonly securityRepository: SecurityRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (req: Request): string => req.cookies.refreshToken,
+        (req: Request): string => {
+          return req.cookies['refreshToken'];
+        },
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.REFRESH_TOKEN_SECRET,
@@ -23,7 +25,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
   }
 
   async validate(payload: RefreshTokenDto): Promise<RefreshTokenDto | false> {
+    console.log('payload', payload);
     const session = await this.securityRepository.getSession(payload.deviceId);
+    console.log('session', session);
+
     if (!session) return false;
 
     const { deviceId: sessionDeviceId, iat: sessionIat } = session;

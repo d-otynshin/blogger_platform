@@ -1,10 +1,10 @@
 import { Controller, Delete, Get, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard, JwtRefreshGuard } from '../guards/bearer/jwt-auth.guard';
-import { UserContextDto } from '../dto/auth.dto';
+import { JwtRefreshGuard } from '../guards/bearer/jwt-auth.guard';
 import { RefreshTokenDto } from '../dto/session-dto';
 import { SecurityRepository } from '../infrastructure/repositories/security.repository';
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
 import { SecurityQueryRepository } from '../infrastructure/queries/security.query-repository';
+import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Controller('security')
 export class SecurityController {
@@ -14,20 +14,36 @@ export class SecurityController {
   ) {}
 
   @Get('devices')
-  @UseGuards(JwtAuthGuard)
-  async getSessions(@ExtractUserFromRequest() user: UserContextDto) {
+  @UseGuards(JwtRefreshGuard)
+  async getSessions(@ExtractUserFromRequest() user: RefreshTokenDto) {
     return this.securityQueryRepository.getSessions(user.id);
   }
 
   @Delete('devices')
   @UseGuards(JwtRefreshGuard)
   async terminateSessions(@ExtractUserFromRequest() user: RefreshTokenDto) {
-    return this.securityRepository.terminateSessions(user.deviceId);
+    const isTerminated = await this.securityRepository.terminateSessions(
+      user.deviceId,
+    );
+
+    if (!isTerminated) {
+      throw NotFoundDomainException.create('Session not found', 'deviceId');
+    }
+
+    return;
   }
 
   @Delete('devices/:id')
   @UseGuards(JwtRefreshGuard)
   async terminateSessionById(@ExtractUserFromRequest() user: RefreshTokenDto) {
-    return this.securityRepository.terminateBySessionId(user.deviceId);
+    const isTerminated = await this.securityRepository.terminateBySessionId(
+      user.deviceId,
+    );
+
+    if (!isTerminated) {
+      throw NotFoundDomainException.create('Session not found', 'deviceId');
+    }
+
+    return;
   }
 }
