@@ -1,19 +1,19 @@
 import crypto from 'node:crypto';
+import process from 'node:process';
+import { Types } from 'mongoose';
 import { Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-
-import {
-  ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
-  REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
-} from '../../constants/auth-token.inject-constants';
 
 import { ValidateUserCommand } from './validate-user.use-case';
 import { UserDocument } from '../../domain/user.entity';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
-import { Types } from 'mongoose';
-import process from 'node:process';
+
+import {
+  ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
+  REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
+} from '../../constants/auth-token.inject-constants';
 
 export class LoginResponseDto {
   accessToken: string;
@@ -45,8 +45,8 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
   async execute({
     loginOrEmail,
     password,
-    ip,
-    title,
+    ip: userIp,
+    title: userTitle,
   }: LoginUserCommand): Promise<LoginResponseDto> {
     const userDocument: UserDocument = await this.commandBus.execute(
       new ValidateUserCommand(loginOrEmail, password),
@@ -65,23 +65,25 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
 
     const refreshToken = this.refreshTokenContext.sign({
       id: userDocument._id,
+      ip: userIp,
+      title: userTitle,
       deviceId,
-      ip,
-      title,
     });
 
     const decodedToken = this.refreshTokenContext.verify(refreshToken, {
       secret: process.env.REFRESH_TOKEN_SECRET,
     });
 
-    await this.securityRepository.createSession({
+    const sessionDocument = await this.securityRepository.createSession({
       userId: new Types.ObjectId(userDocument._id),
       exp: decodedToken.exp,
       iat: decodedToken.iat,
+      title: userTitle,
+      ip: userIp,
       deviceId,
-      title,
-      ip,
     });
+
+    await this.securityRepository.save(sessionDocument);
 
     return { accessToken, refreshToken };
   }
