@@ -80,7 +80,7 @@ const guards = [
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.REFRESH_TOKEN_SECRET, //TODO: move to env. will be in the following lessons
-          signOptions: { expiresIn: '1000s' },
+          signOptions: { expiresIn: '20s' },
         });
       },
       inject: [
