@@ -1,25 +1,15 @@
-import process from 'node:process';
+import { Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { SecurityRepository } from '../repositories/security.repository';
+import { SessionOutputDto } from '../../api/output-dto/session.output-dto';
 
 @Injectable()
 export class SecurityQueryRepository {
-  constructor(
-    private jwtService: JwtService,
-    protected securityRepository: SecurityRepository,
-  ) {}
+  constructor(protected securityRepository: SecurityRepository) {}
 
-  async getSessions(token: string) {
-    const decodedToken = await this.jwtService.verify(token, {
-      secret: process.env.REFRESH_TOKEN_SECRET,
-    });
+  async getSessions(userId: Types.ObjectId): Promise<SessionOutputDto[]> {
+    const sessionDocuments = await this.securityRepository.getSessions(userId);
 
-    // TODO: throw error?
-    if (!decodedToken) return null;
-
-    const { userId } = decodedToken;
-
-    return this.securityRepository.getSessions(userId);
+    return sessionDocuments.map(SessionOutputDto.mapToView);
   }
 }

@@ -29,6 +29,7 @@ import { ThrottlerBehindProxyGuard } from './guards/limiter/throttler-behind-pro
 import { SecurityRepository } from './infrastructure/repositories/security.repository';
 import { Session, SessionSchema } from './domain/session.entity';
 import { JwtRefreshStrategy } from './guards/bearer/jwt-refresh.strategy';
+import { SecurityQueryRepository } from './infrastructure/queries/security.query-repository';
 
 const services = [CryptoService, UsersService, AuthService, EmailService];
 
@@ -37,6 +38,7 @@ const repositories = [
   UsersQueryRepository,
   AuthQueryRepository,
   SecurityRepository,
+  SecurityQueryRepository,
 ];
 
 const guards = [

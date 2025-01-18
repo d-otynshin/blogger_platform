@@ -4,15 +4,19 @@ import { UserContextDto } from '../dto/auth.dto';
 import { RefreshTokenDto } from '../dto/session-dto';
 import { SecurityRepository } from '../infrastructure/repositories/security.repository';
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
+import { SecurityQueryRepository } from '../infrastructure/queries/security.query-repository';
 
 @Controller('security')
 export class SecurityController {
-  constructor(private securityRepository: SecurityRepository) {}
+  constructor(
+    private securityRepository: SecurityRepository,
+    protected securityQueryRepository: SecurityQueryRepository,
+  ) {}
 
   @Get('devices')
   @UseGuards(JwtAuthGuard)
   async getSessions(@ExtractUserFromRequest() user: UserContextDto) {
-    return this.securityRepository.getSessions(user.id);
+    return this.securityQueryRepository.getSessions(user.id);
   }
 
   @Delete('devices')
