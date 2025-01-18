@@ -9,10 +9,10 @@ export class SessionOutputDto {
   static mapToView(session: SessionDocument): SessionOutputDto {
     const dto = new SessionOutputDto();
 
-    dto.ip = session.ip;
-    dto.title = session.title;
-    dto.lastActiveDate = session.exp;
     dto.deviceId = session.deviceId;
+    dto.ip = session.ip;
+    dto.lastActiveDate = new Date(Number(session.exp) * 1000).toISOString();
+    dto.title = session.title;
 
     return dto;
   }
