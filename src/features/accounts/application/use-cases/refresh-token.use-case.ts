@@ -11,6 +11,7 @@ import {
 
 import { UsersRepository } from '../../infrastructure/repositories/users.repository';
 import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
+import { UserDocument } from '../../domain/user.entity';
 
 export class RefreshTokenResponseDto {
   accessToken: string;
@@ -40,34 +41,32 @@ export class RefreshTokenUseCase
   async execute({
     refreshToken,
   }: RefreshTokenCommand): Promise<RefreshTokenResponseDto> {
-    const {
-      id: userId,
-      deviceId,
-      ip,
-      title,
-    } = await this.jwtService.verifyAsync(refreshToken, {
+    // TODO: create decodedToken dto/type
+    const decodedToken = await this.jwtService.verifyAsync(refreshToken, {
       secret: process.env.REFRESH_TOKEN_SECRET,
     });
 
-    const userDocument = await this.usersRepository.findById(userId);
+    const userDocument: UserDocument = await this.usersRepository.findById(
+      decodedToken.userId,
+    );
 
-    const accessToken = this.accessTokenContext.sign({
+    const accessToken: string = this.accessTokenContext.sign({
       id: userDocument._id,
       login: userDocument.login,
     });
 
-    const createdRefreshToken = this.refreshTokenContext.sign({
+    const createdRefreshToken: string = this.refreshTokenContext.sign({
       id: userDocument._id,
       deviceId: crypto.randomUUID(),
-      ip,
-      title,
+      ip: decodedToken.ip,
+      title: decodedToken.title,
     });
 
     const { iat } = await this.jwtService.verifyAsync(createdRefreshToken, {
       secret: process.env.REFRESH_TOKEN_SECRET,
     });
 
-    await this.securityRepository.updateSession(deviceId, iat);
+    await this.securityRepository.updateSession(decodedToken.deviceId, iat);
 
     return { accessToken, refreshToken: createdRefreshToken };
   }

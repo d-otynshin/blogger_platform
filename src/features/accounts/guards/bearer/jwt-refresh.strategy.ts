@@ -29,6 +29,11 @@ export class JwtRefreshStrategy extends PassportStrategy(
     const { deviceId: sessionDeviceId, iat: sessionIat } = session;
 
     if (payload.deviceId !== sessionDeviceId || payload.iat !== sessionIat) {
+      console.log('JwtRefreshStrategy');
+      console.log(
+        payload.deviceId !== sessionDeviceId,
+        payload.iat !== sessionIat,
+      );
       return false;
     }
 

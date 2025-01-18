@@ -1,7 +1,7 @@
 import * as process from 'node:process';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserContextDto } from '../../dto/auth.dto';
 
 @Injectable()
