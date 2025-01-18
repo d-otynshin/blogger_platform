@@ -61,9 +61,11 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
       login: userDocument.login,
     });
 
+    const deviceId = crypto.randomUUID();
+
     const refreshToken = this.refreshTokenContext.sign({
       id: userDocument._id,
-      deviceId: crypto.randomUUID(),
+      deviceId,
       ip,
       title,
     });
@@ -74,11 +76,11 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
 
     await this.securityRepository.createSession({
       userId: new Types.ObjectId(userDocument._id),
-      deviceId: crypto.randomUUID(),
-      ip,
-      title,
       exp: decodedToken.exp,
       iat: decodedToken.iat,
+      deviceId,
+      title,
+      ip,
     });
 
     return { accessToken, refreshToken };

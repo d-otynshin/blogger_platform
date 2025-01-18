@@ -11,9 +11,6 @@ export class Session {
   deviceId: string;
 
   @Prop({ type: String, required: true })
-  name: string;
-
-  @Prop({ type: String, required: true })
   ip: string;
 
   @Prop({ type: String, required: true })

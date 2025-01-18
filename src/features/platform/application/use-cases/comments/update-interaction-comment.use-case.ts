@@ -30,9 +30,6 @@ export class UpdateInteractionCommentUseCase
       { new: true },
     );
 
-    console.log(commentDocument);
-    console.log('updated');
-
     await this.commentsRepository.save(commentDocument);
 
     if (!commentDocument) {

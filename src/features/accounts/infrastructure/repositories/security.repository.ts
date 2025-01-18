@@ -39,7 +39,8 @@ export class SecurityRepository {
   }
 
   async createSession(session: SessionDto) {
-    return this.SessionModel.createInstance(session);
+    const sessionDocument = this.SessionModel.createInstance(session);
+    await sessionDocument.save();
   }
 
   async save(session: SessionDocument) {

@@ -47,7 +47,7 @@ export class RefreshTokenUseCase
     });
 
     const userDocument: UserDocument = await this.usersRepository.findById(
-      decodedToken.userId,
+      decodedToken.id,
     );
 
     const accessToken: string = this.accessTokenContext.sign({
@@ -57,7 +57,7 @@ export class RefreshTokenUseCase
 
     const createdRefreshToken: string = this.refreshTokenContext.sign({
       id: userDocument._id,
-      deviceId: crypto.randomUUID(),
+      deviceId: decodedToken.deviceId,
       ip: decodedToken.ip,
       title: decodedToken.title,
     });
