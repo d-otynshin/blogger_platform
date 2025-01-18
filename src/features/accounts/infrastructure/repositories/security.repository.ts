@@ -12,8 +12,8 @@ export class SecurityRepository {
     @InjectModel(Session.name) private SessionModel: SessionModelType,
   ) {}
 
-  async getSessions(userId: Types.ObjectId) {
-    return this.SessionModel.find({ userId });
+  async getSessions(userId: string) {
+    return this.SessionModel.find({ userId: new Types.ObjectId(userId) });
   }
 
   async getSession(deviceId: string) {

@@ -15,7 +15,7 @@ export class CommentsQueryRepository {
 
   async getCommentById(
     commentId: Types.ObjectId,
-    userId?: Types.ObjectId,
+    userId?: string,
   ): Promise<CommentOutputDto> {
     const commentDocument = await this.CommentModel.findById(commentId);
 
@@ -29,7 +29,7 @@ export class CommentsQueryRepository {
   async getCommentsByPostId(
     postId: Types.ObjectId,
     query: GetPostsQueryParams,
-    userId?: Types.ObjectId,
+    userId?: string,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
     const postDocument = await this.PostModel.findById(postId);
     if (!postDocument) {

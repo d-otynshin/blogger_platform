@@ -16,6 +16,6 @@ export class UpdatePostDto {
 export class PostInteractionDto {
   login: string;
   postId: Types.ObjectId;
-  userId: Types.ObjectId;
+  userId: string;
   action: LikeStatus;
 }

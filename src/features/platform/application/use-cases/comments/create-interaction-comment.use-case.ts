@@ -4,6 +4,7 @@ import { Comment, CommentModelType } from '../../../domain/comment.entity';
 import { CommentInteractionDto } from '../../../dto/comment-dto';
 import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
 import { TInteraction } from '../../../dto/interaction-dto';
+import { Types } from 'mongoose';
 
 export class CreateInteractionCommentCommand {
   constructor(public dto: CommentInteractionDto) {}
@@ -19,7 +20,7 @@ export class CreateInteractionCommentUseCase
 
   async execute({ dto }: CreateInteractionCommentCommand) {
     const createdInteraction: TInteraction = {
-      userId: dto.userId,
+      userId: new Types.ObjectId(dto.userId),
       login: dto.login,
       action: dto.action,
       addedAt: new Date(),

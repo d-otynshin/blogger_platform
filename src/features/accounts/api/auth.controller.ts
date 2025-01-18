@@ -135,6 +135,8 @@ export class AuthController {
       secure: true,
     };
 
+    console.log('refreshToken', refreshToken);
+
     res.cookie('refreshToken', updatedRefreshToken, cookieConfig);
     res.status(200).json({ accessToken });
 

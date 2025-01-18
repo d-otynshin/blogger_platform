@@ -1,8 +1,7 @@
-import { Types } from 'mongoose';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export class UserContextDto {
-  id: Types.ObjectId;
+  id: string;
   login: string;
 }
 

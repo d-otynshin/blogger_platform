@@ -19,12 +19,12 @@ export class PostOutputDto {
     newestLikes: TInteractionView[];
   };
 
-  static mapToView(post: PostDocument, userId?: Types.ObjectId): PostOutputDto {
+  static mapToView(post: PostDocument, userId?: string): PostOutputDto {
     let myStatus = LikeStatus.None;
 
     if (userId) {
       const myInteraction = post.interactions.find(
-        (interaction) => interaction.userId === userId,
+        (interaction) => interaction.userId === new Types.ObjectId(userId),
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;

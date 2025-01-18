@@ -12,7 +12,7 @@ export class UpdateCommentCommand {
   constructor(
     public id: Types.ObjectId,
     public dto: CommentsInputDto,
-    public userId: Types.ObjectId,
+    public userId: string,
   ) {}
 }
 
@@ -31,7 +31,7 @@ export class UpdateCommentUseCase
       throw NotFoundDomainException.create('Invalid comment', 'content');
     }
 
-    if (commentDocument.commentatorInfo.userId !== userId) {
+    if (commentDocument.commentatorInfo.userId !== new Types.ObjectId(userId)) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

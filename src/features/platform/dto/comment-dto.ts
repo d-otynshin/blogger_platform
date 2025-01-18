@@ -21,6 +21,6 @@ export class UpdateCommentDto {
 export class CommentInteractionDto {
   login: string;
   commentId: Types.ObjectId;
-  userId: Types.ObjectId;
+  userId: string;
   action: LikeStatus;
 }

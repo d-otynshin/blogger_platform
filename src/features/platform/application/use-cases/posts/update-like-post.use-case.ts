@@ -14,7 +14,7 @@ import { CreateInteractionPostCommand } from './create-interaction-post.use-case
 export class UpdateLikePostCommand {
   constructor(
     public postId: Types.ObjectId,
-    public userId: Types.ObjectId,
+    public userId: string,
     public login: string,
     public dto: PostInteractionInputDto,
   ) {}
@@ -39,7 +39,7 @@ export class UpdateLikePostUseCase
     }
 
     const interaction = postDocument.interactions.find(
-      (interaction) => interaction.userId === userId,
+      (interaction) => interaction.userId === new Types.ObjectId(userId),
     );
 
     if (!interaction) {
@@ -56,7 +56,7 @@ export class UpdateLikePostUseCase
     }
 
     // Verify that the user is authorized to update the comment
-    if (interaction.userId !== userId) {
+    if (interaction.userId !== new Types.ObjectId(userId)) {
       throw ForbiddenDomainException.create('Forbidden', 'userId');
     }
 

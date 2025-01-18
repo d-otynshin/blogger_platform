@@ -59,7 +59,7 @@ export class BlogsQueryRepository {
   async getAllPosts(
     id: Types.ObjectId,
     query: GetPostsQueryParams,
-    userId?: Types.ObjectId,
+    userId?: string,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
     const blog = await this.BlogModel.findOne({ _id: id });
 

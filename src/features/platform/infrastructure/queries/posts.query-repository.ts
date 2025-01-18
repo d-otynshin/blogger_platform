@@ -16,7 +16,7 @@ export class PostsQueryRepository {
 
   async getById(
     postId: Types.ObjectId,
-    userId?: Types.ObjectId,
+    userId?: string,
   ): Promise<PostOutputDto> {
     const postDocument = await this.PostModel.findById(postId);
 
@@ -29,7 +29,7 @@ export class PostsQueryRepository {
 
   async getAllPosts(
     query: GetPostsQueryParams,
-    userId?: Types.ObjectId,
+    userId?: string,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
     const posts = await this.PostModel.find({})
       .sort({ [query.sortBy]: query.sortDirection })
@@ -51,7 +51,7 @@ export class PostsQueryRepository {
   async getPostsByBlogId(
     blogId: Types.ObjectId,
     query: GetPostsQueryParams,
-    userId?: Types.ObjectId,
+    userId?: string,
   ): Promise<PaginatedViewDto<PostOutputDto[]>> {
     const posts = await this.PostModel.find({ blogId })
       .sort({ [query.sortBy]: query.sortDirection })

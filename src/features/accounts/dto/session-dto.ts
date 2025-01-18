@@ -10,7 +10,7 @@ export class SessionDto {
 }
 
 export class RefreshTokenDto {
-  id: Types.ObjectId;
+  id: string;
   deviceId: string;
   iat: string;
 }

@@ -23,7 +23,6 @@ import {
   ExtractUserIfExistsFromRequest,
   UserContextDto,
 } from '../../../core/decorators/extract-user-from-request';
-import { BadRequestDomainException } from '../../../core/exceptions/domain-exceptions';
 import {
   JwtAuthGuard,
   JwtOptionalAuthGuard,

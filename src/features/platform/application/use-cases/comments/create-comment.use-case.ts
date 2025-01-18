@@ -36,7 +36,7 @@ export class CreateCommentUseCase
     const commentDocument = this.CommentModel.createInstance({
       content: dto.content,
       commentatorInfo: {
-        userId: user.id,
+        userId: new Types.ObjectId(user.id),
         userLogin: user.login,
       },
       postId,

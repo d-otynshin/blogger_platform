@@ -10,7 +10,7 @@ import {
 export class DeleteCommentCommand {
   constructor(
     public id: string,
-    public userId: Types.ObjectId,
+    public userId: string,
   ) {}
 }
 
@@ -33,7 +33,7 @@ export class DeleteCommentUseCase
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }
 
-    if (commentDocument.commentatorInfo.userId !== userId) {
+    if (commentDocument.commentatorInfo.userId !== new Types.ObjectId(userId)) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

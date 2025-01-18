@@ -8,7 +8,7 @@ import { NotFoundDomainException } from '../../../core/exceptions/domain-excepti
 export class AuthQueryRepository {
   constructor(private usersRepository: UsersRepository) {}
 
-  async me(id: Types.ObjectId): Promise<MeViewDto> {
+  async me(id: string): Promise<MeViewDto> {
     const userDocument = await this.usersRepository.findById(
       new Types.ObjectId(id),
     );

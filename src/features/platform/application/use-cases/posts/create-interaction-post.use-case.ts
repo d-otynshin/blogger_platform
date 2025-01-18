@@ -4,6 +4,7 @@ import { TInteraction } from '../../../dto/interaction-dto';
 import { Post, PostModelType } from '../../../domain/post.entity';
 import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
 import { PostInteractionDto } from '../../../dto/post-dto';
+import { Types } from 'mongoose';
 
 export class CreateInteractionPostCommand {
   constructor(public dto: PostInteractionDto) {}
@@ -17,7 +18,7 @@ export class CreateInteractionPostUseCase
 
   async execute({ dto }: CreateInteractionPostCommand) {
     const createdInteraction: TInteraction = {
-      userId: dto.userId,
+      userId: new Types.ObjectId(dto.userId),
       login: dto.login,
       action: dto.action,
       addedAt: new Date(),

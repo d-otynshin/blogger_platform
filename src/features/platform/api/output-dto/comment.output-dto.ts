@@ -16,13 +16,13 @@ export class CommentOutputDto {
 
   static mapToView(
     comment: CommentDocument,
-    userId?: Types.ObjectId,
+    userId?: string,
   ): CommentOutputDto {
     let myStatus = LikeStatus.None;
 
     if (userId) {
       const myInteraction = comment.interactions.find(
-        (interaction) => interaction.userId === userId,
+        (interaction) => interaction.userId === new Types.ObjectId(userId),
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;

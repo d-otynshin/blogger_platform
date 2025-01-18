@@ -1,6 +1,5 @@
 import process from 'node:process';
 
-import { Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -49,7 +48,7 @@ export class AuthService {
 
     return isPasswordValid
       ? {
-          id: userDocument._id.toString() as unknown as Types.ObjectId,
+          id: userDocument._id.toString(),
           login: userDocument.login,
         }
       : null;
