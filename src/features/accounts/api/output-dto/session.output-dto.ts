@@ -7,7 +7,7 @@ export class SessionOutputDto {
   deviceId: string;
 
   static mapToView(session: SessionDocument): SessionOutputDto {
-    const dto = new this();
+    const dto = new SessionOutputDto();
 
     dto.ip = session.ip;
     dto.title = session.title;
