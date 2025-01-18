@@ -12,7 +12,7 @@ export class UsersRepository {
 
   async findById(id: Types.ObjectId): Promise<UserDocument | null> {
     return this.UserModel.findOne({
-      id,
+      _id: id,
       deletionStatus: { $ne: DeletionStatus.PermanentDeleted },
     });
   }

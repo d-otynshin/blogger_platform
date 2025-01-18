@@ -30,6 +30,7 @@ import { SecurityRepository } from './infrastructure/repositories/security.repos
 import { Session, SessionSchema } from './domain/session.entity';
 import { JwtRefreshStrategy } from './guards/bearer/jwt-refresh.strategy';
 import { SecurityQueryRepository } from './infrastructure/queries/security.query-repository';
+import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
 
 const services = [CryptoService, UsersService, AuthService, EmailService];
 
@@ -79,7 +80,7 @@ const guards = [
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.REFRESH_TOKEN_SECRET, //TODO: move to env. will be in the following lessons
-          signOptions: { expiresIn: '10s' },
+          signOptions: { expiresIn: '1000s' },
         });
       },
       inject: [
@@ -88,6 +89,7 @@ const guards = [
     },
     ValidateUserUseCase,
     LoginUserUseCase,
+    RefreshTokenUseCase,
   ],
   exports: [MongooseModule],
 })

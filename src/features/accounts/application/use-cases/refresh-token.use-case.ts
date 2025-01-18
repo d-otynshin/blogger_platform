@@ -48,6 +48,7 @@ export class RefreshTokenUseCase
     } = await this.jwtService.verifyAsync(refreshToken, {
       secret: process.env.REFRESH_TOKEN_SECRET,
     });
+
     const userDocument = await this.usersRepository.findById(userId);
 
     const accessToken = this.accessTokenContext.sign({
