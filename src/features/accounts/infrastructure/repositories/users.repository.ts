@@ -4,7 +4,7 @@ import {
   User,
   UserDocument,
   UserModelType,
-} from '../domain/user.entity';
+} from '../../domain/user.entity';
 import { Types } from 'mongoose';
 
 export class UsersRepository {

@@ -1,5 +1,4 @@
-import * as process from 'node:process';
-
+import process from 'node:process';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -11,7 +10,7 @@ import { AuthService } from './application/auth.service';
 import { UsersController } from './api/users.controller';
 import { AuthController } from './api/auth.controller';
 import { UsersQueryRepository } from './infrastructure/users.query-repository';
-import { UsersRepository } from './infrastructure/users.repository';
+import { UsersRepository } from './infrastructure/repositories/users.repository';
 import { AuthQueryRepository } from './infrastructure/auth.query-repository';
 import { User, UserSchema } from './domain/user.entity';
 import { JwtStrategy } from './guards/bearer/jwt.strategy';
@@ -24,7 +23,11 @@ import {
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from './constants/auth-token.inject-constants';
 import { LoginUserUseCase } from './application/use-cases/login-user.use-case';
-import { ValidateUserCommand, ValidateUserUseCase } from './application/use-cases/validate-user.use-case';
+import { ValidateUserUseCase } from './application/use-cases/validate-user.use-case';
+import { SecurityController } from './api/security.controller';
+import { ThrottlerBehindProxyGuard } from './guards/limiter/throttler-behind-proxy.guard';
+import { SecurityRepository } from './infrastructure/repositories/security.repository';
+import { Session, SessionSchema } from './domain/session.entity';
 
 const services = [CryptoService, UsersService, AuthService, EmailService];
 
@@ -32,21 +35,25 @@ const repositories = [
   UsersRepository,
   UsersQueryRepository,
   AuthQueryRepository,
+  SecurityRepository,
 ];
 
-const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
+const guards = [
+  LocalStrategy,
+  BasicAuthGuard,
+  JwtStrategy,
+  ThrottlerBehindProxyGuard,
+];
 
 @Module({
   imports: [
     CqrsModule,
-    JwtModule.register({
-      secret: process.env.ACCESS_TOKEN_SECRET,
-      signOptions: { expiresIn: '10m' },
-    }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    JwtModule,
     NotificationsModule,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Session.name, schema: SessionSchema }]),
   ],
-  controllers: [UsersController, AuthController],
+  controllers: [UsersController, AuthController, SecurityController],
   providers: [
     ...services,
     ...repositories,
@@ -56,7 +63,7 @@ const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.ACCESS_TOKEN_SECRET,
-          signOptions: { expiresIn: '5m' },
+          signOptions: { expiresIn: '5s' },
         });
       },
       inject: [
@@ -68,7 +75,7 @@ const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.REFRESH_TOKEN_SECRET, //TODO: move to env. will be in the following lessons
-          signOptions: { expiresIn: '10m' },
+          signOptions: { expiresIn: '10s' },
         });
       },
       inject: [
@@ -78,6 +85,6 @@ const guards = [LocalStrategy, BasicAuthGuard, JwtStrategy];
     ValidateUserUseCase,
     LoginUserUseCase,
   ],
-  exports: [MongooseModule, BasicAuthGuard],
+  exports: [MongooseModule],
 })
 export class AccountsModule {}

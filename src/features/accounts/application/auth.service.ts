@@ -1,12 +1,12 @@
 import process from 'node:process';
-import { Types } from 'mongoose';
 
+import { Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { CryptoService } from './crypto.service';
 import { UsersService } from './users.service';
-import { UsersRepository } from '../infrastructure/users.repository';
+import { UsersRepository } from '../infrastructure/repositories/users.repository';
 import { UserContextDto } from '../dto/auth.dto';
 import { emailTemplates } from '../../notifications/utils/templates';
 import { EmailService } from '../../notifications/application/email.service';
@@ -53,12 +53,6 @@ export class AuthService {
           login: userDocument.login,
         }
       : null;
-  }
-
-  async login(id: string) {
-    const accessToken = this.jwtService.sign({ id });
-
-    return { accessToken };
   }
 
   async register(createUserInputDto: CreateUserInputDto) {

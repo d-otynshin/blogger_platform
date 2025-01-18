@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import {
   Get,
   Post,
@@ -8,6 +8,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { AuthService } from '../application/auth.service';
@@ -15,7 +16,7 @@ import { LocalAuthGuard } from '../guards/local/local-auth.guard';
 import { UserContextDto } from '../dto/auth.dto';
 import { MeViewDto } from './output-dto/user.view-dto';
 import { AuthQueryRepository } from '../infrastructure/auth.query-repository';
-import { JwtAuthGuard } from '../guards/bearer/jwt-auth.guard';
+import { JwtAuthGuard, JwtRefreshGuard } from '../guards/bearer/jwt-auth.guard';
 import {
   ConfirmEmailInputDto,
   CreateUserInputDto,
@@ -26,23 +27,33 @@ import {
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
 import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { LoginInputDto } from './input-dto/login.input-dto';
+import { RefreshTokenCommand } from '../application/use-cases/refresh-token.use-case';
+import { RefreshTokenDto } from '../dto/session-dto';
+import { SecurityRepository } from '../infrastructure/repositories/security.repository';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly authQueryRepository: AuthQueryRepository,
+    private readonly securityRepository: SecurityRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
+    @Req() req: Request,
     @Res() res: Response,
     @Body() loginDto: LoginInputDto,
   ): Promise<{ accessToken: string }> {
     const { accessToken, refreshToken } = await this.commandBus.execute(
-      new LoginUserCommand(loginDto.loginOrEmail, loginDto.password),
+      new LoginUserCommand(
+        loginDto.loginOrEmail,
+        loginDto.password,
+        req.ip,
+        req.headers['user-agent'],
+      ),
     );
 
     const EXPIRATION_TIME = {
@@ -104,5 +115,47 @@ export class AuthController {
     @Body() updatePasswordDto: UpdatePasswordInputDto,
   ): Promise<void> {
     return this.authService.newPassword(updatePasswordDto);
+  }
+
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtRefreshGuard)
+  async refreshToken(@Req() req: Request, @Res() res: Response): Promise<void> {
+    const refreshToken = req.cookies['refreshToken'];
+
+    const refreshTokenResponse = await this.commandBus.execute(
+      new RefreshTokenCommand(refreshToken),
+    );
+
+    const { accessToken, refreshToken: updatedRefreshToken } =
+      refreshTokenResponse;
+
+    const cookieConfig = {
+      httpOnly: true,
+      secure: true,
+      maxAge: 20000,
+    };
+
+    res.cookie('refreshToken', updatedRefreshToken, cookieConfig);
+    res.status(200).json({ accessToken });
+
+    return;
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtRefreshGuard)
+  async logout(
+    @ExtractUserFromRequest() decodedToken: RefreshTokenDto,
+    @Res() res: Response,
+  ) {
+    const { deviceId } = decodedToken;
+
+    const isTerminated =
+      await this.securityRepository.terminateBySessionId(deviceId);
+
+    return isTerminated
+      ? res.status(204).send()
+      : res.status(401).send({ error: 'Could not terminate session' });
   }
 }
