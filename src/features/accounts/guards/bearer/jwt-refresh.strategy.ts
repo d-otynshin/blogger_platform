@@ -5,13 +5,14 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 
 import { RefreshTokenDto } from '../../dto/session-dto';
+import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
-  constructor() {
+  constructor(private readonly securityRepository: SecurityRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request): string => req.cookies.refreshToken,
@@ -21,7 +22,16 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: RefreshTokenDto): Promise<RefreshTokenDto> {
+  async validate(payload: RefreshTokenDto): Promise<RefreshTokenDto | false> {
+    const session = await this.securityRepository.getSession(payload.deviceId);
+    if (!session) return false;
+
+    const { deviceId: sessionDeviceId, iat: sessionIat } = session;
+
+    if (payload.deviceId !== sessionDeviceId || payload.iat !== sessionIat) {
+      return false;
+    }
+
     return { id: payload.id, deviceId: payload.deviceId, iat: payload.iat };
   }
 }
