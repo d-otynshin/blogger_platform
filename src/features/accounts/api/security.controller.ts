@@ -46,13 +46,13 @@ export class SecurityController {
     @Param('id') deviceId: string,
   ) {
     const session = await this.securityRepository.getSession(deviceId);
-    console.log('delete: session', session);
 
     if (!session) {
       throw NotFoundDomainException.create('Session not found', 'deviceId');
     }
 
     if (session.userId !== new Types.ObjectId(user.id)) {
+      console.error(session.userId, new Types.ObjectId(user.id));
       throw ForbiddenDomainException.create('Session not found', 'deviceId');
     }
 
