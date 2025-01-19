@@ -4,7 +4,12 @@ import { RefreshTokenDto } from '../dto/session-dto';
 import { SecurityRepository } from '../infrastructure/repositories/security.repository';
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
 import { SecurityQueryRepository } from '../infrastructure/queries/security.query-repository';
-import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
+import {
+  BadRequestDomainException,
+  ForbiddenDomainException,
+  NotFoundDomainException,
+} from '../../../core/exceptions/domain-exceptions';
+import { Types } from 'mongoose';
 
 @Controller('security')
 export class SecurityController {
@@ -35,12 +40,25 @@ export class SecurityController {
 
   @Delete('devices/:id')
   @UseGuards(JwtRefreshGuard)
-  async terminateSessionById(@Param('id') deviceId: string) {
+  async terminateSessionById(
+    @ExtractUserFromRequest() user: RefreshTokenDto,
+    @Param('id') deviceId: string,
+  ) {
+    const session = await this.securityRepository.getSession(user.id);
+
+    if (!session) {
+      throw NotFoundDomainException.create('Session not found', 'deviceId');
+    }
+
+    if (session.userId !== new Types.ObjectId(user.id)) {
+      throw ForbiddenDomainException.create('Session not found', 'deviceId');
+    }
+
     const isTerminated =
       await this.securityRepository.terminateBySessionId(deviceId);
 
     if (!isTerminated) {
-      throw NotFoundDomainException.create('Session not found', 'deviceId');
+      throw BadRequestDomainException.create('Session not found', 'deviceId');
     }
 
     return;
