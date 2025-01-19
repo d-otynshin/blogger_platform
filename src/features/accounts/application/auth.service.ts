@@ -79,12 +79,14 @@ export class AuthService {
 
     const userDocument = await this.usersService.createUser(createUserInputDto);
 
-    await this.emailService.sendConfirmationEmail(
-      createUserInputDto.email,
-      userDocument.confirmationCode,
-      'registration',
-      emailTemplates.registrationEmail,
-    );
+    this.emailService
+      .sendConfirmationEmail(
+        createUserInputDto.email,
+        userDocument.confirmationCode,
+        'registration',
+        emailTemplates.registrationEmail,
+      )
+      .then(() => console.log('email sent'));
   }
 
   async resendEmail(resendEmailDto: EmailInputDto): Promise<void> {
