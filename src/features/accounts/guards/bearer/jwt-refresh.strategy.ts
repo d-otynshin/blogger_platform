@@ -6,6 +6,7 @@ import { PassportStrategy } from '@nestjs/passport';
 
 import { RefreshTokenDto } from '../../dto/session-dto';
 import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
+import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -27,9 +28,11 @@ export class JwtRefreshStrategy extends PassportStrategy(
   async validate(payload: RefreshTokenDto): Promise<RefreshTokenDto | false> {
     console.log('payload', payload);
     const session = await this.securityRepository.getSession(payload.deviceId);
-    console.log('session', session);
 
-    if (!session) return false;
+    if (!session) {
+      console.log('session', session);
+      throw NotFoundDomainException.create('Not Found');
+    }
 
     const { deviceId: sessionDeviceId, iat: sessionIat } = session;
 

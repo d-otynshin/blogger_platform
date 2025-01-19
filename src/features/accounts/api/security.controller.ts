@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
 import { JwtRefreshGuard } from '../guards/bearer/jwt-auth.guard';
 import { RefreshTokenDto } from '../dto/session-dto';
 import { SecurityRepository } from '../infrastructure/repositories/security.repository';
@@ -35,10 +35,9 @@ export class SecurityController {
 
   @Delete('devices/:id')
   @UseGuards(JwtRefreshGuard)
-  async terminateSessionById(@ExtractUserFromRequest() user: RefreshTokenDto) {
-    const isTerminated = await this.securityRepository.terminateBySessionId(
-      user.deviceId,
-    );
+  async terminateSessionById(@Param('id') deviceId: string) {
+    const isTerminated =
+      await this.securityRepository.terminateBySessionId(deviceId);
 
     if (!isTerminated) {
       throw NotFoundDomainException.create('Session not found', 'deviceId');
