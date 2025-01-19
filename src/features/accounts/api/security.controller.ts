@@ -51,7 +51,7 @@ export class SecurityController {
       throw NotFoundDomainException.create('Session not found', 'deviceId');
     }
 
-    if (session.userId !== new Types.ObjectId(user.id)) {
+    if (!new Types.ObjectId(user.id).equals(session.userId)) {
       console.error(session.userId, new Types.ObjectId(user.id));
       throw ForbiddenDomainException.create('Session not found', 'deviceId');
     }
