@@ -45,7 +45,7 @@ export class SecurityController {
     @ExtractUserFromRequest() user: RefreshTokenDto,
     @Param('id') deviceId: string,
   ) {
-    const session = await this.securityRepository.getSession(user.id);
+    const session = await this.securityRepository.getSession(deviceId);
     console.log('delete: session', session);
 
     if (!session) {
