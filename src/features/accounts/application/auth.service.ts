@@ -114,12 +114,14 @@ export class AuthService {
 
     await this.usersRepository.save(userDocument);
 
-    await this.emailService.sendConfirmationEmail(
-      resendEmailDto.email,
-      updatedConfirmationCode,
-      'resend',
-      emailTemplates.registrationEmail,
-    );
+    this.emailService
+      .sendConfirmationEmail(
+        resendEmailDto.email,
+        updatedConfirmationCode,
+        'resend',
+        emailTemplates.registrationEmail,
+      )
+      .then(() => console.log('email resent'));
 
     return;
   }
@@ -173,12 +175,14 @@ export class AuthService {
       login: userDocument.login,
     });
 
-    await this.emailService.sendConfirmationEmail(
-      passwordRecoveryDto.email,
-      updatedConfirmationCode,
-      'recover',
-      emailTemplates.passwordRecoveryEmail,
-    );
+    this.emailService
+      .sendConfirmationEmail(
+        passwordRecoveryDto.email,
+        updatedConfirmationCode,
+        'recover',
+        emailTemplates.passwordRecoveryEmail,
+      )
+      .then(() => console.log('recover email sent'));
 
     return;
   }
