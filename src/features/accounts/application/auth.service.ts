@@ -114,6 +114,8 @@ export class AuthService {
 
     await this.usersRepository.save(userDocument);
 
+    console.log('somehow');
+
     this.emailService
       .sendConfirmationEmail(
         resendEmailDto.email,

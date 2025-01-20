@@ -103,7 +103,6 @@ export class AuthController {
   async confirmEmail(
     @Body() confirmEmailDto: ConfirmEmailInputDto,
   ): Promise<void> {
-    console.log('somehow');
     return this.authService.confirmEmail(confirmEmailDto);
   }
 
