@@ -41,8 +41,8 @@ export class AuthController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @UseGuards(ThrottlerBehindProxyGuard)
   @UseGuards(LocalAuthGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @Post('login')
   async login(
     @Req() req: Request,
@@ -130,8 +130,6 @@ export class AuthController {
 
     const { accessToken, refreshToken: updatedRefreshToken } =
       await this.commandBus.execute(new RefreshTokenCommand(refreshToken));
-
-    console.log('refreshToken', refreshToken);
 
     res.cookie('refreshToken', updatedRefreshToken, {
       httpOnly: true,
