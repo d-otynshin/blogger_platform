@@ -79,14 +79,12 @@ export class AuthService {
 
     const userDocument = await this.usersService.createUser(createUserInputDto);
 
-    this.emailService
-      .sendConfirmationEmail(
-        createUserInputDto.email,
-        userDocument.confirmationCode,
-        'registration',
-        emailTemplates.registrationEmail,
-      )
-      .then(() => console.log('email sent'));
+    await this.emailService.sendConfirmationEmail(
+      createUserInputDto.email,
+      userDocument.confirmationCode,
+      'registration',
+      emailTemplates.registrationEmail,
+    );
   }
 
   async resendEmail(resendEmailDto: EmailInputDto): Promise<void> {
@@ -118,14 +116,12 @@ export class AuthService {
 
     await this.usersRepository.save(userDocument);
 
-    this.emailService
-      .sendConfirmationEmail(
-        resendEmailDto.email,
-        updatedConfirmationCode,
-        'resend',
-        emailTemplates.registrationEmail,
-      )
-      .then(() => console.log('email resent'));
+    await this.emailService.sendConfirmationEmail(
+      resendEmailDto.email,
+      updatedConfirmationCode,
+      'resend',
+      emailTemplates.registrationEmail,
+    );
 
     return;
   }
@@ -179,14 +175,12 @@ export class AuthService {
       login: userDocument.login,
     });
 
-    this.emailService
-      .sendConfirmationEmail(
-        passwordRecoveryDto.email,
-        updatedConfirmationCode,
-        'recover',
-        emailTemplates.passwordRecoveryEmail,
-      )
-      .then(() => console.log('recover email sent'));
+    await this.emailService.sendConfirmationEmail(
+      passwordRecoveryDto.email,
+      updatedConfirmationCode,
+      'recover',
+      emailTemplates.passwordRecoveryEmail,
+    );
 
     return;
   }
