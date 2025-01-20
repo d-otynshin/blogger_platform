@@ -125,21 +125,16 @@ export class AuthController {
   async refreshToken(@Req() req: Request, @Res() res: Response): Promise<void> {
     const refreshToken = req.cookies['refreshToken'];
 
-    const refreshTokenResponse = await this.commandBus.execute(
-      new RefreshTokenCommand(refreshToken),
-    );
-
     const { accessToken, refreshToken: updatedRefreshToken } =
-      refreshTokenResponse;
-
-    const cookieConfig = {
-      httpOnly: true,
-      secure: true,
-    };
+      await this.commandBus.execute(new RefreshTokenCommand(refreshToken));
 
     console.log('refreshToken', refreshToken);
 
-    res.cookie('refreshToken', updatedRefreshToken, cookieConfig);
+    res.cookie('refreshToken', updatedRefreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+
     res.status(200).json({ accessToken });
 
     return;
