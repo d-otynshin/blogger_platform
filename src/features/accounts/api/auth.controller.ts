@@ -49,6 +49,7 @@ export class AuthController {
     @Res() res: Response,
     @Body() loginDto: LoginInputDto,
   ): Promise<{ accessToken: string }> {
+    console.log('login start');
     const { accessToken, refreshToken } = await this.commandBus.execute(
       new LoginUserCommand(
         loginDto.loginOrEmail,
@@ -57,6 +58,8 @@ export class AuthController {
         req.headers['user-agent'],
       ),
     );
+
+    console.log('tokens', accessToken, refreshToken);
 
     const EXPIRATION_TIME = {
       ACCESS: 10 * 1000,
@@ -96,7 +99,7 @@ export class AuthController {
   async resendEmail(@Body() resendEmailDto: EmailInputDto): Promise<void> {
     return this.authService.resendEmail(resendEmailDto);
   }
-ч
+
   @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
