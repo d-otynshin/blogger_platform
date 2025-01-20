@@ -41,6 +41,7 @@ export class SecurityController {
 
   @Delete('devices/:id')
   @UseGuards(JwtRefreshGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async terminateSessionById(
     @ExtractUserFromRequest() user: RefreshTokenDto,
     @Param('id') deviceId: string,
