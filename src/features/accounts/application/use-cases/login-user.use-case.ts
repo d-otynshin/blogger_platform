@@ -52,6 +52,8 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
       new ValidateUserCommand(loginOrEmail, password),
     );
 
+    console.log('login', userDocument);
+
     if (!userDocument) {
       throw NotFoundDomainException.create('User does not exist');
     }
@@ -70,6 +72,8 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
       deviceId,
     });
 
+    console.log('created tokens');
+
     const decodedToken = this.refreshTokenContext.verify(refreshToken, {
       secret: process.env.REFRESH_TOKEN_SECRET,
     });
@@ -82,6 +86,8 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
       ip: userIp,
       deviceId,
     });
+
+    console.log('created session');
 
     await this.securityRepository.save(sessionDocument);
 

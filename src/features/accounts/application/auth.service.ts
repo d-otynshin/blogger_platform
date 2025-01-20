@@ -94,11 +94,15 @@ export class AuthService {
       resendEmailDto.email,
     );
 
+    console.log('userDocument', userDocument);
+
     if (!userDocument) {
+      console.log('not found userDocument');
       throw BadRequestDomainException.create('User not found', 'email');
     }
 
     if (userDocument.isConfirmed) {
+      console.log('isConfirmed');
       throw BadRequestDomainException.create(
         'Email is already confirmed',
         'email',
@@ -114,7 +118,7 @@ export class AuthService {
 
     await this.usersRepository.save(userDocument);
 
-    console.log('somehow');
+    console.log('resending email');
 
     this.emailService
       .sendConfirmationEmail(
