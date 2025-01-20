@@ -18,10 +18,12 @@ export class CreateUserInputDto {
 }
 
 export class EmailInputDto {
+  @IsEmail()
   email: string;
 }
 
 export class ConfirmEmailInputDto {
+  @IsString()
   code: string;
 }
 
