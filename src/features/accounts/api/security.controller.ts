@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtRefreshGuard } from '../guards/bearer/jwt-auth.guard';
 import { RefreshTokenDto } from '../dto/session-dto';
 import { SecurityRepository } from '../infrastructure/repositories/security.repository';

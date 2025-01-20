@@ -96,7 +96,7 @@ export class AuthController {
   async resendEmail(@Body() resendEmailDto: EmailInputDto): Promise<void> {
     return this.authService.resendEmail(resendEmailDto);
   }
-
+ч
   @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')

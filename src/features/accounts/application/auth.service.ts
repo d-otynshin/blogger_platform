@@ -118,8 +118,6 @@ export class AuthService {
 
     await this.usersRepository.save(userDocument);
 
-    console.log('resending email');
-
     this.emailService
       .sendConfirmationEmail(
         resendEmailDto.email,
