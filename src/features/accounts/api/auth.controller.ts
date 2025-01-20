@@ -41,6 +41,7 @@ export class AuthController {
     private readonly commandBus: CommandBus,
   ) {}
 
+  @UseGuards(ThrottlerBehindProxyGuard)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
@@ -89,12 +90,14 @@ export class AuthController {
     return this.authService.register(createUserInputDto);
   }
 
+  @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   async resendEmail(@Body() resendEmailDto: EmailInputDto): Promise<void> {
     return this.authService.resendEmail(resendEmailDto);
   }
 
+  @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
   async confirmEmail(

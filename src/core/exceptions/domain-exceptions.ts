@@ -3,6 +3,7 @@ export enum DomainExceptionCode {
   BadRequest = 2,
   Forbidden = 3,
   Unauthorized = 4,
+  TooManyRequests = 5,
 }
 
 export class ErrorExtension {
@@ -55,4 +56,9 @@ export const ForbiddenDomainException = ConcreteDomainExceptionFactory(
 export const UnauthorizedDomainException = ConcreteDomainExceptionFactory(
   'Unauthorized',
   DomainExceptionCode.Unauthorized,
+);
+
+export const TooManyRequestsDomainException = ConcreteDomainExceptionFactory(
+  'Too Many Requests',
+  DomainExceptionCode.TooManyRequests,
 );
