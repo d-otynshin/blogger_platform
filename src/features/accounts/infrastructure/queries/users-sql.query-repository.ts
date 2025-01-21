@@ -10,14 +10,20 @@ export class UsersSQLQueryRepository {
   async getAll(
     query: GetUsersQueryParams,
   ): Promise<PaginatedViewDto<UserSQLViewDto[]>> {
-    let sqlQuery = `FROM users WHERE `;
-
-    const params = [];
-    const conditions = [];
+    let sqlQuery = `FROM users`;
 
     const sortByDict = {
       createdAt: 'created_at',
     };
+
+    // const staticParams = {
+    //   sortBy: sortByDict[query.sortBy] || query.sortBy || 'created_at',
+    //   pageNumber: query.pageNumber || 1,
+    //   pageSize: query.pageSize || 10,
+    // };
+
+    const params = [];
+    const conditions = [];
 
     if (query.searchLoginTerm) {
       conditions.push(`login ILIKE $${params.length + 1}`);
@@ -29,7 +35,12 @@ export class UsersSQLQueryRepository {
       params.push(`%${query.searchEmailTerm}%`);
     }
 
-    sqlQuery += conditions.length ? conditions.join(' OR ') : 'TRUE';
+    if (conditions.length > 0) {
+      sqlQuery = sqlQuery + ' WHERE ' + conditions.join(' OR ');
+    }
+
+    let sqlQueryCount = sqlQuery;
+    const countParams = params;
 
     // Add sorting and pagination
     sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
@@ -39,11 +50,12 @@ export class UsersSQLQueryRepository {
 
     // Fetch paginated users
     const users = await this.dataSource.query(`SELECT * ${sqlQuery}`, params);
+    sqlQueryCount += ` LIMIT $${countParams.length - 1} OFFSET $${countParams.length}`;
 
     // Count total number of users without limit/offset
-    const countQuery = `SELECT COUNT(*) AS totalCount ${sqlQuery}`;
+    const countQuery = `SELECT COUNT(*) AS totalCount ${sqlQueryCount}`;
 
-    const countResult = await this.dataSource.query(countQuery);
+    const countResult = await this.dataSource.query(countQuery, countParams);
 
     const totalCount = parseInt(countResult[0].totalcount, 10);
 
