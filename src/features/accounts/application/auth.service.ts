@@ -140,6 +140,9 @@ export class AuthService {
     }
 
     if (confirmEmailDto.code !== userData.confirmationCode) {
+      console.log('confirmEmailDto.code', confirmEmailDto.code);
+      console.log('userData.confirmationCode', userData.confirmationCode);
+
       throw BadRequestDomainException.create(
         'Confirmation code is invalid',
         'code',

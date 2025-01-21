@@ -51,15 +51,11 @@ export class UsersPostgresqlRepository {
     return null;
   }
 
-  async deleteInstance(id: string) {
+  async deleteInstance(id: string): Promise<boolean> {
     const query = `DELETE FROM users WHERE id = $1 RETURNING *`;
     const result = await this.dataSource.query(query, [id]);
 
-    if (result.length > 0) {
-      return result[0];
-    }
-
-    return null;
+    return result[0].length > 0;
   }
 
   async updateConfirmationCode(
@@ -78,7 +74,7 @@ export class UsersPostgresqlRepository {
       userId,
     ]);
 
-    return result.length > 0;
+    return result[0].length > 0;
   }
 
   async updateConfirmationStatus(
