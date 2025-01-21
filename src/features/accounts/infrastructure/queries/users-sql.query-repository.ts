@@ -15,6 +15,10 @@ export class UsersSQLQueryRepository {
     const params = [];
     const conditions = [];
 
+    const sortByDict = {
+      createdAt: 'created_at',
+    };
+
     if (query.searchLoginTerm) {
       conditions.push(`login ILIKE $${params.length + 1}`);
       params.push(`%${query.searchLoginTerm}%`);
@@ -28,7 +32,7 @@ export class UsersSQLQueryRepository {
     sqlQuery += conditions.length ? conditions.join(' OR ') : 'TRUE';
 
     // Add sorting and pagination
-    sqlQuery += ` ORDER BY "${query.sortBy}" ${query.sortDirection}`;
+    sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
     sqlQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
 
     params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
