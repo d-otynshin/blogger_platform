@@ -15,7 +15,7 @@ import { AuthService } from '../application/auth.service';
 import { LocalAuthGuard } from '../guards/local/local-auth.guard';
 import { UserContextDto } from '../dto/auth.dto';
 import { MeViewDto } from './output-dto/user.view-dto';
-import { AuthQueryRepository } from '../infrastructure/auth.query-repository';
+import { AuthQueryRepository } from '../infrastructure/queries/auth.query-repository';
 import { JwtAuthGuard, JwtRefreshGuard } from '../guards/bearer/jwt-auth.guard';
 import {
   ConfirmEmailInputDto,
@@ -29,27 +29,26 @@ import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { LoginInputDto } from './input-dto/login.input-dto';
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.use-case';
 import { RefreshTokenDto } from '../dto/session-dto';
-import { SecurityRepository } from '../infrastructure/repositories/security.repository';
-import { ThrottlerBehindProxyGuard } from '../guards/limiter/throttler-behind-proxy.guard';
+// import { ThrottlerBehindProxyGuard } from '../guards/limiter/throttler-behind-proxy.guard';
+import { SecurityPostgresqlRepository } from '../infrastructure/repositories/security-postgresql.repository';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly authQueryRepository: AuthQueryRepository,
-    private readonly securityRepository: SecurityRepository,
+    private readonly securityRepository: SecurityPostgresqlRepository,
     private readonly commandBus: CommandBus,
   ) {}
 
   @UseGuards(LocalAuthGuard)
-  @UseGuards(ThrottlerBehindProxyGuard)
+  // @UseGuards(ThrottlerBehindProxyGuard)
   @Post('login')
   async login(
     @Req() req: Request,
     @Res() res: Response,
     @Body() loginDto: LoginInputDto,
   ): Promise<{ accessToken: string }> {
-    console.log('login start');
     const { accessToken, refreshToken } = await this.commandBus.execute(
       new LoginUserCommand(
         loginDto.loginOrEmail,
@@ -58,8 +57,6 @@ export class AuthController {
         req.headers['user-agent'],
       ),
     );
-
-    console.log('tokens', accessToken, refreshToken);
 
     const EXPIRATION_TIME = {
       ACCESS: 10 * 1000,
@@ -80,12 +77,12 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  me(@ExtractUserFromRequest() user: UserContextDto): Promise<MeViewDto> {
+  async me(@ExtractUserFromRequest() user: UserContextDto): Promise<MeViewDto> {
     return this.authQueryRepository.me(user.id);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(ThrottlerBehindProxyGuard)
+  // @UseGuards(ThrottlerBehindProxyGuard)
   @Post('registration')
   async register(
     @Body() createUserInputDto: CreateUserInputDto,
@@ -93,14 +90,14 @@ export class AuthController {
     return this.authService.register(createUserInputDto);
   }
 
-  @UseGuards(ThrottlerBehindProxyGuard)
+  // @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   async resendEmail(@Body() resendEmailDto: EmailInputDto): Promise<void> {
     return this.authService.resendEmail(resendEmailDto);
   }
 
-  @UseGuards(ThrottlerBehindProxyGuard)
+  // @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
   async confirmEmail(

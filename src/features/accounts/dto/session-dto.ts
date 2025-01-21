@@ -5,7 +5,6 @@ export class SessionDto {
   deviceId: string;
   ip: string;
   title: string;
-  exp: string;
   iat: string;
 }
 

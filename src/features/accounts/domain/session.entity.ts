@@ -17,9 +17,6 @@ export class Session {
   title: string;
 
   @Prop({ type: String, required: true })
-  exp: string;
-
-  @Prop({ type: String, required: true })
   iat: string;
 
   static createInstance(dto: SessionDto): SessionDocument {
@@ -30,7 +27,6 @@ export class Session {
     session.ip = dto.ip;
     session.iat = dto.iat;
     session.title = dto.title;
-    session.exp = dto.exp;
 
     return session as SessionDocument;
   }

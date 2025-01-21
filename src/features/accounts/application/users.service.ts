@@ -1,26 +1,22 @@
 import process from 'node:process';
-import { Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument, UserModelType } from '../domain/user.entity';
-import { UsersRepository } from '../infrastructure/repositories/users.repository';
 import { UpdateUserDto } from '../dto/create-user-dto';
 import { UserViewDto } from '../api/output-dto/user.view-dto';
 import { CryptoService } from './crypto.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserInputDto } from '../api/input-dto/users.input-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
+import { UsersPostgresqlRepository } from '../infrastructure/repositories/users-postgresql.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private UserModel: UserModelType,
-    private usersRepository: UsersRepository,
+    private usersRepository: UsersPostgresqlRepository,
     private cryptoService: CryptoService,
     private jwtService: JwtService,
   ) {}
 
-  async createUser(dto: CreateUserInputDto): Promise<UserDocument> {
+  async createUser(dto: CreateUserInputDto) {
     const passwordHash = await this.cryptoService.createPasswordHash(
       dto.password,
     );
@@ -30,31 +26,25 @@ export class UsersService {
       { secret: process.env.ACCESS_TOKEN_SECRET },
     );
 
-    const userDocument = this.UserModel.createInstance({
+    return this.usersRepository.createInstance({
       email: dto.email,
       login: dto.login,
-      password: passwordHash,
+      passwordHash,
       confirmationCode,
     });
-
-    await this.usersRepository.save(userDocument);
-
-    return userDocument;
   }
 
   async updateUser(id: string, dto: UpdateUserDto): Promise<UserViewDto> {
-    const user = await this.UserModel.findByIdAndUpdate(id, dto, { new: true });
+    const userData = await this.usersRepository.findById(id);
 
-    if (!user) {
+    if (!userData) {
       throw NotFoundDomainException.create('User not found');
     }
 
-    return UserViewDto.mapToView(user);
+    return this.usersRepository.updateUserEmail(id, dto.email);
   }
 
-  async deleteUser(id: Types.ObjectId): Promise<boolean> {
-    const deleteResult = await this.UserModel.deleteOne({ _id: id });
-
-    return deleteResult.deletedCount === 1;
+  async deleteUser(id: string): Promise<boolean> {
+    return this.usersRepository.deleteInstance(id);
   }
 }

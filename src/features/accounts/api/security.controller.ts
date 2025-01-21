@@ -1,35 +1,35 @@
 import {
-  Controller,
-  Delete,
   Get,
-  HttpCode,
-  HttpStatus,
+  Delete,
   Param,
   UseGuards,
+  Controller,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
+
 import { JwtRefreshGuard } from '../guards/bearer/jwt-auth.guard';
 import { RefreshTokenDto } from '../dto/session-dto';
-import { SecurityRepository } from '../infrastructure/repositories/security.repository';
+import { SessionSQLOutputDto } from './output-dto/session.output-dto';
+import { SecurityPostgresqlRepository } from '../infrastructure/repositories/security-postgresql.repository';
+
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
-import { SecurityQueryRepository } from '../infrastructure/queries/security.query-repository';
 import {
   BadRequestDomainException,
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
-import { Types } from 'mongoose';
 
 @Controller('security')
 export class SecurityController {
-  constructor(
-    private securityRepository: SecurityRepository,
-    protected securityQueryRepository: SecurityQueryRepository,
-  ) {}
+  constructor(private securityRepository: SecurityPostgresqlRepository) {}
 
   @Get('devices')
   @UseGuards(JwtRefreshGuard)
   async getSessions(@ExtractUserFromRequest() user: RefreshTokenDto) {
-    return this.securityQueryRepository.getSessions(user.id);
+    const sessionsData = await this.securityRepository.getSessions(user.id);
+
+    return sessionsData.map(SessionSQLOutputDto.mapToView);
   }
 
   @Delete('devices')
@@ -60,8 +60,7 @@ export class SecurityController {
       throw NotFoundDomainException.create('Session not found', 'deviceId');
     }
 
-    if (!new Types.ObjectId(user.id).equals(session.userId)) {
-      console.error(session.userId, new Types.ObjectId(user.id));
+    if (session.userId !== user.id) {
       throw ForbiddenDomainException.create('Session not found', 'deviceId');
     }
 

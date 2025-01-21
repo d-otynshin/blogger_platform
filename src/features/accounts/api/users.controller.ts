@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import {
   Get,
   Post,
@@ -11,8 +10,7 @@ import {
   UseGuards,
   Controller,
 } from '@nestjs/common';
-import { UserViewDto } from './output-dto/user.view-dto';
-import { UsersQueryRepository } from '../infrastructure/users.query-repository';
+import { UserSQLViewDto } from './output-dto/user.view-dto';
 import { GetUsersQueryParams } from './input-dto/get-users-query-params.input-dto';
 import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input-dto/users.input-dto';
@@ -20,35 +18,36 @@ import { BasicAuthGuard } from '../guards/basic/basic-auth.guard';
 
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
+import { UsersSQLQueryRepository } from '../infrastructure/queries/users-sql.query-repository';
 
 @Controller('users')
 @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
-    private readonly usersQueryRepository: UsersQueryRepository,
     private readonly usersService: UsersService,
+    private usersSQLQueryRepository: UsersSQLQueryRepository,
   ) {}
 
   @Get()
   async getAll(
     @Query() query: GetUsersQueryParams,
-  ): Promise<PaginatedViewDto<UserViewDto[]>> {
-    return this.usersQueryRepository.getAll(query);
+  ): Promise<PaginatedViewDto<UserSQLViewDto[]>> {
+    return this.usersSQLQueryRepository.getAll(query);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(
     @Body() createUserDto: CreateUserInputDto,
-  ): Promise<UserViewDto> {
-    const userDocument = await this.usersService.createUser(createUserDto);
+  ): Promise<UserSQLViewDto> {
+    const userData = await this.usersService.createUser(createUserDto);
 
-    return UserViewDto.mapToView(userDocument);
+    return UserSQLViewDto.mapToView(userData);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param('id') id: Types.ObjectId): Promise<void> {
+  async deleteUser(@Param('id') id: string): Promise<void> {
     const isDeleted = await this.usersService.deleteUser(id);
 
     if (!isDeleted) {

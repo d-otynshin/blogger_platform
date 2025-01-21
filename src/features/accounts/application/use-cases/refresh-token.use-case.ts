@@ -3,14 +3,12 @@ import { Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import { UsersRepository } from '../../infrastructure/repositories/users.repository';
-import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
-import { UserDocument } from '../../domain/user.entity';
-
 import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from '../../constants/auth-token.inject-constants';
+import { UsersPostgresqlRepository } from '../../infrastructure/repositories/users-postgresql.repository';
+import { SecurityPostgresqlRepository } from '../../infrastructure/repositories/security-postgresql.repository';
 
 export class RefreshTokenResponseDto {
   accessToken: string;
@@ -32,9 +30,9 @@ export class RefreshTokenUseCase
     @Inject(REFRESH_TOKEN_STRATEGY_INJECT_TOKEN)
     private refreshTokenContext: JwtService,
 
-    private usersRepository: UsersRepository,
+    private usersRepository: UsersPostgresqlRepository,
     private jwtService: JwtService,
-    private securityRepository: SecurityRepository,
+    private securityRepository: SecurityPostgresqlRepository,
   ) {}
 
   async execute({
@@ -46,17 +44,17 @@ export class RefreshTokenUseCase
       { secret: process.env.REFRESH_TOKEN_SECRET },
     );
 
-    const userDocument: UserDocument = await this.usersRepository.findById(
+    const userData = await this.usersRepository.findById(
       decodedRefreshToken.id,
     );
 
     const accessToken: string = this.accessTokenContext.sign({
-      id: userDocument._id,
-      login: userDocument.login,
+      id: userData.id,
+      login: userData.login,
     });
 
     const createdRefreshToken: string = this.refreshTokenContext.sign({
-      id: userDocument._id,
+      id: userData.id,
       deviceId: decodedRefreshToken.deviceId,
       ip: decodedRefreshToken.ip,
       title: decodedRefreshToken.title,
@@ -66,12 +64,10 @@ export class RefreshTokenUseCase
       secret: process.env.REFRESH_TOKEN_SECRET,
     });
 
-    const updateResult = await this.securityRepository.updateSession(
+    await this.securityRepository.updateSession(
       decodedRefreshToken.deviceId,
       iat,
     );
-
-    console.log('refreshToken: updateResult', updateResult.modifiedCount === 1);
 
     return { accessToken, refreshToken: createdRefreshToken };
   }

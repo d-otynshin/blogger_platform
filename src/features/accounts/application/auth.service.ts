@@ -5,7 +5,6 @@ import { JwtService } from '@nestjs/jwt';
 
 import { CryptoService } from './crypto.service';
 import { UsersService } from './users.service';
-import { UsersRepository } from '../infrastructure/repositories/users.repository';
 import { UserContextDto } from '../dto/auth.dto';
 import { emailTemplates } from '../../notifications/utils/templates';
 import { EmailService } from '../../notifications/application/email.service';
@@ -23,6 +22,7 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
+import { UsersPostgresqlRepository } from '../infrastructure/repositories/users-postgresql.repository';
 
 @Injectable()
 export class AuthService {
@@ -31,76 +31,66 @@ export class AuthService {
     private cryptoService: CryptoService,
     private usersService: UsersService,
     private emailService: EmailService,
-    private usersRepository: UsersRepository,
+    private usersRepository: UsersPostgresqlRepository,
   ) {}
 
   async checkCredentials(
     loginOrEmail: string,
     password: string,
   ): Promise<UserContextDto | null> {
-    const userDocument = await this.usersRepository.findOne(loginOrEmail);
-    if (!userDocument) return null;
+    const userData = await this.usersRepository.findOne(loginOrEmail);
+    if (!userData) return null;
 
     const isPasswordValid = await this.cryptoService.comparePasswords({
       password: password,
-      hash: userDocument.passwordHash,
+      hash: userData.password_hash,
     });
 
-    return isPasswordValid
-      ? {
-          id: userDocument._id.toString(),
-          login: userDocument.login,
-        }
-      : null;
+    // TODO: separate for mongo, add type
+    return isPasswordValid ? { id: userData.id, login: userData.login } : null;
   }
 
   async register(createUserInputDto: CreateUserInputDto) {
-    const userDocumentByEmail = await this.usersRepository.findOne(
+    const userDataByEmail = await this.usersRepository.findOne(
       createUserInputDto.email,
     );
 
-    if (userDocumentByEmail) {
+    if (userDataByEmail) {
       throw BadRequestDomainException.create(
         'User with this email already exists',
         'email',
       );
     }
 
-    const userDocumentByLogin = await this.usersRepository.findOne(
+    const userDataByLogin = await this.usersRepository.findOne(
       createUserInputDto.login,
     );
 
-    if (userDocumentByLogin) {
+    if (userDataByLogin) {
       throw BadRequestDomainException.create(
         'User with this login already exists',
         'login',
       );
     }
 
-    const userDocument = await this.usersService.createUser(createUserInputDto);
+    const userData = await this.usersService.createUser(createUserInputDto);
 
     await this.emailService.sendConfirmationEmail(
       createUserInputDto.email,
-      userDocument.confirmationCode,
+      userData.confirmationCode,
       'registration',
       emailTemplates.registrationEmail,
     );
   }
 
   async resendEmail(resendEmailDto: EmailInputDto): Promise<void> {
-    const userDocument = await this.usersRepository.findOne(
-      resendEmailDto.email,
-    );
+    const userData = await this.usersRepository.findOne(resendEmailDto.email);
 
-    console.log('userDocument', userDocument);
-
-    if (!userDocument) {
-      console.log('not found userDocument');
+    if (!userData) {
       throw BadRequestDomainException.create('User not found', 'email');
     }
 
-    if (userDocument.isConfirmed) {
-      console.log('isConfirmed');
+    if (userData.isConfirmed) {
       throw BadRequestDomainException.create(
         'Email is already confirmed',
         'email',
@@ -108,13 +98,14 @@ export class AuthService {
     }
 
     const updatedConfirmationCode = this.jwtService.sign(
-      { login: userDocument.login },
+      { login: userData.login },
       { secret: process.env.ACCESS_TOKEN_SECRET },
     );
 
-    userDocument.confirmationCode = updatedConfirmationCode;
-
-    await this.usersRepository.save(userDocument);
+    await this.usersRepository.updateConfirmationCode(
+      userData.id,
+      updatedConfirmationCode,
+    );
 
     await this.emailService.sendConfirmationEmail(
       resendEmailDto.email,
@@ -136,43 +127,42 @@ export class AuthService {
 
     const { login } = parsedCode;
 
-    const userDocument = await this.usersRepository.findOne(login);
+    const userData = await this.usersRepository.findOne(login);
 
-    if (!userDocument) {
+    if (!userData) {
       throw BadRequestDomainException.create('User not found', 'code');
     }
 
-    if (userDocument.isConfirmed) {
+    if (userData.isConfirmed) {
       throw BadRequestDomainException.create(
         'User is already confirmed',
         'code',
       );
     }
 
-    if (confirmEmailDto.code !== userDocument.confirmationCode) {
+    if (confirmEmailDto.code !== userData.confirmationCode) {
       throw ForbiddenDomainException.create(
         'Confirmation code is invalid',
         'code',
       );
     }
 
-    userDocument.isConfirmed = true;
-    await this.usersRepository.save(userDocument);
+    await this.usersRepository.updateConfirmationStatus(userData.id, true);
 
     return;
   }
 
   async recoverPassword(passwordRecoveryDto: EmailInputDto): Promise<void> {
-    const userDocument = await this.usersRepository.findOne(
+    const userData = await this.usersRepository.findOne(
       passwordRecoveryDto.email,
     );
 
-    if (!userDocument) {
+    if (!userData) {
       throw NotFoundDomainException.create('User not found');
     }
 
     const updatedConfirmationCode: string = this.jwtService.sign({
-      login: userDocument.login,
+      login: userData.login,
     });
 
     await this.emailService.sendConfirmationEmail(
@@ -201,15 +191,16 @@ export class AuthService {
       updatePasswordDto.newPassword,
     );
 
-    const userDocument = await this.usersRepository.findOne(login);
+    const userData = await this.usersRepository.findOne(login);
 
-    if (!userDocument) {
+    if (!userData) {
       throw NotFoundDomainException.create('User not found');
     }
 
-    userDocument.passwordHash = updatedPasswordHash;
-
-    await this.usersRepository.save(userDocument);
+    await this.usersRepository.updatePasswordHash(
+      userData.id,
+      updatedPasswordHash,
+    );
 
     return;
   }

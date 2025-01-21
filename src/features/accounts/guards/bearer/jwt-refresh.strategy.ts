@@ -5,14 +5,14 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 
 import { RefreshTokenDto } from '../../dto/session-dto';
-import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
+import { SecurityPostgresqlRepository } from '../../infrastructure/repositories/security-postgresql.repository';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
-  constructor(private readonly securityRepository: SecurityRepository) {
+  constructor(private securityRepository: SecurityPostgresqlRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request): string => {
@@ -25,11 +25,9 @@ export class JwtRefreshStrategy extends PassportStrategy(
   }
 
   async validate(payload: RefreshTokenDto): Promise<RefreshTokenDto | false> {
-    console.log('payload', payload);
     const session = await this.securityRepository.getSession(payload.deviceId);
 
     if (!session) {
-      console.log('session', session);
       // throw NotFoundDomainException.create('Not Found');
       return false;
     }

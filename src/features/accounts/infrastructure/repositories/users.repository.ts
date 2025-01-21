@@ -6,13 +6,23 @@ import {
   UserModelType,
 } from '../../domain/user.entity';
 import { Types } from 'mongoose';
+import { CreateUserDbDto } from '../../dto/create-user-dto';
 
 export class UsersRepository {
   constructor(@InjectModel(User.name) private UserModel: UserModelType) {}
 
-  async findById(id: Types.ObjectId): Promise<UserDocument | null> {
+  async createInstance(dto: CreateUserDbDto): Promise<UserDocument> {
+    return this.UserModel.createInstance({
+      email: dto.email,
+      login: dto.login,
+      password: dto.passwordHash,
+      confirmationCode: dto.confirmationCode,
+    });
+  }
+
+  async findById(id: string): Promise<UserDocument | null> {
     return this.UserModel.findOne({
-      _id: id,
+      _id: new Types.ObjectId(id),
       deletionStatus: { $ne: DeletionStatus.PermanentDeleted },
     });
   }
@@ -21,6 +31,14 @@ export class UsersRepository {
     return this.UserModel.findOne({
       $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
     });
+  }
+
+  async deleteInstance(id: string): Promise<boolean> {
+    const deleteResult = await this.UserModel.deleteOne({
+      _id: new Types.ObjectId(id),
+    });
+
+    return deleteResult.deletedCount === 1;
   }
 
   async save(user: UserDocument) {

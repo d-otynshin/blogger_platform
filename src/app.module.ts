@@ -1,25 +1,34 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { AccountsModule } from './features/accounts/accounts.module';
 import { TestingModule } from './features/testing/testing.module';
-import { PlatformModule } from './features/platform/platform.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
+// import { MongooseModule } from '@nestjs/mongoose';
+// import { ThrottlerModule } from '@nestjs/throttler';
+// import { PlatformModule } from './features/platform/platform.module';
 
 @Module({
   imports: [
     CqrsModule,
     ConfigModule.forRoot({}),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
-    ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
+    // MongooseModule.forRoot(process.env.MONGODB_URI),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      synchronize: true, // TODO: remove for prod.
+      url: process.env.DB_URL,
+      ssl: {
+        rejectUnauthorized: false, // TODO: remove?
+      },
+    }),
     AccountsModule,
     TestingModule,
-    PlatformModule,
     NotificationsModule,
+    // PlatformModule,
+    // ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
   ],
   controllers: [AppController],
   providers: [AppService],

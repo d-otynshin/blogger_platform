@@ -5,6 +5,14 @@ export class CreateUserDto {
   confirmationCode: string;
 }
 
+// TODO: best practice?
+export class CreateUserDbDto {
+  login: string;
+  email: string;
+  passwordHash: string;
+  confirmationCode: string;
+}
+
 export class UpdateUserDto {
   email: string;
 }
