@@ -74,7 +74,7 @@ export class AuthService {
 
     const userData = await this.usersService.createUser(createUserInputDto);
 
-    await this.emailService.sendConfirmationEmail(
+    this.emailService.sendConfirmationEmail(
       createUserInputDto.email,
       userData.confirmationCode,
       'registration',
