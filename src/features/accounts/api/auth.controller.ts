@@ -42,7 +42,7 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
-  // @UseGuards(ThrottlerBehindProxyGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @Post('login')
   async login(
     @Req() req: Request,
