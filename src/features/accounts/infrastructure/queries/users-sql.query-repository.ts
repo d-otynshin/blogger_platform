@@ -53,11 +53,13 @@ export class UsersSQLQueryRepository {
     sqlQueryCount += ` LIMIT $${countParams.length - 1} OFFSET $${countParams.length}`;
 
     // Count total number of users without limit/offset
-    const countQuery = `SELECT COUNT(*) AS totalCount ${sqlQueryCount}`;
+    const countQuery = `SELECT COUNT(*) AS total_count ${sqlQueryCount}`;
 
     const countResult = await this.dataSource.query(countQuery, countParams);
 
-    const totalCount = parseInt(countResult[0].totalcount, 10);
+    console.log('countResult', countResult);
+
+    const totalCount = parseInt(countResult[0].total_count, 10);
 
     const items = users.map(UserSQLViewDto.mapToView);
 

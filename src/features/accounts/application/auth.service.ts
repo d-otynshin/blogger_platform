@@ -89,6 +89,8 @@ export class AuthService {
       throw BadRequestDomainException.create('User not found', 'email');
     }
 
+    console.log(userData);
+
     if (userData.is_confirmed) {
       throw BadRequestDomainException.create(
         'Email is already confirmed',
@@ -120,6 +122,7 @@ export class AuthService {
     const parsedCode: { login: string } = this.jwtService.decode(
       confirmEmailDto.code,
     );
+
     if (!parsedCode) {
       throw BadRequestDomainException.create('Invalid code token', 'code');
     }
@@ -139,9 +142,7 @@ export class AuthService {
       );
     }
 
-    if (confirmEmailDto.code !== userData.confirmationCode) {
-      console.log('confirmEmailDto.code', confirmEmailDto.code);
-      console.log('userData.confirmationCode', userData.confirmationCode);
+    if (confirmEmailDto.code !== userData.confirmation_code) {
 
       throw BadRequestDomainException.create(
         'Confirmation code is invalid',
