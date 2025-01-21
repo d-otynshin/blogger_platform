@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import {
   Get,
   Post,
@@ -14,12 +13,6 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import {
-  GetPostsQueryParams,
-  PostsQueryRepository,
-} from '../infrastructure/queries/posts.query-repository';
-
-import { PostOutputDto } from './output-dto/post.output-dto';
 import { CommentOutputDto } from './output-dto/comment.output-dto';
 
 import { PostsService } from '../application/posts.service';
@@ -47,15 +40,17 @@ import {
 import { UpdateLikePostCommand } from '../application/use-cases/posts/update-like-post.use-case';
 import { CommentsInputDto } from './input-dto/comments.input-dto';
 import { CreateCommentCommand } from '../application/use-cases/comments/create-comment.use-case';
-import { CommentDocument } from '../domain/comment.entity';
+import { PostSQLOutputDto } from './output-dto/post-sql.output-dto';
+import { PostsSQLQueryRepository } from '../infrastructure/queries/posts-sql.query-repository';
+import { GetPostsQueryParams } from '../infrastructure/queries/get-posts-query-params';
 
 @Controller('posts')
 export class PostsController {
   constructor(
-    private readonly postsService: PostsService,
-    private readonly postsQueryRepository: PostsQueryRepository,
-    private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly commandBus: CommandBus,
+    private readonly postsService: PostsService,
+    private readonly postsQueryRepository: PostsSQLQueryRepository,
+    private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
   @Get()
@@ -63,7 +58,7 @@ export class PostsController {
   async getAll(
     @Query() query: GetPostsQueryParams,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
-  ): Promise<PaginatedViewDto<PostOutputDto[]>> {
+  ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     const userId = user?.id;
 
     return this.postsQueryRepository.getAllPosts(query, userId);
@@ -74,14 +69,14 @@ export class PostsController {
   @HttpCode(HttpStatus.CREATED)
   async createPost(
     @Body() createPostDto: CreatePostInputDto,
-  ): Promise<PostOutputDto> {
+  ): Promise<PostSQLOutputDto> {
     return this.postsService.createPost(createPostDto);
   }
 
   @Get(':postId/comments')
   @UseGuards(JwtOptionalAuthGuard)
   async getAllPosts(
-    @Param('postId') postId: Types.ObjectId,
+    @Param('postId') postId: string,
     @Query() query: GetPostsQueryParams,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
@@ -98,23 +93,23 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async createComment(
-    @Param('postId') postId: Types.ObjectId,
+    @Param('postId') postId: string,
     @Body() createCommentDto: CommentsInputDto,
     @ExtractUserFromRequest() user: UserContextDto,
   ) {
-    const commentDocument: CommentDocument = await this.commandBus.execute(
+    const commentData = await this.commandBus.execute(
       new CreateCommentCommand(postId, createCommentDto, user),
     );
 
-    return CommentOutputDto.mapToView(commentDocument);
+    return CommentOutputDto.mapToView(commentData);
   }
 
   @Get(':id')
   @UseGuards(JwtOptionalAuthGuard)
   async getById(
-    @Param('id') id: Types.ObjectId,
+    @Param('id') id: string,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
-  ): Promise<PostOutputDto> {
+  ): Promise<PostSQLOutputDto> {
     const userId = user?.id;
 
     return this.postsQueryRepository.getById(id, userId);
@@ -141,7 +136,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateLikePost(
-    @Param('id') id: Types.ObjectId,
+    @Param('id') id: string,
     @Body() postInteractionDto: PostInteractionInputDto,
     @ExtractUserFromRequest() user: UserContextDto,
   ): Promise<void> {

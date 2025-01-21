@@ -1,4 +1,4 @@
-import * as process from 'node:process';
+import process from 'node:process';
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailService } from './application/email.service';

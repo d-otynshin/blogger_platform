@@ -1,11 +1,10 @@
-import { Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentModelType } from '../../domain/comment.entity';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
-import { GetPostsQueryParams } from './posts.query-repository';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { Post, PostModelType } from '../../domain/post.entity';
+import { GetPostsQueryParams } from './get-posts-query-params';
 
 export class CommentsQueryRepository {
   constructor(
@@ -14,7 +13,7 @@ export class CommentsQueryRepository {
   ) {}
 
   async getCommentById(
-    commentId: Types.ObjectId,
+    commentId: string,
     userId?: string,
   ): Promise<CommentOutputDto> {
     const commentDocument = await this.CommentModel.findById(commentId);
@@ -27,7 +26,7 @@ export class CommentsQueryRepository {
   }
 
   async getCommentsByPostId(
-    postId: Types.ObjectId,
+    postId: string,
     query: GetPostsQueryParams,
     userId?: string,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {

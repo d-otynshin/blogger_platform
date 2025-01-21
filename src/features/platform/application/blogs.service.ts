@@ -1,82 +1,52 @@
-import { isValidObjectId, Types } from 'mongoose';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogModelType } from '../domain/blog.entity';
-import { BlogsRepository } from '../infrastructure/repositories/blogs.repository';
-import { BlogOutputDto } from '../api/output-dto/blog.output-dto';
-import { PostOutputDto } from '../api/output-dto/post.output-dto';
-import { Post, PostModelType } from '../domain/post.entity';
+import { Injectable } from '@nestjs/common';
+import { BlogSQLOutputDto } from '../api/output-dto/blog.output-dto';
 import { CreatePostByBlogIdInputDto } from '../api/input-dto/posts.input-dto';
-import { PostsRepository } from '../infrastructure/repositories/posts.repository';
 import {
   CreateBlogInputDto,
   UpdateBlogInputDto,
 } from '../api/input-dto/blogs.input-dto';
+import { BlogsSQLRepository } from '../infrastructure/repositories/blogs-sql.repository';
+import { PostsSQLRepository } from '../infrastructure/repositories/posts-sql.repository';
+import { PostSQLOutputDto } from '../api/output-dto/post-sql.output-dto';
 
 @Injectable()
 export class BlogsService {
   constructor(
-    @InjectModel(Blog.name) private BlogModel: BlogModelType,
-    @InjectModel(Post.name) private PostModel: PostModelType,
-    private blogsRepository: BlogsRepository,
-    private postsRepository: PostsRepository,
+    private blogsRepository: BlogsSQLRepository,
+    private postsRepository: PostsSQLRepository,
   ) {}
-  async createBlog(dto: CreateBlogInputDto): Promise<BlogOutputDto> {
-    const createdBlog = this.BlogModel.createInstance({
+  async createBlog(dto: CreateBlogInputDto): Promise<BlogSQLOutputDto> {
+    const createdBlog = await this.blogsRepository.createInstance({
       name: dto.name,
       description: dto.description,
       websiteUrl: dto.websiteUrl,
     });
 
-    await this.blogsRepository.save(createdBlog);
-
-    return BlogOutputDto.mapToView(createdBlog);
+    return BlogSQLOutputDto.mapToView(createdBlog);
   }
 
   async updateBlog(id: string, dto: UpdateBlogInputDto): Promise<boolean> {
-    const updatedBlog = await this.BlogModel.findByIdAndUpdate(id, dto, {
-      new: true,
-    });
-
-    if (!updatedBlog) {
-      throw new NotFoundException(`Blog with id ${id} not found`);
-    }
-
-    return true;
+    return this.blogsRepository.updateById(id, dto);
   }
 
-  async deleteBlogById(id: string): Promise<boolean | null> {
-    const deletedBlog = await this.BlogModel.findByIdAndDelete(id);
-
-    if (!deletedBlog) {
-      return null;
-    }
-
-    return true;
+  async deleteBlogById(id: string): Promise<boolean> {
+    return this.blogsRepository.delete(id);
   }
 
   async createPostByBlogId(
-    blogId: Types.ObjectId,
+    blogId: string,
     dto: CreatePostByBlogIdInputDto,
-  ): Promise<PostOutputDto | null> {
-    if (!isValidObjectId(blogId)) {
-      return null;
-    }
+  ): Promise<PostSQLOutputDto | null> {
+    const blogData = await this.blogsRepository.findById(blogId);
+    if (!blogData) return null;
 
-    const blog = await this.blogsRepository.findById(blogId);
-    if (!blog) return null;
-
-    const postPojo = {
+    const createdPost = await this.postsRepository.createInstance(blogId, {
       title: dto.title,
-      shortDescription: dto.shortDescription,
       content: dto.content,
-      blogName: blog.name,
-    };
+      shortDescription: dto.shortDescription,
+      blogName: blogData.name,
+    });
 
-    const createdPost = this.PostModel.createInstance(blogId, postPojo);
-
-    await this.postsRepository.save(createdPost);
-
-    return PostOutputDto.mapToView(createdPost);
+    return PostSQLOutputDto.mapToView(createdPost);
   }
 }

@@ -1,16 +1,17 @@
-import { Types } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Comment, CommentModelType } from '../../../domain/comment.entity';
-import { BadRequestDomainException, NotFoundDomainException } from '../../../../../core/exceptions/domain-exceptions';
 import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { UserContextDto } from '../../../../accounts/dto/auth.dto';
-import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
-import { Post, PostModelType } from '../../../domain/post.entity';
+
+import {
+  BadRequestDomainException,
+  NotFoundDomainException,
+} from '../../../../../core/exceptions/domain-exceptions';
+import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
+import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
 
 export class CreateCommentCommand {
   constructor(
-    public postId: Types.ObjectId,
+    public postId: string,
     public dto: CommentsInputDto,
     public user: UserContextDto,
   ) {}
@@ -21,34 +22,29 @@ export class CreateCommentUseCase
   implements ICommandHandler<CreateCommentCommand>
 {
   constructor(
-    @InjectModel(Comment.name) private CommentModel: CommentModelType,
-    @InjectModel(Post.name) private PostModel: PostModelType,
-    private commentsRepository: CommentsRepository,
+    private commentsRepository: CommentsSQLRepository,
+    private postsRepository: PostsSQLRepository,
   ) {}
 
   async execute({ user, postId, dto }: CreateCommentCommand) {
-    const postDocument = await this.PostModel.findById(postId);
-    if (!postDocument) {
+    const postData = await this.postsRepository.findById(postId);
+
+    if (!postData) {
       // TODO: update error details
       throw NotFoundDomainException.create('Not Found', 'postId');
     }
 
-    const commentDocument = this.CommentModel.createInstance({
+    const commentData = await this.commentsRepository.createInstance({
+      postId: postId,
       content: dto.content,
-      commentatorInfo: {
-        userId: new Types.ObjectId(user.id),
-        userLogin: user.login,
-      },
-      postId,
+      commentatorId: user.id,
     });
 
-    if (!commentDocument) {
+    if (!commentData) {
       // TODO: update error details
-      throw BadRequestDomainException.create('Invalid comment', 'content');
+      throw BadRequestDomainException.create('Invalid comment');
     }
 
-    await this.commentsRepository.save(commentDocument);
-
-    return commentDocument;
+    return commentData;
   }
 }

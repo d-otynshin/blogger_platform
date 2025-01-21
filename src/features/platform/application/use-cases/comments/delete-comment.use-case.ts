@@ -1,11 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Types } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModelType } from '../../../domain/comment.entity';
 import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../../core/exceptions/domain-exceptions';
+import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
 
 export class DeleteCommentCommand {
   constructor(
@@ -18,28 +16,23 @@ export class DeleteCommentCommand {
 export class DeleteCommentUseCase
   implements ICommandHandler<DeleteCommentCommand>
 {
-  constructor(
-    @InjectModel(Comment.name) private CommentModel: CommentModelType,
-  ) {}
+  constructor(private commentsRepository: CommentsSQLRepository) {}
 
   async execute({ id, userId }: DeleteCommentCommand) {
-    // TODO: create decorator?
-    if (!Types.ObjectId.isValid(id)) {
+    const commentData = await this.commentsRepository.getById(id);
+
+    if (!commentData) {
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }
 
-    const commentDocument = await this.CommentModel.findOne({ _id: id });
-    if (!commentDocument) {
-      throw NotFoundDomainException.create('Comment not found', 'commentId');
-    }
-
-    if (commentDocument.commentatorInfo.userId !== new Types.ObjectId(userId)) {
+    if (commentData?.commentatorInfo?.userId !== userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 
-    const deleteResult = await this.CommentModel.deleteOne({ _id: id });
+    // const isDeleted = await this.commentsRepository.deleteById(id);
+    const isDeleted = true;
 
-    if (deleteResult.deletedCount !== 1) {
+    if (!isDeleted) {
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }
 

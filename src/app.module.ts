@@ -7,8 +7,6 @@ import { TestingModule } from './features/testing/testing.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ThrottlerModule } from '@nestjs/throttler';
-// import { MongooseModule } from '@nestjs/mongoose';
 // import { ThrottlerModule } from '@nestjs/throttler';
 // import { PlatformModule } from './features/platform/platform.module';
 
@@ -16,20 +14,19 @@ import { ThrottlerModule } from '@nestjs/throttler';
   imports: [
     CqrsModule,
     ConfigModule.forRoot({}),
-    // MongooseModule.forRoot(process.env.MONGODB_URI),
     TypeOrmModule.forRoot({
       type: 'postgres',
       synchronize: true, // TODO: remove for prod.
       url: process.env.DB_URL,
       ssl: {
-        rejectUnauthorized: false, // TODO: remove?
+        rejectUnauthorized: false,
       },
     }),
     AccountsModule,
     TestingModule,
     NotificationsModule,
     // PlatformModule,
-    ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
+    // ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,18 +1,16 @@
-import { Types } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
-import { Comment, CommentModelType } from '../../../domain/comment.entity';
 import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../../core/exceptions/domain-exceptions';
+import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
 
 export class UpdateCommentCommand {
   constructor(
-    public id: Types.ObjectId,
-    public dto: CommentsInputDto,
+    public id: string,
     public userId: string,
+    public dto: CommentsInputDto,
   ) {}
 }
 
@@ -20,22 +18,22 @@ export class UpdateCommentCommand {
 export class UpdateCommentUseCase
   implements ICommandHandler<UpdateCommentCommand>
 {
-  constructor(
-    @InjectModel(Comment.name) private CommentModel: CommentModelType,
-  ) {}
+  constructor(private commentsRepository: CommentsSQLRepository) {}
 
   async execute({ id, dto, userId }: UpdateCommentCommand) {
-    const commentDocument = await this.CommentModel.findById(id);
+    const commentData = await this.commentsRepository.getById(id);
 
-    if (!commentDocument) {
+    if (!commentData) {
       throw NotFoundDomainException.create('Invalid comment', 'content');
     }
 
-    if (commentDocument.commentatorInfo.userId !== new Types.ObjectId(userId)) {
+    // TODO: make join query request
+    if (commentData?.commentatorInfo?.userId !== userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 
-    await this.CommentModel.findByIdAndUpdate(id, dto);
+    // TODO: add update for comments
+    // await this.commentsRepository.updateById(id, dto);
 
     return;
   }

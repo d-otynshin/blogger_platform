@@ -1,11 +1,11 @@
 import { Controller, Delete, HttpCode, HttpStatus } from '@nestjs/common';
-import { UsersPostgresqlRepository } from '../accounts/infrastructure/repositories/users-postgresql.repository';
+import { UsersSQLRepository } from '../accounts/infrastructure/repositories/users-sql.repository';
 import { SecurityPostgresqlRepository } from '../accounts/infrastructure/repositories/security-postgresql.repository';
 
 @Controller('testing')
 export class TestingController {
   constructor(
-    private usersRepository: UsersPostgresqlRepository,
+    private usersRepository: UsersSQLRepository,
     private securityRepository: SecurityPostgresqlRepository,
   ) {}
 

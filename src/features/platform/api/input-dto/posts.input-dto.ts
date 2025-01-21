@@ -50,7 +50,7 @@ export class CreatePostInputDto {
   @IsNotEmpty()
   @IsObjectId()
   @IsBlogExist()
-  blogId: Types.ObjectId;
+  blogId: string;
 }
 
 export class UpdatePostInputDto {

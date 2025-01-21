@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CryptoService } from '../crypto.service';
-import { UsersPostgresqlRepository } from '../../infrastructure/repositories/users-postgresql.repository';
+import { UsersSQLRepository } from '../../infrastructure/repositories/users-sql.repository';
 
 export class ValidateUserCommand {
   constructor(
@@ -14,7 +14,7 @@ export class ValidateUserUseCase
   implements ICommandHandler<ValidateUserCommand>
 {
   constructor(
-    private readonly usersRepository: UsersPostgresqlRepository,
+    private readonly usersRepository: UsersSQLRepository,
     private readonly cryptoService: CryptoService,
   ) {}
 

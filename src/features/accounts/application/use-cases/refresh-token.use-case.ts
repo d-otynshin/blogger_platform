@@ -7,7 +7,7 @@ import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from '../../constants/auth-token.inject-constants';
-import { UsersPostgresqlRepository } from '../../infrastructure/repositories/users-postgresql.repository';
+import { UsersSQLRepository } from '../../infrastructure/repositories/users-sql.repository';
 import { SecurityPostgresqlRepository } from '../../infrastructure/repositories/security-postgresql.repository';
 
 export class RefreshTokenResponseDto {
@@ -30,7 +30,7 @@ export class RefreshTokenUseCase
     @Inject(REFRESH_TOKEN_STRATEGY_INJECT_TOKEN)
     private refreshTokenContext: JwtService,
 
-    private usersRepository: UsersPostgresqlRepository,
+    private usersRepository: UsersSQLRepository,
     private jwtService: JwtService,
     private securityRepository: SecurityPostgresqlRepository,
   ) {}

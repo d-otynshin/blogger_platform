@@ -12,9 +12,7 @@ export class UsersSQLQueryRepository {
   ): Promise<PaginatedViewDto<UserSQLViewDto[]>> {
     let sqlQuery = `FROM users`;
 
-    const sortByDict = {
-      createdAt: 'created_at',
-    };
+    const sortByDict = { createdAt: 'created_at' };
 
     const params = [];
     const conditions = [];
@@ -47,13 +45,7 @@ export class UsersSQLQueryRepository {
 
     // Count total number of users without limit/offset
     const countQuery = `SELECT COUNT(*) AS total_count ${sqlQueryCount}`;
-
-    console.log(countParams);
-    console.log(countQuery);
-
     const countResult = await this.dataSource.query(countQuery, countParams);
-
-    console.log(countResult);
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 

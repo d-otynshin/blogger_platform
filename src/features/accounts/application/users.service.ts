@@ -6,12 +6,12 @@ import { CryptoService } from './crypto.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserInputDto } from '../api/input-dto/users.input-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
-import { UsersPostgresqlRepository } from '../infrastructure/repositories/users-postgresql.repository';
+import { UsersSQLRepository } from '../infrastructure/repositories/users-sql.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private usersRepository: UsersPostgresqlRepository,
+    private usersRepository: UsersSQLRepository,
     private cryptoService: CryptoService,
     private jwtService: JwtService,
   ) {}

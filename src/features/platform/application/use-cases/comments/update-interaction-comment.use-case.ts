@@ -1,9 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModelType } from '../../../domain/comment.entity';
 import { CommentInteractionDto } from '../../../dto/comment-dto';
 import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
-import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
+import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
 
 export class UpdateInteractionCommentCommand {
   constructor(public dto: CommentInteractionDto) {}
@@ -13,26 +11,22 @@ export class UpdateInteractionCommentCommand {
 export class UpdateInteractionCommentUseCase
   implements ICommandHandler<UpdateInteractionCommentCommand>
 {
-  constructor(
-    @InjectModel(Comment.name) private CommentModel: CommentModelType,
-    private commentsRepository: CommentsRepository,
-  ) {}
+  constructor(private commentsRepository: CommentsSQLRepository) {}
 
   async execute({ dto }: UpdateInteractionCommentCommand) {
-    const commentDocument = await this.CommentModel.findOneAndUpdate(
-      { _id: dto.commentId, 'interactions.userId': dto.userId },
-      {
-        $set: {
-          'interactions.$.updatedAt': new Date(),
-          'interactions.$.action': dto.action,
-        },
-      },
-      { new: true },
-    );
+    // const commentDocument = await this.CommentModel.findOneAndUpdate(
+    //   { _id: dto.commentId, 'interactions.userId': dto.userId },
+    //   {
+    //     $set: {
+    //       'interactions.$.updatedAt': new Date(),
+    //       'interactions.$.action': dto.action,
+    //     },
+    //   },
+    // );
 
-    await this.commentsRepository.save(commentDocument);
+    const commentData = dto;
 
-    if (!commentDocument) {
+    if (!commentData) {
       throw BadRequestDomainException.create('Invalid comment', 'content');
     }
 

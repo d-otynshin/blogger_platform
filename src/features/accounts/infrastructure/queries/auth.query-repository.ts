@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
-import { UsersPostgresqlRepository } from '../repositories/users-postgresql.repository';
+import { UsersSQLRepository } from '../repositories/users-sql.repository';
 import { MeSQLViewDto } from '../../api/output-dto/user.view-dto';
 
 @Injectable()
 export class AuthQueryRepository {
-  constructor(private usersRepository: UsersPostgresqlRepository) {}
+  constructor(private usersRepository: UsersSQLRepository) {}
 
   async me(id: string): Promise<MeSQLViewDto> {
     const userData = await this.usersRepository.findById(id);

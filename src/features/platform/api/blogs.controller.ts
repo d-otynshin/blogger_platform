@@ -15,10 +15,7 @@ import {
 
 import { BlogsService } from '../application/blogs.service';
 import { GetBlogsQueryParams } from './input-dto/helpers/get-blogs-query-params.input-dto';
-import { BlogOutputDto } from './output-dto/blog.output-dto';
-import { BlogsQueryRepository } from '../infrastructure/queries/blogs.query-repository';
-import { GetPostsQueryParams } from '../infrastructure/queries/posts.query-repository';
-import { PostOutputDto } from './output-dto/post.output-dto';
+import { BlogOutputDto, BlogSQLOutputDto } from './output-dto/blog.output-dto';
 import { CreatePostByBlogIdInputDto } from './input-dto/posts.input-dto';
 
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
@@ -33,12 +30,15 @@ import {
 import { ExtractUserIfExistsFromRequest } from '../../../core/decorators/extract-user-from-request';
 import { UserContextDto } from '../../accounts/dto/auth.dto';
 import { JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
+import { BlogsSQLQueryRepository } from '../infrastructure/queries/blogs-sql.query-repository';
+import { PostSQLOutputDto } from './output-dto/post-sql.output-dto';
+import { GetPostsQueryParams } from '../infrastructure/queries/get-posts-query-params';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private readonly blogsService: BlogsService,
-    private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly blogsQueryRepository: BlogsSQLQueryRepository,
   ) {}
   @Get()
   // TODO: move to separate command
@@ -62,21 +62,21 @@ export class BlogsController {
   @UseGuards(JwtOptionalAuthGuard)
   // TODO: move to separate command
   async getAllPosts(
-    @Param('blogId') blogId: Types.ObjectId,
+    @Param('blogId') blogId: string,
     @Query() query: GetPostsQueryParams,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
-  ): Promise<PaginatedViewDto<PostOutputDto[]>> {
+  ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     const userId = user?.id;
 
-    const posts = await this.blogsQueryRepository.getAllPosts(
+    const paginatedPosts = await this.blogsQueryRepository.getAllPosts(
       blogId,
       query,
       userId,
     );
 
-    if (!posts) throw NotFoundDomainException.create('Blog not found');
+    if (!paginatedPosts) throw NotFoundDomainException.create('Blog not found');
 
-    return posts;
+    return paginatedPosts;
   }
 
   @Post(':blogId/posts')
@@ -84,9 +84,9 @@ export class BlogsController {
   @HttpCode(HttpStatus.CREATED)
   // TODO: move to separate command
   async createPostByBlogId(
-    @Param('blogId') blogId: Types.ObjectId,
+    @Param('blogId') blogId: string,
     @Body() createPostDto: CreatePostByBlogIdInputDto,
-  ): Promise<PostOutputDto> {
+  ): Promise<PostSQLOutputDto> {
     const createdPost = await this.blogsService.createPostByBlogId(
       blogId,
       createPostDto,
@@ -101,7 +101,7 @@ export class BlogsController {
 
   @Get(':id')
   // TODO: move to separate command
-  async getById(@Param('id') id: string): Promise<BlogOutputDto> {
+  async getById(@Param('id') id: string): Promise<BlogSQLOutputDto> {
     const blog = await this.blogsQueryRepository.getById(id);
 
     if (!blog) {

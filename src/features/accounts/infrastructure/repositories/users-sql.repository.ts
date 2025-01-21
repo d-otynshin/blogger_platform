@@ -3,7 +3,7 @@ import { CreateUserDbDto } from '../../dto/create-user-dto';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UsersPostgresqlRepository {
+export class UsersSQLRepository {
   constructor(private dataSource: DataSource) {}
 
   async createInstance(dto: CreateUserDbDto) {
@@ -82,11 +82,11 @@ export class UsersPostgresqlRepository {
     isConfirmed: boolean,
   ): Promise<boolean> {
     const query = `
-    UPDATE users 
-    SET is_confirmed = $1
-    WHERE id = $2 
-    RETURNING *;
-  `;
+      UPDATE users 
+      SET is_confirmed = $1
+      WHERE id = $2 
+      RETURNING *;
+    `;
 
     const result = await this.dataSource.query(query, [isConfirmed, userId]);
 

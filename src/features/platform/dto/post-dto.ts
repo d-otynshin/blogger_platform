@@ -1,10 +1,10 @@
-import { Types } from 'mongoose';
 import { LikeStatus } from './interaction-dto';
 
 export class CreatePostDto {
   title: string;
   shortDescription: string;
   content: string;
+  blogName: string;
 }
 
 export class UpdatePostDto {
@@ -15,7 +15,7 @@ export class UpdatePostDto {
 
 export class PostInteractionDto {
   login: string;
-  postId: Types.ObjectId;
+  postId: string;
   userId: string;
   action: LikeStatus;
 }

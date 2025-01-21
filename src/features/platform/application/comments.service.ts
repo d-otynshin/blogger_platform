@@ -2,7 +2,6 @@ import { Types } from 'mongoose';
 import { CommandBus } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { TInteraction } from '../dto/interaction-dto';
-import { CommentsRepository } from '../infrastructure/repositories/comments.repository';
 import { CommentInteractionDto } from '../dto/comment-dto';
 import { CreateInteractionCommentCommand } from './use-cases/comments/create-interaction-comment.use-case';
 import { UpdateInteractionCommentCommand } from './use-cases/comments/update-interaction-comment.use-case';
@@ -10,12 +9,13 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
+import { CommentsSQLRepository } from '../infrastructure/repositories/comments-sql.repository';
 
 @Injectable()
 export class CommentsService {
   constructor(
-    private commentsRepository: CommentsRepository,
     private commandBus: CommandBus,
+    private commentsRepository: CommentsSQLRepository,
   ) {}
 
   async interact(dto: CommentInteractionDto): Promise<null | void> {
@@ -33,8 +33,7 @@ export class CommentsService {
     }
 
     const interaction = interactions.find(
-      (interaction: TInteraction): boolean =>
-        interaction.userId === new Types.ObjectId(dto.userId),
+      (interaction: TInteraction): boolean => interaction.userId === dto.userId,
     );
 
     if (!interaction) {
@@ -45,7 +44,7 @@ export class CommentsService {
       return;
     }
 
-    if (interaction.userId !== new Types.ObjectId(dto.userId)) {
+    if (interaction.userId !== dto.userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

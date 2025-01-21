@@ -5,16 +5,16 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { BlogsRepository } from '../../../infrastructure/repositories/blogs.repository';
+import { BlogsSQLRepository } from '../../../infrastructure/repositories/blogs-sql.repository';
 
 @ValidatorConstraint({ name: 'IsBlogExist', async: true })
 @Injectable()
 export class IsBlogExistConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly blogsRepository: BlogsRepository) {}
+  constructor(private readonly blogsRepository: BlogsSQLRepository) {}
   async validate(value: any): Promise<boolean> {
-    const blogDocument = await this.blogsRepository.findById(value);
+    const blogData = await this.blogsRepository.findById(value);
 
-    return Boolean(blogDocument);
+    return Boolean(blogData);
   }
 
   defaultMessage(): string {

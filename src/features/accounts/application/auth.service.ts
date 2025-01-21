@@ -21,7 +21,7 @@ import {
   BadRequestDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
-import { UsersPostgresqlRepository } from '../infrastructure/repositories/users-postgresql.repository';
+import { UsersSQLRepository } from '../infrastructure/repositories/users-sql.repository';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +30,7 @@ export class AuthService {
     private cryptoService: CryptoService,
     private usersService: UsersService,
     private emailService: EmailService,
-    private usersRepository: UsersPostgresqlRepository,
+    private usersRepository: UsersSQLRepository,
   ) {}
 
   async checkCredentials(
@@ -143,7 +143,6 @@ export class AuthService {
     }
 
     if (confirmEmailDto.code !== userData.confirmation_code) {
-
       throw BadRequestDomainException.create(
         'Confirmation code is invalid',
         'code',

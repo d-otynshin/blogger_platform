@@ -1,17 +1,14 @@
-import { LikeStatus, TInteraction } from './interaction-dto';
-import { Types } from 'mongoose';
+import { LikeStatus } from './interaction-dto';
 
 export type TCommentator = {
-  userId: Types.ObjectId;
+  userId: string;
   userLogin: string;
 };
 
 export class CreateCommentDto {
   content: string;
-  commentatorInfo: TCommentator;
-  interactions: TInteraction[];
-  postId: Types.ObjectId;
-  createdAt: Date;
+  commentatorId: string;
+  postId: string;
 }
 
 export class UpdateCommentDto {
@@ -20,7 +17,7 @@ export class UpdateCommentDto {
 
 export class CommentInteractionDto {
   login: string;
-  commentId: Types.ObjectId;
+  commentId: string;
   userId: string;
   action: LikeStatus;
 }

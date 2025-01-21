@@ -3,6 +3,9 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
+/* Modules */
+import { NotificationsModule } from '../notifications/notifications.module';
+
 /* Services */
 import { AuthService } from './application/auth.service';
 import { UsersService } from './application/users.service';
@@ -17,7 +20,7 @@ import { SecurityController } from './api/security.controller';
 /* Repositories */
 import { AuthQueryRepository } from './infrastructure/queries/auth.query-repository';
 import { UsersSQLQueryRepository } from './infrastructure/queries/users-sql.query-repository';
-import { UsersPostgresqlRepository } from './infrastructure/repositories/users-postgresql.repository';
+import { UsersSQLRepository } from './infrastructure/repositories/users-sql.repository';
 import { SecurityPostgresqlRepository } from './infrastructure/repositories/security-postgresql.repository';
 
 /* Use Cases */
@@ -32,7 +35,6 @@ import { JwtRefreshStrategy } from './guards/bearer/jwt-refresh.strategy';
 import { BasicAuthGuard } from './guards/basic/basic-auth.guard';
 import { ThrottlerBehindProxyGuard } from './guards/limiter/throttler-behind-proxy.guard';
 
-import { NotificationsModule } from '../notifications/notifications.module';
 import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
@@ -51,7 +53,7 @@ import {
     /* Repositories */
     AuthQueryRepository,
     UsersSQLQueryRepository,
-    UsersPostgresqlRepository,
+    UsersSQLRepository,
     SecurityPostgresqlRepository,
 
     /* Use Cases */
@@ -90,6 +92,6 @@ import {
       ],
     },
   ],
-  exports: [UsersPostgresqlRepository], // MongooseModule
+  exports: [UsersSQLRepository],
 })
 export class AccountsModule {}
