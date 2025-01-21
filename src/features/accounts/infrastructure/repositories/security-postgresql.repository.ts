@@ -64,4 +64,10 @@ export class SecurityPostgresqlRepository {
 
     return null;
   }
+
+  async deleteAll() {
+    const query = 'DELETE FROM sessions';
+    const result = await this.dataSource.query(query);
+    return result.affectedRows > 0;
+  }
 }
