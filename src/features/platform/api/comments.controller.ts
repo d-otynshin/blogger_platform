@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import {
   Put,
   Delete,
@@ -42,7 +41,7 @@ export class CommentsController {
   @UseGuards(JwtOptionalAuthGuard)
   @HttpCode(HttpStatus.OK)
   async getCommentById(
-    @Param('id') commentId: Types.ObjectId,
+    @Param('id') commentId: string,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<CommentOutputDto> {
     const userId = user?.id;
@@ -54,7 +53,7 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateComment(
-    @Param('id') id: Types.ObjectId,
+    @Param('id') id: string,
     @Body() commentsDto: CommentsInputDto,
     @ExtractUserFromRequest() user: UserContextDto,
   ): Promise<void> {
@@ -77,7 +76,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtAuthGuard)
   async interactComment(
-    @Param('id') id: Types.ObjectId,
+    @Param('id') id: string,
     @Body() interactionDto: CommentInteractionInputDto,
     @ExtractUserFromRequest() user: UserContextDto,
   ): Promise<void> {

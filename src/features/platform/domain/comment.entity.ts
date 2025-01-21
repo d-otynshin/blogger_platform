@@ -1,12 +1,12 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model, Types } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
 import { TCommentator } from '../dto/comment-dto';
 import { TInteraction } from '../dto/interaction-dto';
 
 @Schema({ timestamps: true })
 export class Comment {
   @Prop({ type: String, required: true })
-  postId: Types.ObjectId;
+  postId: string;
 
   @Prop({ type: String, required: true })
   content: string;
@@ -22,8 +22,8 @@ export class Comment {
 
   static createInstance(dto: {
     content: string;
-    commentatorInfo: { userId: Types.ObjectId; userLogin: string };
-    postId: Types.ObjectId;
+    commentatorInfo: { userId: string; userLogin: string };
+    postId: string;
   }): CommentDocument {
     const comment = new this();
 

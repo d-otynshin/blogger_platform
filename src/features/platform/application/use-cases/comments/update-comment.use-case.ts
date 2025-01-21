@@ -9,8 +9,8 @@ import { CommentsSQLRepository } from '../../../infrastructure/repositories/comm
 export class UpdateCommentCommand {
   constructor(
     public id: string,
-    public userId: string,
     public dto: CommentsInputDto,
+    public userId: string,
   ) {}
 }
 

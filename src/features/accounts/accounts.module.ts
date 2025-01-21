@@ -33,7 +33,7 @@ import { JwtStrategy } from './guards/bearer/jwt.strategy';
 import { LocalStrategy } from './guards/local/local.strategy';
 import { JwtRefreshStrategy } from './guards/bearer/jwt-refresh.strategy';
 import { BasicAuthGuard } from './guards/basic/basic-auth.guard';
-import { ThrottlerBehindProxyGuard } from './guards/limiter/throttler-behind-proxy.guard';
+// import { ThrottlerBehindProxyGuard } from './guards/limiter/throttler-behind-proxy.guard';
 
 import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
@@ -66,7 +66,7 @@ import {
     LocalStrategy,
     BasicAuthGuard,
     JwtRefreshStrategy,
-    ThrottlerBehindProxyGuard,
+    // ThrottlerBehindProxyGuard,
     {
       provide: ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
       useFactory: (): JwtService => {
