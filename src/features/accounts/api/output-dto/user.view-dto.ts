@@ -48,7 +48,7 @@ export class UserSQLViewDto {
     dto.email = user.email;
     dto.login = user.login;
     dto.id = user.id;
-    dto.createdAt = user.createdAt;
+    dto.createdAt = user.created_at;
 
     return dto;
   }
