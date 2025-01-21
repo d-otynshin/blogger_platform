@@ -57,9 +57,7 @@ export class UsersSQLQueryRepository {
 
     const countResult = await this.dataSource.query(countQuery, countParams);
 
-    console.log('countResult', countResult);
-
-    const totalCount = parseInt(countResult[0].total_count, 10);
+    const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 
     const items = users.map(UserSQLViewDto.mapToView);
 
