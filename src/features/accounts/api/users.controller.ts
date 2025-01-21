@@ -20,7 +20,7 @@ import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 import { UsersSQLQueryRepository } from '../infrastructure/queries/users-sql.query-repository';
 
-@Controller('users')
+@Controller('sa/users')
 @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
