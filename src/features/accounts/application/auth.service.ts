@@ -89,7 +89,7 @@ export class AuthService {
       throw BadRequestDomainException.create('User not found', 'email');
     }
 
-    if (userData.isConfirmed) {
+    if (userData.is_confirmed) {
       throw BadRequestDomainException.create(
         'Email is already confirmed',
         'email',
