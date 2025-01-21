@@ -52,7 +52,7 @@ export class UsersPostgresqlRepository {
   }
 
   async deleteInstance(id: string) {
-    const query = `DELETE * FROM users WHERE id = $1 RETURNING *`;
+    const query = `DELETE FROM users WHERE id = $1 RETURNING *`;
     const result = await this.dataSource.query(query, [id]);
 
     if (result.length > 0) {

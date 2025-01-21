@@ -10,7 +10,7 @@ export class UsersSQLQueryRepository {
   async getAll(
     query: GetUsersQueryParams,
   ): Promise<PaginatedViewDto<UserSQLViewDto[]>> {
-    let sqlQuery = `SELECT * FROM users WHERE `;
+    let sqlQuery = `FROM users WHERE `;
 
     const params = [];
     const conditions = [];
@@ -38,12 +38,13 @@ export class UsersSQLQueryRepository {
     params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
 
     // Fetch paginated users
-    const users = await this.dataSource.query(sqlQuery, params);
+    const users = await this.dataSource.query(`SELECT * ${sqlQuery}`, params);
 
     // Count total number of users without limit/offset
-    const countQuery = `SELECT COUNT(*) AS totalCount FROM users`;
+    const countQuery = `SELECT COUNT(*) AS totalCount ${sqlQuery}`;
 
     const countResult = await this.dataSource.query(countQuery);
+
     const totalCount = parseInt(countResult[0].totalcount, 10);
 
     const items = users.map(UserSQLViewDto.mapToView);
