@@ -29,7 +29,7 @@ import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { LoginInputDto } from './input-dto/login.input-dto';
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.use-case';
 import { RefreshTokenDto } from '../dto/session-dto';
-// import { ThrottlerBehindProxyGuard } from '../guards/limiter/throttler-behind-proxy.guard';
+import { ThrottlerBehindProxyGuard } from '../guards/limiter/throttler-behind-proxy.guard';
 import { SecurityPostgresqlRepository } from '../infrastructure/repositories/security-postgresql.repository';
 
 @Controller('auth')
@@ -82,7 +82,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
-  // @UseGuards(ThrottlerBehindProxyGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @Post('registration')
   async register(
     @Body() createUserInputDto: CreateUserInputDto,
@@ -90,14 +90,14 @@ export class AuthController {
     return this.authService.register(createUserInputDto);
   }
 
-  // @UseGuards(ThrottlerBehindProxyGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-email-resending')
   async resendEmail(@Body() resendEmailDto: EmailInputDto): Promise<void> {
     return this.authService.resendEmail(resendEmailDto);
   }
 
-  // @UseGuards(ThrottlerBehindProxyGuard)
+  @UseGuards(ThrottlerBehindProxyGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('registration-confirmation')
   async confirmEmail(
