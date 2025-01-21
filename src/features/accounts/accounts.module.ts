@@ -30,14 +30,13 @@ import { JwtStrategy } from './guards/bearer/jwt.strategy';
 import { LocalStrategy } from './guards/local/local.strategy';
 import { JwtRefreshStrategy } from './guards/bearer/jwt-refresh.strategy';
 import { BasicAuthGuard } from './guards/basic/basic-auth.guard';
+import { ThrottlerBehindProxyGuard } from './guards/limiter/throttler-behind-proxy.guard';
 
 import { NotificationsModule } from '../notifications/notifications.module';
 import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from './constants/auth-token.inject-constants';
-
-// import { ThrottlerBehindProxyGuard } from './guards/limiter/throttler-behind-proxy.guard';
 
 @Module({
   imports: [JwtModule, CqrsModule, NotificationsModule],
@@ -65,12 +64,13 @@ import {
     LocalStrategy,
     BasicAuthGuard,
     JwtRefreshStrategy,
+    ThrottlerBehindProxyGuard,
     {
       provide: ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.ACCESS_TOKEN_SECRET,
-          signOptions: { expiresIn: '5m' },
+          signOptions: { expiresIn: '10s' },
         });
       },
       inject: [
@@ -82,7 +82,7 @@ import {
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.REFRESH_TOKEN_SECRET, //TODO: move to env. will be in the following lessons
-          signOptions: { expiresIn: '20m' },
+          signOptions: { expiresIn: '20s' },
         });
       },
       inject: [
