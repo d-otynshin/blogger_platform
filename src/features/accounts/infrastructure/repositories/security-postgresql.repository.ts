@@ -41,15 +41,15 @@ export class SecurityPostgresqlRepository {
     return this.dataSource.query(query, [deviceId]);
   }
 
-  async updateSession(userId: string, iat: string): Promise<boolean> {
+  async updateSession(deviceId: string, iat: string): Promise<boolean> {
     const query = `
-    UPDATE sessions 
-    SET iat = $1 
-    WHERE "userId" = $2 
-    RETURNING *;
+      UPDATE sessions 
+      SET iat = $1 
+      WHERE "deviceId" = $2 
+      RETURNING *;
   `;
 
-    const result = await this.dataSource.query(query, [iat, userId]);
+    const result = await this.dataSource.query(query, [iat, deviceId]);
 
     return result.length > 0;
   }
