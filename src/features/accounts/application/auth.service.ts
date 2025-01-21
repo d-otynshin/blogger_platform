@@ -19,7 +19,6 @@ import {
 /* From Core */
 import {
   BadRequestDomainException,
-  ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
 import { UsersPostgresqlRepository } from '../infrastructure/repositories/users-postgresql.repository';
@@ -141,7 +140,7 @@ export class AuthService {
     }
 
     if (confirmEmailDto.code !== userData.confirmationCode) {
-      throw ForbiddenDomainException.create(
+      throw BadRequestDomainException.create(
         'Confirmation code is invalid',
         'code',
       );
