@@ -65,6 +65,6 @@ export class BlogsSQLRepository {
   async deleteAll() {
     const query = 'DELETE FROM blogs RETURNING *';
     const result = await this.dataSource.query(query);
-    return result.affectedRows > 0;
+    return result.length > 0;
   }
 }
