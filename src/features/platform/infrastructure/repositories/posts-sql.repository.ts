@@ -64,7 +64,7 @@ export class PostsSQLRepository {
       dto.content,
     ]);
 
-    return result[0] > 0;
+    return result.length > 0;
   }
 
   async createInteraction(

@@ -135,7 +135,7 @@ export class BlogsController {
 
   @Delete('sa/blogs/:blogId/posts/:postId')
   @UseGuards(BasicAuthGuard)
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.NO_CONTENT)
   // TODO: move to separate command
   async deletePostByBlogId(
     @Param('blogId') blogId: string,
