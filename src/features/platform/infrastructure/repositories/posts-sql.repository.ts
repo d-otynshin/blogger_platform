@@ -46,6 +46,8 @@ export class PostsSQLRepository {
     const query = `DELETE FROM posts WHERE id = $1`;
     const result = await this.dataSource.query(query, [id]);
 
+    console.log('result', result);
+
     return result[0] > 1;
   }
 

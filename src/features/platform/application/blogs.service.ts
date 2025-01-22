@@ -71,9 +71,11 @@ export class BlogsService {
 
   async deletePostByBlogId(blogId: string, postId: string) {
     const blogData = await this.blogsRepository.findById(blogId);
+    console.log('blogData', blogData);
     if (!blogData) return null;
 
     const postData = await this.postsRepository.findById(postId);
+    console.log('postData', postData);
     if (!postData) return null;
 
     return this.postsRepository.delete(postId);

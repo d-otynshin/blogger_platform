@@ -44,6 +44,14 @@ export class BlogsController {
   ) {}
 
   @UseGuards(BasicAuthGuard)
+  @Get('sa/blogs')
+  // TODO: move to separate command
+  async getAdminAll(
+    @Query() query: GetBlogsQueryParams,
+  ): Promise<PaginatedViewDto<BlogOutputDto[]>> {
+    return this.blogsQueryRepository.getAll(query);
+  }
+
   @Get('blogs')
   // TODO: move to separate command
   async getAll(
@@ -105,7 +113,7 @@ export class BlogsController {
 
   @Put('sa/blogs/:blogId/posts/:postId')
   @UseGuards(BasicAuthGuard)
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.NO_CONTENT)
   // TODO: move to separate command
   async updatePostByBlogId(
     @Param('blogId') blogId: string,
@@ -136,7 +144,7 @@ export class BlogsController {
     );
 
     if (!isDeleted) {
-      throw NotFoundDomainException.create('Blog not found');
+      throw NotFoundDomainException.create('Post not found');
     }
 
     return;
