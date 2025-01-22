@@ -107,4 +107,10 @@ export class CommentsSQLRepository {
 
     return result.length > 0;
   }
+
+  async deleteAll() {
+    const query = 'DELETE FROM comments';
+    const result = await this.dataSource.query(query);
+    return result.affectedRows > 0;
+  }
 }

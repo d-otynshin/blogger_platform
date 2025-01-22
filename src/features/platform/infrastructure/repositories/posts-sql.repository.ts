@@ -106,4 +106,10 @@ export class PostsSQLRepository {
 
     return result.length > 0;
   }
+
+  async deleteAll() {
+    const query = 'DELETE FROM posts';
+    const result = await this.dataSource.query(query);
+    return result.affectedRows > 0;
+  }
 }

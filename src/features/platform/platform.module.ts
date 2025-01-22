@@ -69,6 +69,6 @@ import { CommentsSQLRepository } from './infrastructure/repositories/comments-sq
     UpdateLikePostUseCase,
     CreateInteractionPostUseCase,
   ],
-  exports: [],
+  exports: [PostsSQLRepository, BlogsSQLRepository, CommentsSQLRepository],
 })
 export class PlatformModule {}
