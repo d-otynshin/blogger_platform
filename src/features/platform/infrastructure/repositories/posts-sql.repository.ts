@@ -35,6 +35,13 @@ export class PostsSQLRepository {
     return result[0];
   }
 
+  async findByBlogId(blogId: string) {
+    const query = `SELECT * FROM posts WHERE blog_id = $1 LIMIT 1`;
+    const result = await this.dataSource.query(query, [blogId]);
+
+    return result[0];
+  }
+
   async delete(id: string) {
     const query = `DELETE FROM posts WHERE id = $1`;
     const result = await this.dataSource.query(query, [id]);

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { BlogSQLOutputDto } from '../api/output-dto/blog.output-dto';
-import { CreatePostByBlogIdInputDto } from '../api/input-dto/posts.input-dto';
+import {
+  CreatePostByBlogIdInputDto,
+  UpdatePostByBlogIdDtoInputDto,
+} from '../api/input-dto/posts.input-dto';
 import {
   CreateBlogInputDto,
   UpdateBlogInputDto,
@@ -48,5 +51,31 @@ export class BlogsService {
     });
 
     return PostSQLOutputDto.mapToView(createdPost);
+  }
+
+  async updatePostByBlogId(
+    blogId: string,
+    dto: UpdatePostByBlogIdDtoInputDto,
+  ): Promise<PostSQLOutputDto | null> {
+    const blogData = await this.blogsRepository.findById(blogId);
+    if (!blogData) return null;
+
+    const createdPost = await this.postsRepository.updateById(blogId, {
+      title: dto.title,
+      content: dto.content,
+      shortDescription: dto.shortDescription,
+    });
+
+    return PostSQLOutputDto.mapToView(createdPost);
+  }
+
+  async deletePostByBlogId(blogId: string, postId: string) {
+    const blogData = await this.blogsRepository.findById(blogId);
+    if (!blogData) return null;
+
+    const postData = await this.postsRepository.findById(postId);
+    if (!postData) return null;
+
+    return this.postsRepository.delete(postId);
   }
 }

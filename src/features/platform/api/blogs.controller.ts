@@ -15,7 +15,10 @@ import {
 import { BlogsService } from '../application/blogs.service';
 import { GetBlogsQueryParams } from './input-dto/helpers/get-blogs-query-params.input-dto';
 import { BlogsSQLQueryRepository } from '../infrastructure/queries/blogs-sql.query-repository';
-import { CreatePostByBlogIdInputDto } from './input-dto/posts.input-dto';
+import {
+  CreatePostByBlogIdInputDto,
+  UpdatePostByBlogIdDtoInputDto,
+} from './input-dto/posts.input-dto';
 import { BlogOutputDto, BlogSQLOutputDto } from './output-dto/blog.output-dto';
 import {
   CreateBlogInputDto,
@@ -96,6 +99,43 @@ export class BlogsController {
     }
 
     return createdPost;
+  }
+
+  @Put('sa/blogs/:blogId/posts/:postId')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  // TODO: move to separate command
+  async updatePostByBlogId(
+    @Param('blogId') blogId: string,
+    @Body() dto: UpdatePostByBlogIdDtoInputDto,
+  ): Promise<PostSQLOutputDto> {
+    const updatedPost = await this.blogsService.updatePostByBlogId(blogId, dto);
+
+    if (!updatedPost) {
+      throw NotFoundDomainException.create('Blog not found');
+    }
+
+    return updatedPost;
+  }
+
+  @Delete('sa/blogs/:blogId/posts/:postId')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  // TODO: move to separate command
+  async deletePostByBlogId(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+  ): Promise<PostSQLOutputDto> {
+    const isDeleted = await this.blogsService.deletePostByBlogId(
+      blogId,
+      postId,
+    );
+
+    if (!isDeleted) {
+      throw NotFoundDomainException.create('Blog not found');
+    }
+
+    return;
   }
 
   @Get('blogs/:id')

@@ -1,4 +1,5 @@
 import { IsIn, IsNotEmpty, Length } from 'class-validator';
+import { OmitType } from '@nestjs/swagger';
 import {
   contentConstraints,
   shortDescriptionConstraints,
@@ -71,6 +72,11 @@ export class UpdatePostInputDto {
   @IsBlogExist()
   blogId: string;
 }
+
+export class UpdatePostByBlogIdDtoInputDto extends OmitType(
+  CreatePostByBlogIdInputDto,
+  ['blogName'] as const,
+) {}
 
 export class PostInteractionInputDto {
   @IsTrimmed()
