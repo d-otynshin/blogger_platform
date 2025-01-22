@@ -43,6 +43,7 @@ export class BlogsController {
     private readonly blogsQueryRepository: BlogsSQLQueryRepository,
   ) {}
   @Get('blogs')
+  @Get('sa/blogs')
   // TODO: move to separate command
   async getAll(
     @Query() query: GetBlogsQueryParams,
@@ -126,6 +127,8 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
   ): Promise<PostSQLOutputDto> {
+    console.log('postId', postId);
+    console.log('blogId', blogId);
     const isDeleted = await this.blogsService.deletePostByBlogId(
       blogId,
       postId,

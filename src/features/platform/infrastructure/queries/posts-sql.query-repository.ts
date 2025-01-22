@@ -34,7 +34,7 @@ export class PostsSQLQueryRepository {
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     let sqlQuery = `FROM posts`;
 
-    const sortByDict = { createdAt: 'created_at' };
+    const sortByDict = { createdAt: 'created_at', blogName: 'blog_name' };
     const params: number[] = [];
 
     const sqlQueryCount = sqlQuery;
