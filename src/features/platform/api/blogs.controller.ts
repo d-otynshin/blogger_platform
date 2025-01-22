@@ -42,8 +42,9 @@ export class BlogsController {
     private readonly blogsService: BlogsService,
     private readonly blogsQueryRepository: BlogsSQLQueryRepository,
   ) {}
+
+  @UseGuards(BasicAuthGuard)
   @Get('blogs')
-  @Get('sa/blogs')
   // TODO: move to separate command
   async getAll(
     @Query() query: GetBlogsQueryParams,
