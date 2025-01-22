@@ -117,15 +117,20 @@ export class BlogsController {
   // TODO: move to separate command
   async updatePostByBlogId(
     @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
     @Body() dto: UpdatePostByBlogIdDtoInputDto,
   ): Promise<PostSQLOutputDto> {
-    const updatedPost = await this.blogsService.updatePostByBlogId(blogId, dto);
+    const isUpdated = await this.blogsService.updatePostByBlogId(
+      blogId,
+      postId,
+      dto,
+    );
 
-    if (!updatedPost) {
+    if (!isUpdated) {
       throw NotFoundDomainException.create('Blog not found');
     }
 
-    return updatedPost;
+    return;
   }
 
   @Delete('sa/blogs/:blogId/posts/:postId')

@@ -46,12 +46,10 @@ export class PostsSQLRepository {
     const query = `DELETE FROM posts WHERE id = $1`;
     const result = await this.dataSource.query(query, [id]);
 
-    console.log('result', result);
-
-    return result[0] > 1;
+    return result[1] > 0;
   }
 
-  async updateById(id: string, dto: UpdatePostDto) {
+  async updateById(postId: string, dto: UpdatePostDto) {
     const query = `
       UPDATE posts
       SET title = $2, short_description = $3, content = $4
@@ -60,13 +58,13 @@ export class PostsSQLRepository {
     `;
 
     const result = await this.dataSource.query(query, [
-      id,
+      postId,
       dto.title,
       dto.shortDescription,
       dto.content,
     ]);
 
-    return result[0];
+    return result[0] > 0;
   }
 
   async createInteraction(

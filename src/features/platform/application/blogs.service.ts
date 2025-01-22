@@ -55,18 +55,17 @@ export class BlogsService {
 
   async updatePostByBlogId(
     blogId: string,
+    postId: string,
     dto: UpdatePostByBlogIdDtoInputDto,
-  ): Promise<PostSQLOutputDto | null> {
+  ): Promise<boolean> {
     const blogData = await this.blogsRepository.findById(blogId);
     if (!blogData) return null;
 
-    const createdPost = await this.postsRepository.updateById(blogId, {
+    return this.postsRepository.updateById(postId, {
       title: dto.title,
       content: dto.content,
       shortDescription: dto.shortDescription,
     });
-
-    return PostSQLOutputDto.mapToView(createdPost);
   }
 
   async deletePostByBlogId(blogId: string, postId: string) {
