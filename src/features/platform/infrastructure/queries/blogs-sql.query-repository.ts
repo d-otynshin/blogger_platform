@@ -38,7 +38,7 @@ export class BlogsSQLQueryRepository {
     const conditions = [];
 
     if (query.searchNameTerm) {
-      conditions.push(`login ILIKE $${params.length + 1}`);
+      conditions.push(`name ILIKE $${params.length + 1}`);
       params.push(`%${query.searchNameTerm}%`);
     }
 

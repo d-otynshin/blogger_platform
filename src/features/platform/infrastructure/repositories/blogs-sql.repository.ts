@@ -59,7 +59,7 @@ export class BlogsSQLRepository {
 
     console.log('update', result);
 
-    return result.length > 0;
+    return result[0].length > 0;
   }
 
   async deleteAll() {
