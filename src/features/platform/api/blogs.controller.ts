@@ -33,13 +33,13 @@ import { JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guar
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 import { ExtractUserIfExistsFromRequest } from '../../../core/decorators/extract-user-from-request';
 
-@Controller('sa/blogs')
+@Controller()
 export class BlogsController {
   constructor(
     private readonly blogsService: BlogsService,
     private readonly blogsQueryRepository: BlogsSQLQueryRepository,
   ) {}
-  @Get()
+  @Get('blogs')
   // TODO: move to separate command
   async getAll(
     @Query() query: GetBlogsQueryParams,
@@ -47,7 +47,7 @@ export class BlogsController {
     return this.blogsQueryRepository.getAll(query);
   }
 
-  @Post()
+  @Post('sa/blogs')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   // TODO: move to separate command
@@ -57,7 +57,7 @@ export class BlogsController {
     return this.blogsService.createBlog(createBlogDto);
   }
 
-  @Get(':blogId/posts')
+  @Get('blogs/:blogId/posts')
   @UseGuards(JwtOptionalAuthGuard)
   // TODO: move to separate command
   async getAllPosts(
@@ -78,7 +78,7 @@ export class BlogsController {
     return paginatedPosts;
   }
 
-  @Post(':blogId/posts')
+  @Post('sa/blogs/:blogId/posts')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   // TODO: move to separate command
@@ -98,7 +98,7 @@ export class BlogsController {
     return createdPost;
   }
 
-  @Get(':id')
+  @Get('blogs/:id')
   // TODO: move to separate command
   async getById(@Param('id') id: string): Promise<BlogSQLOutputDto> {
     const blog = await this.blogsQueryRepository.getById(id);
@@ -110,7 +110,7 @@ export class BlogsController {
     return blog;
   }
 
-  @Put(':id')
+  @Put('sa/blogs/:id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
@@ -127,7 +127,7 @@ export class BlogsController {
     return;
   }
 
-  @Delete(':id')
+  @Delete('sa/blogs/:id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   // TODO: move to separate command
