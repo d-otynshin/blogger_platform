@@ -1,14 +1,17 @@
 import { DataSource } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+
+import { PostsSQLRepository } from '../repositories/posts-sql.repository';
+import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { BaseSortablePaginationParams } from '../../../../core/dto/base.query-params.input-dto';
-import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
-import { PostsSQLRepository } from '../repositories/posts-sql.repository';
 
 export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
   sortBy = 'createdAt';
 }
 
+@Injectable()
 export class PostsSQLQueryRepository {
   constructor(
     private dataSource: DataSource,
@@ -29,7 +32,7 @@ export class PostsSQLQueryRepository {
     query: GetPostsQueryParams,
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    let sqlQuery = `FROM posts WHERE`;
+    let sqlQuery = `FROM posts`;
 
     const sortByDict = { createdAt: 'created_at' };
     const params: number[] = [];

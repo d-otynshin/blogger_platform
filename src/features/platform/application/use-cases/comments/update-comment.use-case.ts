@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import {
+  BadRequestDomainException,
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../../core/exceptions/domain-exceptions';
@@ -27,13 +28,14 @@ export class UpdateCommentUseCase
       throw NotFoundDomainException.create('Invalid comment', 'content');
     }
 
-    // TODO: make join query request
-    if (commentData?.commentatorInfo?.userId !== userId) {
+    if (commentData.commentator_id !== userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 
-    // TODO: add update for comments
-    // await this.commentsRepository.updateById(id, dto);
+    const isUpdated = await this.commentsRepository.updateInstance(id, dto);
+    if (!isUpdated) {
+      throw BadRequestDomainException.create('Forbidden');
+    }
 
     return;
   }

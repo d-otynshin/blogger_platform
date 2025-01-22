@@ -20,15 +20,17 @@ export class PostSQLOutputDto {
   static mapToView(post, userId?: string): PostSQLOutputDto {
     let myStatus = LikeStatus.None;
 
+    const interactions = [];
+
     if (userId) {
-      const myInteraction = post.interactions.find(
+      const myInteraction = interactions.find(
         (interaction) => interaction.userId === userId,
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;
     }
 
-    const newestLikes = post.interactions
+    const newestLikes = interactions
       .filter((interaction) => interaction.action === LikeStatus.Like)
       .sort((likeA, likeB) =>
         isBefore(likeA.added_at, likeB.added_at) ? 1 : -1,
@@ -42,7 +44,7 @@ export class PostSQLOutputDto {
 
     const dto = new PostSQLOutputDto();
 
-    dto.id = post._id.toString();
+    dto.id = post.id;
     dto.title = post.title;
     dto.shortDescription = post.short_description;
     dto.content = post.content;
@@ -51,10 +53,10 @@ export class PostSQLOutputDto {
     dto.createdAt = post.created_at;
 
     dto.extendedLikesInfo = {
-      likesCount: post.interactions.filter(
+      likesCount: interactions.filter(
         (interaction) => interaction.action === LikeStatus.Like,
       ).length,
-      dislikesCount: post.interactions.filter(
+      dislikesCount: interactions.filter(
         (interaction) => interaction.action === LikeStatus.Dislike,
       ).length,
       myStatus,

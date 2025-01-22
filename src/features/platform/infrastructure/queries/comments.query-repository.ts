@@ -1,53 +1,53 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentModelType } from '../../domain/comment.entity';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
-import { Post, PostModelType } from '../../domain/post.entity';
 import { GetPostsQueryParams } from './get-posts-query-params';
+import { CommentsSQLRepository } from '../repositories/comments-sql.repository';
+import { PostsSQLRepository } from '../repositories/posts-sql.repository';
 
 export class CommentsQueryRepository {
   constructor(
-    @InjectModel(Comment.name) private CommentModel: CommentModelType,
-    @InjectModel(Post.name) private PostModel: PostModelType,
+    private readonly commentRepository: CommentsSQLRepository,
+    private readonly postsRepository: PostsSQLRepository,
   ) {}
 
   async getCommentById(
     commentId: string,
     userId?: string,
   ): Promise<CommentOutputDto> {
-    const commentDocument = await this.CommentModel.findById(commentId);
+    const commentData = await this.commentRepository.getById(commentId);
 
-    if (!commentDocument) {
+    if (!commentData) {
       throw NotFoundDomainException.create('Comment not found', 'id');
     }
 
-    return CommentOutputDto.mapToView(commentDocument, userId);
+    return CommentOutputDto.mapToView(commentData, userId);
   }
 
   async getCommentsByPostId(
     postId: string,
     query: GetPostsQueryParams,
-    userId?: string,
+    // userId?: string,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
-    const postDocument = await this.PostModel.findById(postId);
-    if (!postDocument) {
+    const postData = await this.postsRepository.findById(postId);
+    if (!postData) {
       throw NotFoundDomainException.create('Post not found', 'postId');
     }
 
-    const comments = await this.CommentModel.find({ postId })
-      .sort({ [query.sortBy]: query.sortDirection })
-      .skip(query.calculateSkip())
-      .limit(query.pageSize);
+    // const comments = await this.commentRepository.find({ postId })
+    //   .sort({ [query.sortBy]: query.sortDirection })
+    //   .skip(query.calculateSkip())
+    //   .limit(query.pageSize);
 
-    const totalCount = await this.CommentModel.countDocuments({ postId });
+    const comments = [];
+    const totalCount = 0;
 
-    const items = comments.map((comment) =>
-      CommentOutputDto.mapToView(comment, userId),
-    );
+    // const items = comments.map((comment) =>
+    //   CommentOutputDto.mapToView(comment, userId),
+    // );
 
     return PaginatedViewDto.mapToView({
-      items,
+      items: comments,
       totalCount,
       page: query.pageNumber,
       size: query.pageSize,

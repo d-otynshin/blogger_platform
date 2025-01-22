@@ -16,7 +16,6 @@ export class UpdateCommentDto {
 }
 
 export class CommentInteractionDto {
-  login: string;
   commentId: string;
   userId: string;
   action: LikeStatus;

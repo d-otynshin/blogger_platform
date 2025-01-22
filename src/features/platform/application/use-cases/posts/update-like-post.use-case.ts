@@ -1,19 +1,13 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-
 import { PostInteractionInputDto } from '../../../api/input-dto/posts.input-dto';
-
-import {
-  ForbiddenDomainException,
-  NotFoundDomainException,
-} from '../../../../../core/exceptions/domain-exceptions';
 import { CreateInteractionPostCommand } from './create-interaction-post.use-case';
 import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
+import { ForbiddenDomainException } from '../../../../../core/exceptions/domain-exceptions';
 
 export class UpdateLikePostCommand {
   constructor(
     public postId: string,
     public userId: string,
-    public login: string,
     public dto: PostInteractionInputDto,
   ) {}
 }
@@ -28,15 +22,13 @@ export class UpdateLikePostUseCase
   ) {}
 
   async execute(command: UpdateLikePostCommand) {
-    const { postId, userId, login, dto } = command;
+    const { postId, userId, dto } = command;
 
     // Retrieve the post document by its ID
-    const postData = await this.postsRepository.findById(postId);
-    if (!postData) {
-      throw NotFoundDomainException.create('Invalid post', 'postId');
-    }
+    const postInteractions =
+      await this.postsRepository.getInteractionById(postId);
 
-    const interaction = postData.interactions.find(
+    const interaction = postInteractions.find(
       (interaction) => interaction.userId === userId,
     );
 
@@ -45,7 +37,6 @@ export class UpdateLikePostUseCase
         new CreateInteractionPostCommand({
           postId,
           userId,
-          login,
           action: dto.likeStatus,
         }),
       );
@@ -58,16 +49,11 @@ export class UpdateLikePostUseCase
       throw ForbiddenDomainException.create('Forbidden', 'userId');
     }
 
-    // Update the existing one with the new like status
-    // await this.PostModel.findOneAndUpdate(
-    //   { _id: postId, 'interactions.userId': userId },
-    //   {
-    //     $set: {
-    //       'interactions.$.addedAt': new Date(),
-    //       'interactions.$.action': dto.likeStatus,
-    //     },
-    //   },
-    // );
+    await this.postsRepository.updateInteractionById(
+      postId,
+      userId,
+      dto.likeStatus,
+    );
 
     return;
   }

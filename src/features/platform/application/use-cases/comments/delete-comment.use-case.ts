@@ -29,8 +29,7 @@ export class DeleteCommentUseCase
       throw ForbiddenDomainException.create('Forbidden');
     }
 
-    // const isDeleted = await this.commentsRepository.deleteById(id);
-    const isDeleted = true;
+    const isDeleted = await this.commentsRepository.deleteInstance(id);
 
     if (!isDeleted) {
       throw NotFoundDomainException.create('Comment not found', 'commentId');

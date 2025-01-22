@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { IsIn, IsNotEmpty, Length } from 'class-validator';
 import {
   contentConstraints,
@@ -7,7 +6,6 @@ import {
 } from '../../domain/post.entity';
 import { LikeStatus } from '../../dto/interaction-dto';
 import { IsTrimmed } from '../../../../core/decorators/is-trimmed';
-import { IsObjectId } from '../../../../core/decorators/is-objectid';
 import { IsBlogExist } from './helpers/validate-blog-id';
 
 export class CreatePostByBlogIdInputDto {
@@ -48,7 +46,6 @@ export class CreatePostInputDto {
 
   @IsTrimmed()
   @IsNotEmpty()
-  @IsObjectId()
   @IsBlogExist()
   blogId: string;
 }
@@ -71,9 +68,8 @@ export class UpdatePostInputDto {
 
   @IsTrimmed()
   @IsNotEmpty()
-  @IsObjectId()
   @IsBlogExist()
-  blogId: Types.ObjectId;
+  blogId: string;
 }
 
 export class PostInteractionInputDto {

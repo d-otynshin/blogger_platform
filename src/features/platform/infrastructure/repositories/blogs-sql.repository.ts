@@ -28,7 +28,7 @@ export class BlogsSQLRepository {
   }
 
   async findById(id: string) {
-    const query = `SELECT * FROM blogs WHERE id = $1`;
+    const query = `SELECT * FROM blogs WHERE id = $1 LIMIT 1`;
     const result = await this.dataSource.query(query, [id]);
 
     return result[0];
@@ -44,10 +44,7 @@ export class BlogsSQLRepository {
   async updateById(id: string, dto: UpdateBlogDto): Promise<boolean> {
     const query = `
       UPDATE blogs 
-      SET
-        name = $2, 
-        description = $3, 
-        websiteUrl = $4
+      SET name = $2, description = $3, websiteUrl = $4
       WHERE id = $1
       RETURNING *;
     `;

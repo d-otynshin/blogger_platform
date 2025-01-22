@@ -14,7 +14,6 @@ export class UpdatePostDto {
 }
 
 export class PostInteractionDto {
-  login: string;
   postId: string;
   userId: string;
   action: LikeStatus;

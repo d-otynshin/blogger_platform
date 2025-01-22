@@ -1,4 +1,5 @@
 import {
+  Get,
   Put,
   Delete,
   Body,
@@ -6,7 +7,6 @@ import {
   HttpCode,
   HttpStatus,
   Controller,
-  Get,
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -84,7 +84,6 @@ export class CommentsController {
     return this.commentsService.interact({
       commentId: id,
       userId: user.id,
-      login: user.login,
       action: interactionDto.likeStatus,
     });
   }

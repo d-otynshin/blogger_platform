@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { TInteraction } from '../../dto/interaction-dto';
+import { CreateCommentDto, UpdateCommentDto } from '../../dto/comment-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
-import { CreateCommentDto } from '../../dto/comment-dto';
 
 @Injectable()
 export class CommentsSQLRepository {
@@ -37,14 +37,74 @@ export class CommentsSQLRepository {
     return result[0];
   }
 
-  async getInteractions(id: string): Promise<TInteraction[] | null> {
-    const commentData = await this.getById(id);
+  async updateInstance(commentId: string, dto: UpdateCommentDto) {
+    const query = `UPDATE comments SET content = $2 WHERE id = $1`;
+    const result = await this.dataSource.query(query, [commentId, dto.content]);
+
+    return result.length > 0;
+  }
+
+  async deleteInstance(id: string) {
+    const query = `DELETE FROM comments WHERE id = ${id}`;
+    const result = await this.dataSource.query(query, [id]);
+
+    return result.length > 0;
+  }
+
+  async createInteraction(
+    commentId: string,
+    userId: string,
+    action: string,
+  ): Promise<boolean> {
+    const uuid = crypto.randomUUID();
+
+    const query = `
+      INSERT INTO comments_interactions (id, comment_id, user_id, action, created_at)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `;
+
+    const result = await this.dataSource.query(query, [
+      uuid,
+      commentId,
+      userId,
+      action,
+      new Date().toISOString(),
+    ]);
+
+    return result.length > 0;
+  }
+
+  async getInteractions(commentId: string): Promise<TInteraction[] | null> {
+    const commentData = await this.getById(commentId);
 
     if (!commentData) {
       throw NotFoundDomainException.create('No comment found');
     }
 
-    // TODO: change to interactions request
-    return commentData;
+    const query = `SELECT * FROM comments_interactions WHERE comment_id = $1`;
+
+    return this.dataSource.query(query, [commentId]);
+  }
+
+  async updateInteractionById(
+    commentId: string,
+    userId: string,
+    action: string,
+  ): Promise<boolean> {
+    const query = `
+      UPDATE comments_interactions
+      SET action = $3
+      WHERE comment_id = $1 AND user_id = $2
+      RETURNING *
+    `;
+
+    const result = await this.dataSource.query(query, [
+      commentId,
+      userId,
+      action,
+    ]);
+
+    return result.length > 0;
   }
 }

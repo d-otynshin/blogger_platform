@@ -23,11 +23,6 @@ export class ValidateUserUseCase
 
     if (!userData) return null;
 
-    console.log('validate');
-
-    console.log(command.password);
-    console.log(userData.password_hash);
-
     const isCorrect = await this.cryptoService.comparePasswords({
       password: command.password,
       hash: userData.password_hash,

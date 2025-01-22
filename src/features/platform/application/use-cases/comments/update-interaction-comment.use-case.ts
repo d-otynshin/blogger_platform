@@ -14,19 +14,13 @@ export class UpdateInteractionCommentUseCase
   constructor(private commentsRepository: CommentsSQLRepository) {}
 
   async execute({ dto }: UpdateInteractionCommentCommand) {
-    // const commentDocument = await this.CommentModel.findOneAndUpdate(
-    //   { _id: dto.commentId, 'interactions.userId': dto.userId },
-    //   {
-    //     $set: {
-    //       'interactions.$.updatedAt': new Date(),
-    //       'interactions.$.action': dto.action,
-    //     },
-    //   },
-    // );
+    const isUpdated = await this.commentsRepository.updateInteractionById(
+      dto.commentId,
+      dto.userId,
+      dto.action,
+    );
 
-    const commentData = dto;
-
-    if (!commentData) {
+    if (!isUpdated) {
       throw BadRequestDomainException.create('Invalid comment', 'content');
     }
 

@@ -19,12 +19,15 @@ export class PostsService {
       throw NotFoundDomainException.create('Blog not found', 'blogId');
     }
 
-    const createdPostData = this.postsRepository.createInstance(dto.blogId, {
-      title: dto.title,
-      content: dto.content,
-      shortDescription: dto.shortDescription,
-      blogName: blogData.name,
-    });
+    const createdPostData = await this.postsRepository.createInstance(
+      dto.blogId,
+      {
+        title: dto.title,
+        content: dto.content,
+        shortDescription: dto.shortDescription,
+        blogName: blogData.name,
+      },
+    );
 
     return PostSQLOutputDto.mapToView(createdPostData);
   }

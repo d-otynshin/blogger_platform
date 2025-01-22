@@ -7,7 +7,9 @@ import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
 import { PostsSQLQueryRepository } from './posts-sql.query-repository';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { GetPostsQueryParams } from './get-posts-query-params';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class BlogsSQLQueryRepository {
   constructor(
     private dataSource: DataSource,

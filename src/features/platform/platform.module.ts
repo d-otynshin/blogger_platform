@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 
 /* Constraints */
 import { IsBlogExistConstraint } from './api/input-dto/helpers/validate-blog-id';
@@ -34,9 +35,10 @@ import { UpdateLikePostUseCase } from './application/use-cases/posts/update-like
 import { CreateInteractionPostUseCase } from './application/use-cases/posts/create-interaction-post.use-case';
 import { UpdateInteractionCommentUseCase } from './application/use-cases/comments/update-interaction-comment.use-case';
 import { CreateInteractionCommentUseCase } from './application/use-cases/comments/create-interaction-comment.use-case';
+import { CommentsSQLRepository } from './infrastructure/repositories/comments-sql.repository';
 
 @Module({
-  imports: [AccountsModule],
+  imports: [AccountsModule, CqrsModule],
   controllers: [BlogsController, PostsController, CommentsController],
   providers: [
     /* Guards */
@@ -51,6 +53,7 @@ import { CreateInteractionCommentUseCase } from './application/use-cases/comment
     PostsService,
 
     /* Repositories */
+    CommentsSQLRepository,
     CommentsQueryRepository,
     BlogsSQLRepository,
     BlogsSQLQueryRepository,

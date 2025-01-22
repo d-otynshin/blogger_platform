@@ -10,8 +10,8 @@ export class PostsSQLRepository {
     const uuid = crypto.randomUUID();
 
     const query = `
-      INSERT INTO blogs (id, title, short_description, content, blog_name, blog_id, created_at)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO posts (id, title, short_description, content, blog_name, blog_id, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
     `;
 
@@ -45,10 +45,7 @@ export class PostsSQLRepository {
   async updateById(id: string, dto: UpdatePostDto) {
     const query = `
       UPDATE posts
-      SET
-        title = $2
-        short_description = $3
-        content = $4
+      SET title = $2, short_description = $3, content = $4
       WHERE id = $1
       RETURNING *  
     `;
@@ -61,5 +58,52 @@ export class PostsSQLRepository {
     ]);
 
     return result[0];
+  }
+
+  async createInteraction(
+    postId: string,
+    userId: string,
+    action: string,
+  ): Promise<boolean> {
+    const uuid = crypto.randomUUID();
+
+    const query = `
+      INSERT INTO posts_interactions (id, post_id, user_id, action, created_at)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `;
+
+    const result = await this.dataSource.query(query, [
+      uuid,
+      postId,
+      userId,
+      action,
+      new Date().toISOString(),
+    ]);
+
+    return result.length > 0;
+  }
+
+  async getInteractionById(postId: string) {
+    const query = `SELECT * FROM posts_interactions WHERE post_id = $1`;
+
+    return this.dataSource.query(query, [postId]);
+  }
+
+  async updateInteractionById(
+    postId: string,
+    userId: string,
+    action: string,
+  ): Promise<boolean> {
+    const query = `
+      UPDATE posts_interactions
+      SET action = $3
+      WHERE post_id = $1 AND user_id = $2
+      RETURNING *
+    `;
+
+    const result = await this.dataSource.query(query, [postId, userId, action]);
+
+    return result.length > 0;
   }
 }

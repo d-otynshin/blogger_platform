@@ -1,40 +1,39 @@
-import { Types } from 'mongoose';
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
   Post,
+  Get,
   Put,
+  Delete,
+  Body,
+  Param,
   Query,
   UseGuards,
+  Controller,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 
 import { BlogsService } from '../application/blogs.service';
 import { GetBlogsQueryParams } from './input-dto/helpers/get-blogs-query-params.input-dto';
-import { BlogOutputDto, BlogSQLOutputDto } from './output-dto/blog.output-dto';
+import { BlogsSQLQueryRepository } from '../infrastructure/queries/blogs-sql.query-repository';
 import { CreatePostByBlogIdInputDto } from './input-dto/posts.input-dto';
-
-import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
-import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
-
-/* From Accounts module */
-import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
+import { BlogOutputDto, BlogSQLOutputDto } from './output-dto/blog.output-dto';
 import {
   CreateBlogInputDto,
   UpdateBlogInputDto,
 } from './input-dto/blogs.input-dto';
-import { ExtractUserIfExistsFromRequest } from '../../../core/decorators/extract-user-from-request';
-import { UserContextDto } from '../../accounts/dto/auth.dto';
-import { JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
-import { BlogsSQLQueryRepository } from '../infrastructure/queries/blogs-sql.query-repository';
+
+import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
 import { PostSQLOutputDto } from './output-dto/post-sql.output-dto';
 import { GetPostsQueryParams } from '../infrastructure/queries/get-posts-query-params';
 
-@Controller('blogs')
+import { UserContextDto } from '../../accounts/dto/auth.dto';
+import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
+import { JwtOptionalAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
+
+import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
+import { ExtractUserIfExistsFromRequest } from '../../../core/decorators/extract-user-from-request';
+
+@Controller('sa/blogs')
 export class BlogsController {
   constructor(
     private readonly blogsService: BlogsService,
