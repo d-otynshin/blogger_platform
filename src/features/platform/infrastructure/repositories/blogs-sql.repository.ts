@@ -63,8 +63,8 @@ export class BlogsSQLRepository {
   }
 
   async deleteAll() {
-    const query = 'DELETE FROM blogs RETURNING *';
+    const query = 'DELETE FROM blogs';
     const result = await this.dataSource.query(query);
-    return result.length > 0;
+    return result.affectedRows > 0;
   }
 }
