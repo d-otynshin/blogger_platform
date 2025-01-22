@@ -135,7 +135,7 @@ export class BlogsController {
     const isDeleted = await this.blogsService.deleteBlogById(id);
 
     if (!isDeleted) {
-      throw NotFoundDomainException.create(`Blog with ID ${id} not found`);
+      throw NotFoundDomainException.create(`Blog with id ${id} not found`);
     }
 
     return;

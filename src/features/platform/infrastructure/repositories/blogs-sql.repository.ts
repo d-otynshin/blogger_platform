@@ -35,7 +35,7 @@ export class BlogsSQLRepository {
   }
 
   async delete(id: string) {
-    const query = `DELETE FROM blogs WHERE id = $1`;
+    const query = `DELETE FROM blogs WHERE id = $1 RETURNING *`;
     const result = await this.dataSource.query(query, [id]);
     console.log('delete', result);
 
@@ -63,7 +63,7 @@ export class BlogsSQLRepository {
   }
 
   async deleteAll() {
-    const query = 'DELETE FROM blogs';
+    const query = 'DELETE FROM blogs RETURNING *';
     const result = await this.dataSource.query(query);
     return result.affectedRows > 0;
   }
