@@ -115,10 +115,10 @@ export class BlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Param('id') id: string,
-    @Body() updateBlogDto: UpdateBlogInputDto,
+    @Body() dto: UpdateBlogInputDto,
   ): Promise<boolean> {
     // TODO: move to separate command
-    const isUpdated = await this.blogsService.updateBlog(id, updateBlogDto);
+    const isUpdated = await this.blogsService.updateBlog(id, dto);
 
     if (!isUpdated) {
       throw NotFoundDomainException.create(`Blog with ID ${id} not found`);

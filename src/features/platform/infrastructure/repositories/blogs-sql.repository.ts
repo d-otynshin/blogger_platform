@@ -44,7 +44,7 @@ export class BlogsSQLRepository {
   async updateById(id: string, dto: UpdateBlogDto): Promise<boolean> {
     const query = `
       UPDATE blogs 
-      SET name = $2, description = $3, websiteUrl = $4
+      SET name = $2, description = $3, website_url = $4
       WHERE id = $1
       RETURNING *;
     `;
