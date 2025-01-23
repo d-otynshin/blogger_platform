@@ -2,7 +2,7 @@ import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostInteractionInputDto } from '../../../api/input-dto/posts.input-dto';
 import { CreateInteractionPostCommand } from './create-interaction-post.use-case';
 import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
-import { ForbiddenDomainException } from '../../../../../core/exceptions/domain-exceptions';
+import { ForbiddenDomainException, NotFoundDomainException } from '../../../../../core/exceptions/domain-exceptions';
 
 export class UpdateLikePostCommand {
   constructor(
@@ -23,6 +23,12 @@ export class UpdateLikePostUseCase
 
   async execute(command: UpdateLikePostCommand) {
     const { postId, userId, dto } = command;
+
+    const postData = await this.postsRepository.findById(postId);
+
+    if (!postData) {
+      throw NotFoundDomainException.create('Post not found', 'postId');
+    }
 
     // Retrieve the post document by its ID
     const postInteractions =

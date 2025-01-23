@@ -2,13 +2,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { UserContextDto } from '../../../../accounts/dto/auth.dto';
 
+import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
+import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
+import { UsersSQLRepository } from '../../../../accounts/infrastructure/repositories/users-sql.repository';
+
 import {
   BadRequestDomainException,
   NotFoundDomainException,
 } from '../../../../../core/exceptions/domain-exceptions';
-import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
-import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
-import { UsersSQLRepository } from '../../../../accounts/infrastructure/repositories/users-sql.repository';
 
 export class CreateCommentCommand {
   constructor(

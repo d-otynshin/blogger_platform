@@ -43,10 +43,10 @@ export class CommentsSQLRepository {
   }
 
   async deleteInstance(id: string) {
-    const query = `DELETE FROM comments WHERE id = $1`;
+    const query = `DELETE FROM comments WHERE id = $1 RETURNING *`;
     const result = await this.dataSource.query(query, [id]);
-
-    return result.length > 0;
+    // TODO: correct all query responses
+    return result[0].length > 0;
   }
 
   async createInteraction(

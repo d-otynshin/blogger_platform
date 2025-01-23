@@ -28,7 +28,7 @@ export class CommentsQueryRepository {
     }
 
     const userData = await this.usersRepository.findById(
-      commentData.commentator_d,
+      commentData.commentator_id,
     );
 
     if (!userData) {

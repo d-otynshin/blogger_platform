@@ -25,7 +25,7 @@ export class DeleteCommentUseCase
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }
 
-    if (commentData?.commentatorInfo?.userId !== userId) {
+    if (commentData.commentator_id !== userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 
