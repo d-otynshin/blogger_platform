@@ -90,12 +90,12 @@ export class CommentsQueryRepository {
 
     const totalCount = parseInt(countResult[0].total_count, 10);
 
-    // const items = comments.map((comment: any) =>
-    //   CommentOutputDto.mapToView(comment, userId),
-    // );
+    const items = comments.map((comment: any) =>
+      CommentOutputDto.mapToView(comment, userId),
+    );
 
     return PaginatedViewDto.mapToView({
-      items: comments,
+      items,
       totalCount,
       page: query.pageNumber,
       size: query.pageSize,
