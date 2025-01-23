@@ -27,19 +27,19 @@ export class CommentsService {
       throw NotFoundDomainException.create('No interactions found.');
     }
 
-    const interaction = interactions.find(
+    const myInteraction = interactions.find(
       (interaction): boolean => interaction.user_id === dto.userId,
     );
 
-    if (!interaction) {
+    if (!myInteraction) {
       return this.commandBus.execute(new CreateInteractionCommentCommand(dto));
     }
 
-    if (interaction.action === dto.action) {
+    if (myInteraction.action === dto.action) {
       return;
     }
 
-    if (interaction.user_id !== dto.userId) {
+    if (myInteraction.user_id !== dto.userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

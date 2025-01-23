@@ -30,17 +30,21 @@ export class CommentsQueryRepository {
       throw NotFoundDomainException.create('Comment not found', 'id');
     }
 
-    const userData = await this.usersRepository.findById(
+    const commentatorData = await this.usersRepository.findById(
       commentData.commentator_id,
     );
 
-    if (!userData) {
+    if (!commentatorData) {
       throw BadRequestDomainException.create('Not Found', 'user');
     }
 
+    const interactions =
+      await this.commentRepository.getInteractions(commentId);
+
     const commentWithLogin = {
       ...commentData,
-      commentator_login: userData.login,
+      interactions,
+      commentator_login: commentatorData.login,
     };
 
     return CommentOutputDto.mapToView(commentWithLogin, userId);
