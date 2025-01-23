@@ -73,7 +73,7 @@ export class CommentsSQLRepository {
     return result.length > 0;
   }
 
-  async getInteractions(commentId: string): Promise<TInteraction[] | null> {
+  async getInteractions(commentId: string) {
     const commentData = await this.getById(commentId);
 
     if (!commentData) {
@@ -103,7 +103,7 @@ export class CommentsSQLRepository {
       action,
     ]);
 
-    return result.length > 0;
+    return result[0].length > 0;
   }
 
   async deleteAll() {

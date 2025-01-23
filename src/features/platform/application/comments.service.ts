@@ -19,11 +19,6 @@ export class CommentsService {
   ) {}
 
   async interact(dto: CommentInteractionDto): Promise<null | void> {
-    // TODO: create decorator?
-    if (!Types.ObjectId.isValid(dto.commentId)) {
-      throw NotFoundDomainException.create('Comment not found', 'commentId');
-    }
-
     const interactions = await this.commentsRepository.getInteractions(
       dto.commentId,
     );
@@ -33,7 +28,7 @@ export class CommentsService {
     }
 
     const interaction = interactions.find(
-      (interaction: TInteraction): boolean => interaction.userId === dto.userId,
+      (interaction): boolean => interaction.user_id === dto.userId,
     );
 
     if (!interaction) {
@@ -44,7 +39,7 @@ export class CommentsService {
       return;
     }
 
-    if (interaction.userId !== dto.userId) {
+    if (interaction.user_id !== dto.userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 
