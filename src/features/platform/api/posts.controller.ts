@@ -73,6 +73,34 @@ export class PostsController {
     return this.postsService.createPost(createPostDto);
   }
 
+  @Get(':id')
+  @UseGuards(JwtOptionalAuthGuard)
+  async getById(
+    @Param('id') id: string,
+    @ExtractUserIfExistsFromRequest() user: UserContextDto,
+  ): Promise<PostSQLOutputDto> {
+    const userId = user?.id;
+
+    return this.postsQueryRepository.getById(id, userId);
+  }
+
+  @Put(':id')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateBlog(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostInputDto,
+  ): Promise<void> {
+    return this.postsService.updatePost(id, updatePostDto);
+  }
+
+  @Delete(':id')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteBlog(@Param('id') id: string): Promise<void> {
+    return this.postsService.deletePostById(id);
+  }
+
   @Get(':postId/comments')
   @UseGuards(JwtOptionalAuthGuard)
   async getAllPosts(
@@ -102,34 +130,6 @@ export class PostsController {
     );
 
     return CommentOutputDto.mapToView(commentDataWithLogin);
-  }
-
-  @Get(':id')
-  @UseGuards(JwtOptionalAuthGuard)
-  async getById(
-    @Param('id') id: string,
-    @ExtractUserIfExistsFromRequest() user: UserContextDto,
-  ): Promise<PostSQLOutputDto> {
-    const userId = user?.id;
-
-    return this.postsQueryRepository.getById(id, userId);
-  }
-
-  @Put(':id')
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async updateBlog(
-    @Param('id') id: string,
-    @Body() updatePostDto: UpdatePostInputDto,
-  ): Promise<void> {
-    return this.postsService.updatePost(id, updatePostDto);
-  }
-
-  @Delete(':id')
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteBlog(@Param('id') id: string): Promise<void> {
-    return this.postsService.deletePostById(id);
   }
 
   @Put(':id/like-status')

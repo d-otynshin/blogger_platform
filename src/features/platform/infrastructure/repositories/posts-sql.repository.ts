@@ -91,8 +91,13 @@ export class PostsSQLRepository {
     return result.length > 0;
   }
 
-  async getInteractionById(postId: string) {
-    const query = `SELECT * FROM posts_interactions WHERE post_id = $1`;
+  async getInteractionsById(postId: string) {
+    const query = `
+        SELECT pi.*, u.login AS user_login FROM posts_interactions pi
+        LEFT JOIN users u
+        ON pi.user_id = u.id
+        WHERE post_id = $1
+    `;
 
     return this.dataSource.query(query, [postId]);
   }

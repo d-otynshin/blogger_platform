@@ -26,7 +26,7 @@ export class PostsSQLQueryRepository {
     }
 
     const postInteractions =
-      await this.postsRepository.getInteractionById(postId);
+      await this.postsRepository.getInteractionsById(postId);
 
     return PostSQLOutputDto.mapToView(
       {
