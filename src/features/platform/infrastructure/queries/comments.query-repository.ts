@@ -55,8 +55,8 @@ export class CommentsQueryRepository {
 
     let sqlQuery = `
       FROM comments c
-      JOIN users u ON c.commentator_id = u.id
-      JOIN comments_interactions ci ON c.id = ci.comment_id;
+      LEFT JOIN users u ON c.commentator_id = u.id
+      LEFT JOIN comments_interactions ci ON c.id = ci.comment_id
       GROUP BY c.id
     `;
 
