@@ -25,7 +25,16 @@ export class PostsSQLQueryRepository {
       throw NotFoundDomainException.create('Post not found');
     }
 
-    return PostSQLOutputDto.mapToView(postData, userId);
+    const postInteractions =
+      await this.postsRepository.getInteractionById(postId);
+
+    return PostSQLOutputDto.mapToView(
+      {
+        ...postData,
+        interactions: postInteractions,
+      },
+      userId,
+    );
   }
 
   async getAllPosts(
