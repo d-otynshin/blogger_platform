@@ -32,7 +32,7 @@ export class UpdateLikePostUseCase
 
     // Retrieve the post document by its ID
     const postInteractions =
-      await this.postsRepository.getInteractionById(postId);
+      await this.postsRepository.getInteractionsById(postId);
 
     const interaction = postInteractions.find(
       (interaction) => interaction.user_id === userId,
