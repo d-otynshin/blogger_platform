@@ -102,9 +102,6 @@ export class PostsSQLQueryRepository {
     const sortByDict = { createdAt: 'created_at' };
     const params: (string | number)[] = [blogId];
 
-    const sqlQueryCount = sqlQuery;
-    const countParams = [...params];
-
     sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
     sqlQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
 
@@ -122,9 +119,12 @@ export class PostsSQLQueryRepository {
       params,
     );
 
-    // Count total number of posts without limit/offset
-    const countQuery = `SELECT COUNT(*) AS total_count ${sqlQueryCount}`;
-    const countResult = await this.dataSource.query(countQuery, countParams);
+    const countResult = await this.dataSource.query(
+      `SELECT COUNT(*) AS total_count FROM posts WHERE blog_ud = $1`,
+      [blogId],
+    );
+
+    console.log('countResult', countResult);
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 

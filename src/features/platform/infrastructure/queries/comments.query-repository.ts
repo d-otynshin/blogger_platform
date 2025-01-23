@@ -64,12 +64,9 @@ export class CommentsQueryRepository {
     `;
 
     const sortByDict = { createdAt: 'created_at' };
-    const params: number[] = [];
 
     sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
-    sqlQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-
-    params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
+    sqlQuery += ` LIMIT $1 OFFSET $2`;
 
     const comments = await this.dataSource.query(
       `
@@ -83,7 +80,7 @@ export class CommentsQueryRepository {
             )
         ) FILTER (WHERE ci.user_id IS NOT NULL) AS interactions ${sqlQuery}
       `,
-      params,
+      [query.pageSize, (query.pageNumber - 1) * query.pageSize],
     );
 
     const countResult = await this.dataSource.query(
