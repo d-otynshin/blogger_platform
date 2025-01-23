@@ -87,9 +87,10 @@ export class PostsSQLQueryRepository {
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     let sqlQuery = `
-      FROM posts WHERE blog_id = $1
+      FROM posts p
       LEFT JOIN posts_interactions pi ON id = pi.post_id
       LEFT JOIN users u ON pi.user_id = u.id
+      WHERE p.blog_id = $1
       GROUP BY p.id
     `;
 

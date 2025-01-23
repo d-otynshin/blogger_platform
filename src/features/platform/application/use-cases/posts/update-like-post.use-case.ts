@@ -35,7 +35,7 @@ export class UpdateLikePostUseCase
       await this.postsRepository.getInteractionById(postId);
 
     const interaction = postInteractions.find(
-      (interaction) => interaction.userId === userId,
+      (interaction) => interaction.user_id === userId,
     );
 
     if (!interaction) {
@@ -51,7 +51,7 @@ export class UpdateLikePostUseCase
     }
 
     // Verify that the user is authorized to update the comment
-    if (interaction.userId !== userId) {
+    if (interaction.user_id !== userId) {
       throw ForbiddenDomainException.create('Forbidden', 'userId');
     }
 

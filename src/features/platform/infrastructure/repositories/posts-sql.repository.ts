@@ -111,7 +111,7 @@ export class PostsSQLRepository {
 
     const result = await this.dataSource.query(query, [postId, userId, action]);
 
-    return result.length > 0;
+    return result[0].length > 0;
   }
 
   async deleteAll() {
