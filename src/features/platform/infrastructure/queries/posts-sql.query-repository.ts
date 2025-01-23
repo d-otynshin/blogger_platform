@@ -35,6 +35,7 @@ export class PostsSQLQueryRepository {
     let sqlQuery = `
       FROM posts p
       LEFT JOIN posts_interactions pi ON p.id = pi.post_id
+      LEFT JOIN users u ON pi.user_id = u.id
       GROUP BY p.id
     `;
 
@@ -56,7 +57,8 @@ export class PostsSQLQueryRepository {
             JSON_BUILD_OBJECT(
                 'user_id', pi.user_id, 
                 'action', pi.action, 
-                'added_at', pi.added_at
+                'added_at', pi.added_at,
+                'user_login', u.login
             )
         ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}
       `,
@@ -87,6 +89,7 @@ export class PostsSQLQueryRepository {
     let sqlQuery = `
       FROM posts WHERE blog_id = $1
       LEFT JOIN posts_interactions pi ON id = pi.post_id
+      LEFT JOIN users u ON pi.user_id = u.id
       GROUP BY p.id
     `;
 
@@ -105,7 +108,7 @@ export class PostsSQLQueryRepository {
       `SELECT p.*,
         JSON_AGG(
             JSON_BUILD_OBJECT(
-                'user_id', pi.user_id, 
+                'user_id', pi.user_id,
                 'action', pi.action, 
                 'added_at', pi.added_at
             )

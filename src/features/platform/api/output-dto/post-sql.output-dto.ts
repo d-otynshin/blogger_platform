@@ -39,7 +39,7 @@ export class PostSQLOutputDto {
       .map((like) => ({
         addedAt: like.added_at,
         userId: like.user_id,
-        login: like.login,
+        login: like.user_login,
       }));
 
     const dto = new PostSQLOutputDto();

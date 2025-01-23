@@ -9,7 +9,7 @@ import { CommentsSQLRepository } from '../../../infrastructure/repositories/comm
 
 export class UpdateCommentCommand {
   constructor(
-    public id: string,
+    public commentId: string,
     public dto: CommentsInputDto,
     public userId: string,
   ) {}
@@ -21,8 +21,8 @@ export class UpdateCommentUseCase
 {
   constructor(private commentsRepository: CommentsSQLRepository) {}
 
-  async execute({ id, dto, userId }: UpdateCommentCommand) {
-    const commentData = await this.commentsRepository.getById(id);
+  async execute({ commentId, dto, userId }: UpdateCommentCommand) {
+    const commentData = await this.commentsRepository.getById(commentId);
 
     if (!commentData) {
       throw NotFoundDomainException.create('Invalid comment', 'content');
@@ -32,7 +32,11 @@ export class UpdateCommentUseCase
       throw ForbiddenDomainException.create('Forbidden');
     }
 
-    const isUpdated = await this.commentsRepository.updateInstance(id, dto);
+    const isUpdated = await this.commentsRepository.updateInstance(
+      commentId,
+      dto,
+    );
+
     if (!isUpdated) {
       throw BadRequestDomainException.create('Forbidden');
     }

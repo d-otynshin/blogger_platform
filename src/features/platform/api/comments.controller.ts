@@ -53,12 +53,12 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateComment(
-    @Param('id') id: string,
+    @Param('id') commentId: string,
     @Body() commentsDto: CommentsInputDto,
     @ExtractUserFromRequest() user: UserContextDto,
   ): Promise<void> {
     return this.commandBus.execute(
-      new UpdateCommentCommand(id, commentsDto, user.id),
+      new UpdateCommentCommand(commentId, commentsDto, user.id),
     );
   }
 
