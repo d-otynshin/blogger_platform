@@ -96,7 +96,7 @@ export class PostsSQLQueryRepository {
       LEFT JOIN posts_interactions pi ON p.id = pi.post_id
       LEFT JOIN users u ON pi.user_id = u.id
       WHERE p.blog_id = $1
-      GROUP BY p.id, u.id, u.login
+      GROUP BY p.id
     `;
 
     const sortByDict = { createdAt: 'created_at' };
@@ -113,7 +113,7 @@ export class PostsSQLQueryRepository {
             JSON_BUILD_OBJECT(
                 'user_id', pi.user_id,
                 'action', pi.action, 
-                'added_at', pi.added_at
+                'added_at', pi.added_at,
                 'user_login', u.login
             )
         ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}`,
