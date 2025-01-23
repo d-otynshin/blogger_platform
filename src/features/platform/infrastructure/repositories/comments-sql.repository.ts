@@ -29,9 +29,7 @@ export class CommentsSQLRepository {
   }
 
   async getById(id: string) {
-    const query = `
-        SELECT * FROM comments WHERE id = ${id}
-    `;
+    const query = `SELECT * FROM comments WHERE id = $1`;
 
     const result = await this.dataSource.query(query, [id]);
     return result[0];

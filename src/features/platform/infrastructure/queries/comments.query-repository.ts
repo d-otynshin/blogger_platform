@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
@@ -6,6 +7,7 @@ import { GetPostsQueryParams } from './get-posts-query-params';
 import { CommentsSQLRepository } from '../repositories/comments-sql.repository';
 import { PostsSQLRepository } from '../repositories/posts-sql.repository';
 
+@Injectable()
 export class CommentsQueryRepository {
   constructor(
     private dataSource: DataSource,
