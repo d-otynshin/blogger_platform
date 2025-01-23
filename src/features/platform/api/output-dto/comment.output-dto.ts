@@ -27,7 +27,10 @@ export class CommentOutputDto {
 
     dto.id = comment.id;
     dto.content = comment.content;
-    dto.commentatorInfo = comment.commentatorInfo;
+    dto.commentatorInfo = {
+      userId: comment.user_id,
+      userLogin: comment.user_login,
+    };
     dto.createdAt = comment.created_at;
     dto.likesInfo = {
       likesCount: comment.interactions.filter(

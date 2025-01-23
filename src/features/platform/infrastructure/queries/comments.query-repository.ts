@@ -1,3 +1,4 @@
+import { DataSource } from 'typeorm';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
@@ -7,8 +8,9 @@ import { PostsSQLRepository } from '../repositories/posts-sql.repository';
 
 export class CommentsQueryRepository {
   constructor(
-    private readonly commentRepository: CommentsSQLRepository,
+    private dataSource: DataSource,
     private readonly postsRepository: PostsSQLRepository,
+    private readonly commentRepository: CommentsSQLRepository,
   ) {}
 
   async getCommentById(
@@ -27,22 +29,51 @@ export class CommentsQueryRepository {
   async getCommentsByPostId(
     postId: string,
     query: GetPostsQueryParams,
-    // userId?: string,
+    userId?: string,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
     const postData = await this.postsRepository.findById(postId);
     if (!postData) {
       throw NotFoundDomainException.create('Post not found', 'postId');
     }
 
-    // const comments = await this.commentRepository.find({ postId })
-    //   .sort({ [query.sortBy]: query.sortDirection })
-    //   .skip(query.calculateSkip())
-    //   .limit(query.pageSize);
+    let sqlQuery = `
+      FROM comments c
+      JOIN users u ON c.commentator_id = u.id
+      JOIN comments_interactions ci ON c.id = ci.comment_id;
+      GROUP BY c.id
+    `;
 
-    const comments = [];
-    const totalCount = 0;
+    const sortByDict = { createdAt: 'created_at' };
+    const params: number[] = [];
 
-    // const items = comments.map((comment) =>
+    sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
+    sqlQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+
+    params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
+
+    const comments = await this.dataSource.query(
+      `
+         SELECT c.*,
+         u.id AS user_id, u.login AS user_login,
+         JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'user_id', ci.user_id, 
+                'action', ci.action, 
+                'added_at', ci.added_at
+            )
+        ) FILTER (WHERE ci.user_id IS NOT NULL) AS interactions ${sqlQuery}
+      `,
+      params,
+    );
+
+    const countResult = await this.dataSource.query(
+      'SELECT COUNT(*) AS total_count FROM comments WHERE postId = $1',
+      [postId],
+    );
+
+    const totalCount = parseInt(countResult[0].total_count, 10);
+
+    // const items = comments.map((comment: any) =>
     //   CommentOutputDto.mapToView(comment, userId),
     // );
 

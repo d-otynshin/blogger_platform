@@ -78,14 +78,14 @@ export class PostsController {
   async getAllPosts(
     @Param('postId') postId: string,
     @Query() query: GetPostsQueryParams,
-    // @ExtractUserIfExistsFromRequest() user: UserContextDto,
+    @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
-    // const userId = user?.id;
+    const userId = user?.id;
 
     return this.commentsQueryRepository.getCommentsByPostId(
       postId,
       query,
-      // userId,
+      userId,
     );
   }
 

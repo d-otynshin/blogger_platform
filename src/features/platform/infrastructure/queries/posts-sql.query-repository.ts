@@ -32,7 +32,11 @@ export class PostsSQLQueryRepository {
     query: GetPostsQueryParams,
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    let sqlQuery = `FROM posts`;
+    let sqlQuery = `
+      FROM posts p
+      LEFT JOIN posts_interactions pi ON p.id = pi.post_id
+      GROUP BY p.id
+    `;
 
     const sortByDict = { createdAt: 'created_at', blogName: 'blog_name' };
     const params: number[] = [];
@@ -45,7 +49,19 @@ export class PostsSQLQueryRepository {
 
     params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
 
-    const posts = await this.dataSource.query(`SELECT * ${sqlQuery}`, params);
+    const posts = await this.dataSource.query(
+      `
+        SELECT p.*,
+        JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'user_id', pi.user_id, 
+                'action', pi.action, 
+                'added_at', pi.added_at
+            )
+        ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}
+      `,
+      params,
+    );
 
     // Count total number of posts without limit/offset
     const countQuery = `SELECT COUNT(*) AS total_count ${sqlQueryCount}`;
@@ -68,7 +84,11 @@ export class PostsSQLQueryRepository {
     query: GetPostsQueryParams,
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    let sqlQuery = `FROM posts WHERE blog_id = $1`;
+    let sqlQuery = `
+      FROM posts WHERE blog_id = $1
+      JOIN posts_interactions pi ON id = pi.post_id
+      GROUP BY p.id
+    `;
 
     const sortByDict = { createdAt: 'created_at' };
     const params: (string | number)[] = [blogId];
@@ -81,7 +101,17 @@ export class PostsSQLQueryRepository {
 
     params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
 
-    const posts = await this.dataSource.query(`SELECT * ${sqlQuery}`, params);
+    const posts = await this.dataSource.query(
+      `SELECT p.*,
+        JSON_AGG(
+            JSON_BUILD_OBJECT(
+                'user_id', pi.user_id, 
+                'action', pi.action, 
+                'added_at', pi.added_at
+            )
+        ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}`,
+      params,
+    );
 
     // Count total number of posts without limit/offset
     const countQuery = `SELECT COUNT(*) AS total_count ${sqlQueryCount}`;

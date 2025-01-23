@@ -75,7 +75,7 @@ export class PostsSQLRepository {
     const uuid = crypto.randomUUID();
 
     const query = `
-      INSERT INTO posts_interactions (id, post_id, user_id, action, created_at)
+      INSERT INTO posts_interactions (id, post_id, user_id, action, added_at)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *
     `;

@@ -20,11 +20,11 @@ export class PostSQLOutputDto {
   static mapToView(post, userId?: string): PostSQLOutputDto {
     let myStatus = LikeStatus.None;
 
-    const interactions = [];
+    const interactions = post.interactions ?? [];
 
     if (userId) {
       const myInteraction = interactions.find(
-        (interaction) => interaction.userId === userId,
+        (interaction) => interaction.user_id === userId,
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;
