@@ -97,11 +97,11 @@ export class PostsController {
     @Body() createCommentDto: CommentsInputDto,
     @ExtractUserFromRequest() user: UserContextDto,
   ) {
-    const commentData = await this.commandBus.execute(
+    const commentDataWithLogin = await this.commandBus.execute(
       new CreateCommentCommand(postId, createCommentDto, user),
     );
 
-    return CommentOutputDto.mapToView(commentData);
+    return CommentOutputDto.mapToView(commentDataWithLogin);
   }
 
   @Get(':id')

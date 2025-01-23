@@ -2,10 +2,11 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
-import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { BadRequestDomainException, NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { GetPostsQueryParams } from './get-posts-query-params';
 import { CommentsSQLRepository } from '../repositories/comments-sql.repository';
 import { PostsSQLRepository } from '../repositories/posts-sql.repository';
+import { UsersSQLRepository } from '../../../accounts/infrastructure/repositories/users-sql.repository';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -13,6 +14,7 @@ export class CommentsQueryRepository {
     private dataSource: DataSource,
     private readonly postsRepository: PostsSQLRepository,
     private readonly commentRepository: CommentsSQLRepository,
+    private readonly usersRepository: UsersSQLRepository,
   ) {}
 
   async getCommentById(
@@ -25,7 +27,20 @@ export class CommentsQueryRepository {
       throw NotFoundDomainException.create('Comment not found', 'id');
     }
 
-    return CommentOutputDto.mapToView(commentData, userId);
+    const userData = await this.usersRepository.findById(
+      commentData.commentator_d,
+    );
+
+    if (!userData) {
+      throw BadRequestDomainException.create('Not Found', 'user');
+    }
+
+    const commentWithLogin = {
+      ...commentData,
+      commentator_login: userData.login,
+    };
+
+    return CommentOutputDto.mapToView(commentWithLogin, userId);
   }
 
   async getCommentsByPostId(

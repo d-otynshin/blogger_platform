@@ -8,6 +8,7 @@ import {
 } from '../../../../../core/exceptions/domain-exceptions';
 import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
 import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
+import { UsersSQLRepository } from '../../../../accounts/infrastructure/repositories/users-sql.repository';
 
 export class CreateCommentCommand {
   constructor(
@@ -22,8 +23,9 @@ export class CreateCommentUseCase
   implements ICommandHandler<CreateCommentCommand>
 {
   constructor(
-    private commentsRepository: CommentsSQLRepository,
     private postsRepository: PostsSQLRepository,
+    private commentsRepository: CommentsSQLRepository,
+    private usersRepository: UsersSQLRepository,
   ) {}
 
   async execute({ user, postId, dto }: CreateCommentCommand) {
@@ -45,6 +47,14 @@ export class CreateCommentUseCase
       throw BadRequestDomainException.create('Invalid comment');
     }
 
-    return commentData;
+    const userData = await this.usersRepository.findById(user.id);
+    if (!userData) {
+      throw BadRequestDomainException.create('Not Found', 'user');
+    }
+
+    return {
+      ...commentData,
+      commentator_login: userData.login,
+    };
   }
 }

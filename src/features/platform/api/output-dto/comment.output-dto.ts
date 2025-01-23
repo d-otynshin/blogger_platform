@@ -30,8 +30,8 @@ export class CommentOutputDto {
     dto.id = comment.id;
     dto.content = comment.content;
     dto.commentatorInfo = {
-      userId: comment.user_id,
-      userLogin: comment.user_login,
+      userId: comment.user_id || comment.commentator_id,
+      userLogin: comment.user_login || comment.login,
     };
     dto.createdAt = comment.created_at;
     dto.likesInfo = {
