@@ -69,13 +69,7 @@ export class PostsSQLQueryRepository {
     );
 
     // Count total number of posts without limit/offset
-    const countQuery = `
-      SELECT COUNT(p.*) AS total_count
-      FROM posts p
-      LEFT JOIN posts_interactions pi ON p.id = pi.post_id
-      LEFT JOIN users u ON pi.user_id = u.id
-      GROUP BY p.id
-    `;
+    const countQuery = `SELECT COUNT(*) AS total_count FROM posts`;
 
     const countResult = await this.dataSource.query(countQuery, []);
     console.log('countResult', countResult);
