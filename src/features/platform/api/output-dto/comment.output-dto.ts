@@ -15,8 +15,10 @@ export class CommentOutputDto {
   static mapToView(comment: any, userId?: string): CommentOutputDto {
     let myStatus = LikeStatus.None;
 
+    const interactions = comment.interactions ?? [];
+
     if (userId) {
-      const myInteraction = comment.interactions.find(
+      const myInteraction = interactions.find(
         (interaction) => interaction.user_id === userId,
       );
 
@@ -33,10 +35,10 @@ export class CommentOutputDto {
     };
     dto.createdAt = comment.created_at;
     dto.likesInfo = {
-      likesCount: comment.interactions.filter(
+      likesCount: interactions.filter(
         (interaction) => interaction.action === LikeStatus.Like,
       ).length,
-      dislikesCount: comment.interactions.filter(
+      dislikesCount: interactions.filter(
         (interaction) => interaction.action === LikeStatus.Dislike,
       ).length,
       myStatus,
