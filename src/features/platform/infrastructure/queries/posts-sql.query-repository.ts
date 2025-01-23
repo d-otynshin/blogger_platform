@@ -78,6 +78,7 @@ export class PostsSQLQueryRepository {
     `;
 
     const countResult = await this.dataSource.query(countQuery, []);
+    console.log('countResult', countResult);
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 
