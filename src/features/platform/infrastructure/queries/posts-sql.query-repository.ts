@@ -96,7 +96,7 @@ export class PostsSQLQueryRepository {
       LEFT JOIN posts_interactions pi ON p.id = pi.post_id
       LEFT JOIN users u ON pi.user_id = u.id
       WHERE p.blog_id = $1
-      GROUP BY p.id
+      GROUP BY p.id, u.id, u.login
     `;
 
     const sortByDict = { createdAt: 'created_at' };
@@ -114,6 +114,7 @@ export class PostsSQLQueryRepository {
                 'user_id', pi.user_id,
                 'action', pi.action, 
                 'added_at', pi.added_at
+                'user_login', u.login
             )
         ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}`,
       params,
@@ -123,8 +124,6 @@ export class PostsSQLQueryRepository {
       `SELECT COUNT(*) AS total_count FROM posts WHERE blog_id = $1`,
       [blogId],
     );
-
-    console.log('countResult', countResult);
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 
