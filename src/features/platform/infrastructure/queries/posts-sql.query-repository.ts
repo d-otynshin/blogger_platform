@@ -120,7 +120,7 @@ export class PostsSQLQueryRepository {
     );
 
     const countResult = await this.dataSource.query(
-      `SELECT COUNT(*) AS total_count FROM posts WHERE blog_ud = $1`,
+      `SELECT COUNT(*) AS total_count FROM posts WHERE blog_id = $1`,
       [blogId],
     );
 

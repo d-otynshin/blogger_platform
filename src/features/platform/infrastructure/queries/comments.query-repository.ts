@@ -60,6 +60,7 @@ export class CommentsQueryRepository {
       FROM comments c
       LEFT JOIN users u ON c.commentator_id = u.id
       LEFT JOIN comments_interactions ci ON c.id = ci.comment_id
+      WHERE post_id = $3
       GROUP BY c.id, u.id, u.login
     `;
 
@@ -80,8 +81,10 @@ export class CommentsQueryRepository {
             )
         ) FILTER (WHERE ci.user_id IS NOT NULL) AS interactions ${sqlQuery}
       `,
-      [query.pageSize, (query.pageNumber - 1) * query.pageSize],
+      [query.pageSize, (query.pageNumber - 1) * query.pageSize, postId],
     );
+
+    console.log('comments', comments);
 
     const countResult = await this.dataSource.query(
       'SELECT COUNT(*) AS total_count FROM comments WHERE post_id = $1',
