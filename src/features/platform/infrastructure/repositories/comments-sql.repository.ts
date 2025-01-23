@@ -1,6 +1,5 @@
 import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import { TInteraction } from '../../dto/interaction-dto';
 import { CreateCommentDto, UpdateCommentDto } from '../../dto/comment-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 
@@ -57,7 +56,7 @@ export class CommentsSQLRepository {
     const uuid = crypto.randomUUID();
 
     const query = `
-      INSERT INTO comments_interactions (id, comment_id, user_id, action, created_at)
+      INSERT INTO comments_interactions (id, comment_id, user_id, action, added_at)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *
     `;
