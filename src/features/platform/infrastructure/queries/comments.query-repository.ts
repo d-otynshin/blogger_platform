@@ -86,21 +86,6 @@ export class CommentsQueryRepository {
       params,
     );
 
-    console.log(
-      'query',
-      `
-         SELECT c.*,
-         u.id AS user_id, u.login AS user_login,
-         JSON_AGG(
-            JSON_BUILD_OBJECT(
-                'user_id', ci.user_id, 
-                'action', ci.action, 
-                'added_at', ci.added_at
-            )
-        ) FILTER (WHERE ci.user_id IS NOT NULL) AS interactions ${sqlQuery}
-      `,
-    );
-
     const countResult = await this.dataSource.query(
       'SELECT COUNT(*) AS total_count FROM comments WHERE post_id = $1',
       [postId],

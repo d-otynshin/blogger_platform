@@ -52,7 +52,7 @@ export class PostsSQLQueryRepository {
     const params: number[] = [];
 
     sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
-    sqlQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    sqlQuery += ` LIMIT $${params.length - 1} OFFSET $${params.length}`;
 
     params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
 
@@ -81,7 +81,6 @@ export class PostsSQLQueryRepository {
     `;
 
     const countResult = await this.dataSource.query(countQuery, params);
-    console.log('countResult', countResult);
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 
