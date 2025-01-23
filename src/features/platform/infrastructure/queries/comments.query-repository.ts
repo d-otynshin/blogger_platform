@@ -2,7 +2,10 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
-import { BadRequestDomainException, NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
+import {
+  BadRequestDomainException,
+  NotFoundDomainException,
+} from '../../../../core/exceptions/domain-exceptions';
 import { GetPostsQueryParams } from './get-posts-query-params';
 import { CommentsSQLRepository } from '../repositories/comments-sql.repository';
 import { PostsSQLRepository } from '../repositories/posts-sql.repository';
@@ -57,7 +60,7 @@ export class CommentsQueryRepository {
       FROM comments c
       LEFT JOIN users u ON c.commentator_id = u.id
       LEFT JOIN comments_interactions ci ON c.id = ci.comment_id
-      GROUP BY c.id
+      GROUP BY c.id, u.id, u.login
     `;
 
     const sortByDict = { createdAt: 'created_at' };

@@ -37,7 +37,7 @@ export class PostSQLOutputDto {
       )
       .slice(0, 3)
       .map((like) => ({
-        addedAt: String(like.added_at),
+        addedAt: new Date(like.added_at).toISOString(),
         userId: like.user_id,
         login: like.user_login,
       }));
