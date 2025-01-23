@@ -49,12 +49,9 @@ export class PostsSQLQueryRepository {
     `;
 
     const sortByDict = { createdAt: 'created_at', blogName: 'blog_name' };
-    const params: number[] = [];
 
     sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
-    sqlQuery += ` LIMIT $${params.length - 1} OFFSET $${params.length}`;
-
-    params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
+    sqlQuery += ` LIMIT $1 OFFSET $2`;
 
     const posts = await this.dataSource.query(
       `
@@ -68,7 +65,7 @@ export class PostsSQLQueryRepository {
             )
         ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}
       `,
-      params,
+      [query.pageSize, (query.pageNumber - 1) * query.pageSize],
     );
 
     // Count total number of posts without limit/offset
@@ -80,7 +77,7 @@ export class PostsSQLQueryRepository {
       GROUP BY p.id
     `;
 
-    const countResult = await this.dataSource.query(countQuery, params);
+    const countResult = await this.dataSource.query(countQuery, []);
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 
