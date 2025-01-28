@@ -1,8 +1,11 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostInteractionInputDto } from '../../../api/input-dto/posts.input-dto';
 import { CreateInteractionPostCommand } from './create-interaction-post.use-case';
-import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
-import { ForbiddenDomainException, NotFoundDomainException } from '../../../../../core/exceptions/domain-exceptions';
+import { PostsRepository } from '../../../infrastructure/repositories/posts.repository';
+import {
+  ForbiddenDomainException,
+  NotFoundDomainException,
+} from '../../../../../core/exceptions/domain-exceptions';
 
 export class UpdateLikePostCommand {
   constructor(
@@ -18,7 +21,7 @@ export class UpdateLikePostUseCase
 {
   constructor(
     private commandBus: CommandBus,
-    private postsRepository: PostsSQLRepository,
+    private postsRepository: PostsRepository,
   ) {}
 
   async execute(command: UpdateLikePostCommand) {
@@ -35,7 +38,7 @@ export class UpdateLikePostUseCase
       await this.postsRepository.getInteractionsById(postId);
 
     const interaction = postInteractions.find(
-      (interaction) => interaction.user_id === userId,
+      (interaction) => interaction.user.id === userId,
     );
 
     if (!interaction) {
@@ -51,7 +54,7 @@ export class UpdateLikePostUseCase
     }
 
     // Verify that the user is authorized to update the comment
-    if (interaction.user_id !== userId) {
+    if (interaction.user.id !== userId) {
       throw ForbiddenDomainException.create('Forbidden', 'userId');
     }
 

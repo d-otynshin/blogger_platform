@@ -11,7 +11,7 @@ import {
 import { JwtRefreshGuard } from '../guards/bearer/jwt-auth.guard';
 import { RefreshTokenDto } from '../dto/session-dto';
 import { SessionSQLOutputDto } from './output-dto/session.output-dto';
-import { SecurityPostgresqlRepository } from '../infrastructure/repositories/security-postgresql.repository';
+import { SecurityRepository } from '../infrastructure/repositories/security.repository';
 
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
 import {
@@ -22,7 +22,7 @@ import {
 
 @Controller('security')
 export class SecurityController {
-  constructor(private securityRepository: SecurityPostgresqlRepository) {}
+  constructor(private securityRepository: SecurityRepository) {}
 
   @Get('devices')
   @UseGuards(JwtRefreshGuard)
@@ -60,7 +60,7 @@ export class SecurityController {
       throw NotFoundDomainException.create('Session not found', 'deviceId');
     }
 
-    if (session.userId !== user.id) {
+    if (session.user_id !== user.id) {
       throw ForbiddenDomainException.create('Session not found', 'deviceId');
     }
 

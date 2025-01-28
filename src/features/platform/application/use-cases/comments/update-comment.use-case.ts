@@ -5,7 +5,7 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../../core/exceptions/domain-exceptions';
-import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
+import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 
 export class UpdateCommentCommand {
   constructor(
@@ -19,7 +19,7 @@ export class UpdateCommentCommand {
 export class UpdateCommentUseCase
   implements ICommandHandler<UpdateCommentCommand>
 {
-  constructor(private commentsRepository: CommentsSQLRepository) {}
+  constructor(private commentsRepository: CommentsRepository) {}
 
   async execute({ commentId, dto, userId }: UpdateCommentCommand) {
     const commentData = await this.commentsRepository.getById(commentId);
@@ -28,7 +28,7 @@ export class UpdateCommentUseCase
       throw NotFoundDomainException.create('Invalid comment', 'content');
     }
 
-    if (commentData.commentator_id !== userId) {
+    if (commentData.commentator.id !== userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

@@ -1,8 +1,14 @@
 import { IsEmail, IsString, Length } from 'class-validator';
-import {
-  loginConstraints,
-  passwordConstraints,
-} from '../../domain/user.entity';
+
+export const loginConstraints = {
+  minLength: 3,
+  maxLength: 10,
+};
+
+export const passwordConstraints = {
+  minLength: 6,
+  maxLength: 20,
+};
 
 export class CreateUserInputDto {
   @Length(loginConstraints.minLength, loginConstraints.maxLength)

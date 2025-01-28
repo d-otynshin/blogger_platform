@@ -8,15 +8,15 @@ import {
   CreateBlogInputDto,
   UpdateBlogInputDto,
 } from '../api/input-dto/blogs.input-dto';
-import { BlogsSQLRepository } from '../infrastructure/repositories/blogs-sql.repository';
-import { PostsSQLRepository } from '../infrastructure/repositories/posts-sql.repository';
+import { BlogsRepository } from '../infrastructure/repositories/blogs.repository';
+import { PostsRepository } from '../infrastructure/repositories/posts.repository';
 import { PostSQLOutputDto } from '../api/output-dto/post-sql.output-dto';
 
 @Injectable()
 export class BlogsService {
   constructor(
-    private blogsRepository: BlogsSQLRepository,
-    private postsRepository: PostsSQLRepository,
+    private blogsRepository: BlogsRepository,
+    private postsRepository: PostsRepository,
   ) {}
   async createBlog(dto: CreateBlogInputDto): Promise<BlogSQLOutputDto> {
     const createdBlog = await this.blogsRepository.createInstance({

@@ -11,7 +11,7 @@ import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from '../../constants/auth-token.inject-constants';
-import { SecurityPostgresqlRepository } from '../../infrastructure/repositories/security-postgresql.repository';
+import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
 
 export class LoginResponseDto {
   accessToken: string;
@@ -36,7 +36,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     @Inject(REFRESH_TOKEN_STRATEGY_INJECT_TOKEN)
     private refreshTokenContext: JwtService,
 
-    private securityRepository: SecurityPostgresqlRepository,
+    private securityRepository: SecurityRepository,
     private commandBus: CommandBus,
   ) {}
 

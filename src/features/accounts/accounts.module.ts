@@ -1,6 +1,7 @@
 import process from 'node:process';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
 /* Modules */
@@ -18,10 +19,10 @@ import { UsersController } from './api/users.controller';
 import { SecurityController } from './api/security.controller';
 
 /* Repositories */
+import { UsersRepository } from './infrastructure/repositories/users.repository';
 import { AuthQueryRepository } from './infrastructure/queries/auth.query-repository';
+import { SecurityRepository } from './infrastructure/repositories/security.repository';
 import { UsersSQLQueryRepository } from './infrastructure/queries/users-sql.query-repository';
-import { UsersSQLRepository } from './infrastructure/repositories/users-sql.repository';
-import { SecurityPostgresqlRepository } from './infrastructure/repositories/security-postgresql.repository';
 
 /* Use Cases */
 import { LoginUserUseCase } from './application/use-cases/login-user.use-case';
@@ -40,8 +41,16 @@ import {
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from './constants/auth-token.inject-constants';
 
+import { User } from './domain/user.entity';
+import { Session } from './domain/session.entity';
+
 @Module({
-  imports: [JwtModule, CqrsModule, NotificationsModule],
+  imports: [
+    JwtModule,
+    CqrsModule,
+    NotificationsModule,
+    TypeOrmModule.forFeature([User, Session]),
+  ],
   controllers: [UsersController, AuthController, SecurityController],
   providers: [
     /* Services */
@@ -51,10 +60,10 @@ import {
     CryptoService,
 
     /* Repositories */
+    UsersRepository,
+    SecurityRepository,
     AuthQueryRepository,
     UsersSQLQueryRepository,
-    UsersSQLRepository,
-    SecurityPostgresqlRepository,
 
     /* Use Cases */
     ValidateUserUseCase,
@@ -92,6 +101,7 @@ import {
       ],
     },
   ],
-  exports: [UsersSQLRepository],
+  // TODO: should I export UsersRepository and SecurityRepository?
+  exports: [TypeOrmModule, UsersRepository],
 })
 export class AccountsModule {}

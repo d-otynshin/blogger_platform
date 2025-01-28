@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostInteractionDto } from '../../../dto/post-dto';
-import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
+import { PostsRepository } from '../../../infrastructure/repositories/posts.repository';
 import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
 
 export class CreateInteractionPostCommand {
@@ -11,7 +11,7 @@ export class CreateInteractionPostCommand {
 export class CreateInteractionPostUseCase
   implements ICommandHandler<CreateInteractionPostCommand>
 {
-  constructor(private postsRepository: PostsSQLRepository) {}
+  constructor(private postsRepository: PostsRepository) {}
 
   async execute({ dto }: CreateInteractionPostCommand) {
     const isCreated = await this.postsRepository.createInteraction(

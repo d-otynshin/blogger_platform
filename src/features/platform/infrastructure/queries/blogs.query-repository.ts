@@ -1,20 +1,20 @@
 import { DataSource } from 'typeorm';
 import { GetBlogsQueryParams } from '../../api/input-dto/helpers/get-blogs-query-params.input-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
-import { BlogsSQLRepository } from '../repositories/blogs-sql.repository';
+import { BlogsRepository } from '../repositories/blogs.repository';
 import { BlogSQLOutputDto } from '../../api/output-dto/blog.output-dto';
 import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
-import { PostsSQLQueryRepository } from './posts-sql.query-repository';
+import { PostsQueryRepository } from './posts.query-repository';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { GetPostsQueryParams } from './get-posts-query-params';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class BlogsSQLQueryRepository {
+export class BlogsQueryRepository {
   constructor(
     private dataSource: DataSource,
-    private blogsRepository: BlogsSQLRepository,
-    private postsQueryRepository: PostsSQLQueryRepository,
+    private blogsRepository: BlogsRepository,
+    private postsQueryRepository: PostsQueryRepository,
   ) {}
 
   async getById(id: string) {

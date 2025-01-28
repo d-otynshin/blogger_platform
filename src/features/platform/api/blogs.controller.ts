@@ -14,7 +14,7 @@ import {
 
 import { BlogsService } from '../application/blogs.service';
 import { GetBlogsQueryParams } from './input-dto/helpers/get-blogs-query-params.input-dto';
-import { BlogsSQLQueryRepository } from '../infrastructure/queries/blogs-sql.query-repository';
+import { BlogsQueryRepository } from '../infrastructure/queries/blogs.query-repository';
 import {
   CreatePostByBlogIdInputDto,
   UpdatePostByBlogIdDtoInputDto,
@@ -40,7 +40,7 @@ import { ExtractUserIfExistsFromRequest } from '../../../core/decorators/extract
 export class BlogsController {
   constructor(
     private readonly blogsService: BlogsService,
-    private readonly blogsQueryRepository: BlogsSQLQueryRepository,
+    private readonly blogsQueryRepository: BlogsQueryRepository,
   ) {}
 
   @UseGuards(BasicAuthGuard)

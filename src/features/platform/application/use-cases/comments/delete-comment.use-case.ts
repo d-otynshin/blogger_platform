@@ -3,7 +3,7 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../../core/exceptions/domain-exceptions';
-import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
+import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 
 export class DeleteCommentCommand {
   constructor(
@@ -16,7 +16,7 @@ export class DeleteCommentCommand {
 export class DeleteCommentUseCase
   implements ICommandHandler<DeleteCommentCommand>
 {
-  constructor(private commentsRepository: CommentsSQLRepository) {}
+  constructor(private commentsRepository: CommentsRepository) {}
 
   async execute({ id, userId }: DeleteCommentCommand) {
     const commentData = await this.commentsRepository.getById(id);
@@ -25,7 +25,7 @@ export class DeleteCommentUseCase
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }
 
-    if (commentData.commentator_id !== userId) {
+    if (commentData.commentator.id !== userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

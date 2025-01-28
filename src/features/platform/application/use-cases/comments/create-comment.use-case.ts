@@ -2,9 +2,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { UserContextDto } from '../../../../accounts/dto/auth.dto';
 
-import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
-import { PostsSQLRepository } from '../../../infrastructure/repositories/posts-sql.repository';
-import { UsersSQLRepository } from '../../../../accounts/infrastructure/repositories/users-sql.repository';
+import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
+import { PostsRepository } from '../../../infrastructure/repositories/posts.repository';
+import { UsersRepository } from '../../../../accounts/infrastructure/repositories/users.repository';
 
 import {
   BadRequestDomainException,
@@ -24,9 +24,9 @@ export class CreateCommentUseCase
   implements ICommandHandler<CreateCommentCommand>
 {
   constructor(
-    private postsRepository: PostsSQLRepository,
-    private commentsRepository: CommentsSQLRepository,
-    private usersRepository: UsersSQLRepository,
+    private postsRepository: PostsRepository,
+    private commentsRepository: CommentsRepository,
+    private usersRepository: UsersRepository,
   ) {}
 
   async execute({ user, postId, dto }: CreateCommentCommand) {

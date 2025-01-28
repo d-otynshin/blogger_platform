@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentInteractionDto } from '../../../dto/comment-dto';
 import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
-import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
+import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 
 export class CreateInteractionCommentCommand {
   constructor(public dto: CommentInteractionDto) {}
@@ -11,7 +11,7 @@ export class CreateInteractionCommentCommand {
 export class CreateInteractionCommentUseCase
   implements ICommandHandler<CreateInteractionCommentCommand>
 {
-  constructor(private commentsRepository: CommentsSQLRepository) {}
+  constructor(private commentsRepository: CommentsRepository) {}
 
   async execute({ dto }: CreateInteractionCommentCommand) {
     const isCreated = await this.commentsRepository.createInteraction(

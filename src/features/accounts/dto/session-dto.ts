@@ -1,15 +1,13 @@
-import { Types } from 'mongoose';
-
 export class SessionDto {
-  userId: Types.ObjectId;
+  userId: string;
   deviceId: string;
   ip: string;
   title: string;
-  iat: string;
+  iat: number;
 }
 
 export class RefreshTokenDto {
   id: string;
   deviceId: string;
-  iat: string;
+  iat: number;
 }

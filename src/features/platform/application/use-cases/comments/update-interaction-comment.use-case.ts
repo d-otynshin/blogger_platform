@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentInteractionDto } from '../../../dto/comment-dto';
 import { BadRequestDomainException } from '../../../../../core/exceptions/domain-exceptions';
-import { CommentsSQLRepository } from '../../../infrastructure/repositories/comments-sql.repository';
+import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 
 export class UpdateInteractionCommentCommand {
   constructor(public dto: CommentInteractionDto) {}
@@ -11,7 +11,7 @@ export class UpdateInteractionCommentCommand {
 export class UpdateInteractionCommentUseCase
   implements ICommandHandler<UpdateInteractionCommentCommand>
 {
-  constructor(private commentsRepository: CommentsSQLRepository) {}
+  constructor(private commentsRepository: CommentsRepository) {}
 
   async execute({ dto }: UpdateInteractionCommentCommand) {
     const isUpdated = await this.commentsRepository.updateInteractionById(

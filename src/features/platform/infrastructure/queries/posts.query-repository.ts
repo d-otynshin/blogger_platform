@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
-import { PostsSQLRepository } from '../repositories/posts-sql.repository';
+import { PostsRepository } from '../repositories/posts.repository';
 import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
@@ -12,10 +12,10 @@ export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
 }
 
 @Injectable()
-export class PostsSQLQueryRepository {
+export class PostsQueryRepository {
   constructor(
     private dataSource: DataSource,
-    private postsRepository: PostsSQLRepository,
+    private postsRepository: PostsRepository,
   ) {}
 
   async getById(postId: string, userId?: string): Promise<PostSQLOutputDto> {
@@ -72,7 +72,6 @@ export class PostsSQLQueryRepository {
     const countQuery = `SELECT COUNT(*) AS total_count FROM posts`;
 
     const countResult = await this.dataSource.query(countQuery, []);
-    console.log('countResult', countResult);
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 

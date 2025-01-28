@@ -41,7 +41,7 @@ import { UpdateLikePostCommand } from '../application/use-cases/posts/update-lik
 import { CommentsInputDto } from './input-dto/comments.input-dto';
 import { CreateCommentCommand } from '../application/use-cases/comments/create-comment.use-case';
 import { PostSQLOutputDto } from './output-dto/post-sql.output-dto';
-import { PostsSQLQueryRepository } from '../infrastructure/queries/posts-sql.query-repository';
+import { PostsQueryRepository } from '../infrastructure/queries/posts.query-repository';
 import { GetPostsQueryParams } from '../infrastructure/queries/get-posts-query-params';
 
 @Controller('posts')
@@ -49,7 +49,7 @@ export class PostsController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly postsService: PostsService,
-    private readonly postsQueryRepository: PostsSQLQueryRepository,
+    private readonly postsQueryRepository: PostsQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
 

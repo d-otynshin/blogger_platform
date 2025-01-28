@@ -5,14 +5,14 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 
 import { RefreshTokenDto } from '../../dto/session-dto';
-import { SecurityPostgresqlRepository } from '../../infrastructure/repositories/security-postgresql.repository';
+import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
-  constructor(private securityRepository: SecurityPostgresqlRepository) {
+  constructor(private securityRepository: SecurityRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request): string => {
@@ -32,7 +32,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
       return false;
     }
 
-    const { deviceId: sessionDeviceId, iat: sessionIat } = session;
+    const { device_id: sessionDeviceId, iat: sessionIat } = session;
 
     // TODO: change comparison
     if (payload.deviceId !== sessionDeviceId || payload.iat != sessionIat) {

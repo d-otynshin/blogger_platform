@@ -1,6 +1,11 @@
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model } from 'mongoose';
-import { CreateBlogDto } from '../dto/blog-dto';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Post } from './post.entity';
 
 export const nameConstraints = {
   minLength: 1,
@@ -17,38 +22,26 @@ export const websiteUrlConstraints = {
   maxLength: 100,
 };
 
-@Schema({ timestamps: true })
+@Entity('blogs')
 export class Blog {
-  @Prop({ type: String, required: true })
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
   name: string;
 
-  @Prop({ type: String, required: true })
+  @Column()
   description: string;
 
-  @Prop({ type: String, required: true })
-  websiteUrl: string;
+  @Column()
+  website_url: string;
 
-  @Prop({ type: Boolean, required: true })
-  isMembership: boolean;
+  @Column({ default: false })
+  is_membership: boolean;
 
-  @Prop({ type: Date })
-  createdAt: Date;
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  created_at: Date;
 
-  static createInstance(dto: CreateBlogDto): BlogDocument {
-    const blog = new this();
-
-    blog.name = dto.name;
-    blog.description = dto.description;
-    blog.websiteUrl = dto.websiteUrl;
-    blog.isMembership = false;
-
-    return blog as BlogDocument;
-  }
+  @OneToMany(() => Post, (post) => post.blog, { cascade: true })
+  posts: Post[];
 }
-
-export const BlogSchema = SchemaFactory.createForClass(Blog);
-BlogSchema.loadClass(Blog);
-
-export type BlogDocument = HydratedDocument<Blog>;
-
-export type BlogModelType = Model<BlogDocument> & typeof Blog;

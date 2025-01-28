@@ -7,17 +7,17 @@ import {
   NotFoundDomainException,
 } from '../../../../core/exceptions/domain-exceptions';
 import { GetPostsQueryParams } from './get-posts-query-params';
-import { CommentsSQLRepository } from '../repositories/comments-sql.repository';
-import { PostsSQLRepository } from '../repositories/posts-sql.repository';
-import { UsersSQLRepository } from '../../../accounts/infrastructure/repositories/users-sql.repository';
+import { CommentsRepository } from '../repositories/comments.repository';
+import { PostsRepository } from '../repositories/posts.repository';
+import { UsersRepository } from '../../../accounts/infrastructure/repositories/users.repository';
 
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
     private dataSource: DataSource,
-    private readonly postsRepository: PostsSQLRepository,
-    private readonly commentRepository: CommentsSQLRepository,
-    private readonly usersRepository: UsersSQLRepository,
+    private readonly postsRepository: PostsRepository,
+    private readonly commentRepository: CommentsRepository,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   async getCommentById(
@@ -31,7 +31,7 @@ export class CommentsQueryRepository {
     }
 
     const commentatorData = await this.usersRepository.findById(
-      commentData.commentator_id,
+      commentData.commentator.id,
     );
 
     if (!commentatorData) {
@@ -87,8 +87,6 @@ export class CommentsQueryRepository {
       `,
       [query.pageSize, (query.pageNumber - 1) * query.pageSize, postId],
     );
-
-    console.log('comments', comments);
 
     const countResult = await this.dataSource.query(
       'SELECT COUNT(*) AS total_count FROM comments WHERE post_id = $1',

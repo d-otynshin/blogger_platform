@@ -29,14 +29,14 @@ import { LoginUserCommand } from '../application/use-cases/login-user.use-case';
 import { LoginInputDto } from './input-dto/login.input-dto';
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.use-case';
 import { RefreshTokenDto } from '../dto/session-dto';
-import { SecurityPostgresqlRepository } from '../infrastructure/repositories/security-postgresql.repository';
+import { SecurityRepository } from '../infrastructure/repositories/security.repository';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly authQueryRepository: AuthQueryRepository,
-    private readonly securityRepository: SecurityPostgresqlRepository,
+    private readonly securityRepository: SecurityRepository,
     private readonly commandBus: CommandBus,
   ) {}
 

@@ -1,54 +1,49 @@
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../../domain/user.entity';
+import { UserSQLViewDto } from '../../api/output-dto/user.view-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { GetUsersQueryParams } from '../../api/input-dto/get-users-query-params.input-dto';
-import { UserSQLViewDto } from '../../api/output-dto/user.view-dto';
-import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UsersSQLQueryRepository {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(User)
+    private usersTypeOrmRepository: Repository<User>,
+  ) {}
+
   async getAll(
     query: GetUsersQueryParams,
   ): Promise<PaginatedViewDto<UserSQLViewDto[]>> {
-    let sqlQuery = `FROM users`;
+    const queryBuilder = this.usersTypeOrmRepository.createQueryBuilder('user');
 
-    const sortByDict = { createdAt: 'created_at' };
-
-    const params = [];
-    const conditions = [];
-
+    // Apply search filters
     if (query.searchLoginTerm) {
-      conditions.push(`login ILIKE $${params.length + 1}`);
-      params.push(`%${query.searchLoginTerm}%`);
+      queryBuilder.andWhere('user.login ILIKE :login', {
+        login: `%${query.searchLoginTerm}%`,
+      });
     }
 
     if (query.searchEmailTerm) {
-      conditions.push(`email ILIKE $${params.length + 1}`);
-      params.push(`%${query.searchEmailTerm}%`);
+      queryBuilder.andWhere('user.email ILIKE :email', {
+        email: `%${query.searchEmailTerm}%`,
+      });
     }
 
-    if (conditions.length > 0) {
-      sqlQuery = sqlQuery + ' WHERE ' + conditions.join(' OR ');
-    }
+    // Apply sorting
+    const sortBy = query.sortBy ? query.sortBy : 'createdAt';
+    const sortDirection = query.sortDirection || 'ASC';
+    queryBuilder.orderBy(sortBy, sortDirection);
 
-    const sqlQueryCount = sqlQuery;
-    const countParams = [...params];
-
-    // Add sorting and pagination
-    sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
-    sqlQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-
-    params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
+    // Apply pagination
+    queryBuilder.skip((query.pageNumber - 1) * query.pageSize);
+    queryBuilder.take(query.pageSize);
 
     // Fetch paginated users
-    const users = await this.dataSource.query(`SELECT * ${sqlQuery}`, params);
+    const [users, totalCount] = await queryBuilder.getManyAndCount();
 
-    // Count total number of users without limit/offset
-    const countQuery = `SELECT COUNT(*) AS total_count ${sqlQueryCount}`;
-    const countResult = await this.dataSource.query(countQuery, countParams);
-
-    const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
-
+    // Map the users to the SQL View DTO
     const items = users.map(UserSQLViewDto.mapToView);
 
     return PaginatedViewDto.mapToView({

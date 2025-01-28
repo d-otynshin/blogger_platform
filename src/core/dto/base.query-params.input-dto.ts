@@ -12,8 +12,8 @@ class PaginationParams {
 }
 
 export enum SortDirection {
-  Asc = 'asc',
-  Desc = 'desc',
+  Asc = 'ASC',
+  Desc = 'DESC',
 }
 
 export abstract class BaseSortablePaginationParams<T> extends PaginationParams {

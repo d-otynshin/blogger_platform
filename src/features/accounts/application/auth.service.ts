@@ -21,7 +21,7 @@ import {
   BadRequestDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
-import { UsersSQLRepository } from '../infrastructure/repositories/users-sql.repository';
+import { UsersRepository } from '../infrastructure/repositories/users.repository';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +30,7 @@ export class AuthService {
     private cryptoService: CryptoService,
     private usersService: UsersService,
     private emailService: EmailService,
-    private usersRepository: UsersSQLRepository,
+    private usersRepository: UsersRepository,
   ) {}
 
   async checkCredentials(
@@ -72,11 +72,11 @@ export class AuthService {
       );
     }
 
-    const userData = await this.usersService.createUser(createUserInputDto);
+    const user = await this.usersService.createUser(createUserInputDto);
 
     await this.emailService.sendConfirmationEmail(
       createUserInputDto.email,
-      userData.confirmationCode,
+      user.confirmation_code,
       'registration',
       emailTemplates.registrationEmail,
     );

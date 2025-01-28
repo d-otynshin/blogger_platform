@@ -1,7 +1,12 @@
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model, Types } from 'mongoose';
-import { TInteraction } from '../dto/interaction-dto';
-import { CreatePostByBlogIdInputDto } from '../api/input-dto/posts.input-dto';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
+
+import { Blog } from './blog.entity';
 
 export const titleConstraints = {
   minLength: 1,
@@ -18,49 +23,26 @@ export const contentConstraints = {
   maxLength: 1000,
 };
 
-@Schema({ timestamps: true })
+@Entity('posts')
 export class Post {
-  @Prop({ type: String, required: true })
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
   title: string;
 
-  @Prop({ type: String, required: true })
-  shortDescription: string;
+  @Column()
+  short_description: string;
 
-  @Prop({ type: String, required: true })
+  @Column()
   content: string;
 
-  @Prop({ type: String, required: true })
-  blogId: Types.ObjectId;
+  @Column()
+  blog_name: string;
 
-  @Prop({ type: String, required: true })
-  blogName: string;
+  @ManyToOne(() => Blog, (blog) => blog.posts, { onDelete: 'CASCADE' })
+  blog: Blog;
 
-  @Prop({ type: Date })
-  createdAt: Date;
-
-  @Prop({ type: [Object], required: true })
-  interactions: TInteraction[];
-
-  static createInstance(
-    blogId: Types.ObjectId,
-    dto: CreatePostByBlogIdInputDto,
-  ): PostDocument {
-    const post = new this();
-
-    post.title = dto.title;
-    post.shortDescription = dto.shortDescription;
-    post.content = dto.content;
-    post.blogId = blogId;
-    post.blogName = dto.blogName || 'TEST';
-    post.interactions = [];
-
-    return post as PostDocument;
-  }
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  created_at: Date;
 }
-
-export const PostSchema = SchemaFactory.createForClass(Post);
-PostSchema.loadClass(Post);
-
-export type PostDocument = HydratedDocument<Post>;
-
-export type PostModelType = Model<PostDocument> & typeof Post;

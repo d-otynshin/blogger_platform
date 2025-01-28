@@ -1,12 +1,10 @@
-import { SessionDocument } from '../../domain/session.entity';
-
 export class SessionOutputDto {
   ip: string;
   title: string;
   lastActiveDate: string;
   deviceId: string;
 
-  static mapToView(session: SessionDocument): SessionOutputDto {
+  static mapToView(session: any): SessionOutputDto {
     const dto = new SessionOutputDto();
 
     dto.deviceId = session.deviceId;

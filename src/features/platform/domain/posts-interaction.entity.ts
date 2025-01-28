@@ -2,26 +2,26 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../../accounts/domain/user.entity';
 import { Post } from './post.entity';
 
-@Entity('comments')
-export class Comment {
+@Entity('posts_interactions')
+export class PostsInteraction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column()
-  content: string;
-
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  commentator: User;
 
   @ManyToOne(() => Post, { onDelete: 'CASCADE' })
   post: Post;
 
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  user: User;
+
+  @Column()
+  action: string;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
-  created_at: Date;
+  added_at: Date;
 }

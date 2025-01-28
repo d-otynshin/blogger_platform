@@ -7,8 +7,8 @@ import {
   ACCESS_TOKEN_STRATEGY_INJECT_TOKEN,
   REFRESH_TOKEN_STRATEGY_INJECT_TOKEN,
 } from '../../constants/auth-token.inject-constants';
-import { UsersSQLRepository } from '../../infrastructure/repositories/users-sql.repository';
-import { SecurityPostgresqlRepository } from '../../infrastructure/repositories/security-postgresql.repository';
+import { UsersRepository } from '../../infrastructure/repositories/users.repository';
+import { SecurityRepository } from '../../infrastructure/repositories/security.repository';
 
 export class RefreshTokenResponseDto {
   accessToken: string;
@@ -30,9 +30,9 @@ export class RefreshTokenUseCase
     @Inject(REFRESH_TOKEN_STRATEGY_INJECT_TOKEN)
     private refreshTokenContext: JwtService,
 
-    private usersRepository: UsersSQLRepository,
+    private usersRepository: UsersRepository,
     private jwtService: JwtService,
-    private securityRepository: SecurityPostgresqlRepository,
+    private securityRepository: SecurityRepository,
   ) {}
 
   async execute({

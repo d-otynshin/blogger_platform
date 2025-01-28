@@ -1,42 +1,22 @@
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model, Types } from 'mongoose';
-import { SessionDto } from '../dto/session-dto';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Schema({ timestamps: true })
+@Entity('sessions')
 export class Session {
-  @Prop({ type: Types.ObjectId, required: true })
-  userId: Types.ObjectId;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Prop({ type: String, required: true })
-  deviceId: string;
+  @Column({ unique: true })
+  user_id: string;
 
-  @Prop({ type: String, required: true })
+  @Column({ unique: true })
+  device_id: string;
+
+  @Column()
   ip: string;
 
-  @Prop({ type: String, required: true })
+  @Column()
   title: string;
 
-  @Prop({ type: String, required: true })
-  iat: string;
-
-  static createInstance(dto: SessionDto): SessionDocument {
-    const session = new this();
-
-    session.userId = dto.userId;
-    session.deviceId = dto.deviceId;
-    session.ip = dto.ip;
-    session.iat = dto.iat;
-    session.title = dto.title;
-
-    return session as SessionDocument;
-  }
+  @Column()
+  iat: number;
 }
-
-export const SessionSchema = SchemaFactory.createForClass(Session);
-
-/* register methods */
-SessionSchema.loadClass(Session);
-
-export type SessionDocument = HydratedDocument<Session>;
-
-export type SessionModelType = Model<SessionDocument> & typeof Session;

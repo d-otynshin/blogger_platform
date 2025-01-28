@@ -2,15 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdatePostDto } from '../dto/post-dto';
 import { CreatePostInputDto } from '../api/input-dto/posts.input-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
-import { BlogsSQLRepository } from '../infrastructure/repositories/blogs-sql.repository';
-import { PostsSQLRepository } from '../infrastructure/repositories/posts-sql.repository';
+import { BlogsRepository } from '../infrastructure/repositories/blogs.repository';
+import { PostsRepository } from '../infrastructure/repositories/posts.repository';
 import { PostSQLOutputDto } from '../api/output-dto/post-sql.output-dto';
 
 @Injectable()
 export class PostsService {
   constructor(
-    private postsRepository: PostsSQLRepository,
-    private blogsRepository: BlogsSQLRepository,
+    private postsRepository: PostsRepository,
+    private blogsRepository: BlogsRepository,
   ) {}
   async createPost(dto: CreatePostInputDto): Promise<PostSQLOutputDto> {
     const blogData = await this.blogsRepository.findById(dto.blogId);

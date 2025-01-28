@@ -1,7 +1,5 @@
-import { Types } from 'mongoose';
 import { CommandBus } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
-import { TInteraction } from '../dto/interaction-dto';
 import { CommentInteractionDto } from '../dto/comment-dto';
 import { CreateInteractionCommentCommand } from './use-cases/comments/create-interaction-comment.use-case';
 import { UpdateInteractionCommentCommand } from './use-cases/comments/update-interaction-comment.use-case';
@@ -9,13 +7,13 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
-import { CommentsSQLRepository } from '../infrastructure/repositories/comments-sql.repository';
+import { CommentsRepository } from '../infrastructure/repositories/comments.repository';
 
 @Injectable()
 export class CommentsService {
   constructor(
     private commandBus: CommandBus,
-    private commentsRepository: CommentsSQLRepository,
+    private commentsRepository: CommentsRepository,
   ) {}
 
   async interact(dto: CommentInteractionDto): Promise<null | void> {
@@ -28,7 +26,7 @@ export class CommentsService {
     }
 
     const myInteraction = interactions.find(
-      (interaction): boolean => interaction.user_id === dto.userId,
+      (interaction): boolean => interaction.user.id === dto.userId,
     );
 
     if (!myInteraction) {
@@ -39,7 +37,7 @@ export class CommentsService {
       return;
     }
 
-    if (myInteraction.user_id !== dto.userId) {
+    if (myInteraction.user.id !== dto.userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

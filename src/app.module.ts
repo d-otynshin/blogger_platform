@@ -8,8 +8,15 @@ import { NotificationsModule } from './features/notifications/notifications.modu
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlatformModule } from './features/platform/platform.module';
+
+// TODO: refactor and remove
+import { User } from './features/accounts/domain/user.entity';
+import { Blog } from './features/platform/domain/blog.entity';
+import { Post } from './features/platform/domain/post.entity';
+import { Comment } from './features/platform/domain/comment.entity';
+import { PostsInteraction } from './features/platform/domain/posts-interaction.entity';
+import { CommentsInteraction } from './features/platform/domain/comments-interaction.entity';
 // import { ThrottlerModule } from '@nestjs/throttler';
-// import { PlatformModule } from './features/platform/platform.module';
 
 @Module({
   imports: [
@@ -22,11 +29,21 @@ import { PlatformModule } from './features/platform/platform.module';
       ssl: {
         rejectUnauthorized: false,
       },
+      entities: [
+        User,
+        Post,
+        Blog,
+        Post,
+        Comment,
+        PostsInteraction,
+        CommentsInteraction,
+      ],
     }),
-    AccountsModule,
     TestingModule,
-    NotificationsModule,
+    AccountsModule,
     PlatformModule,
+    NotificationsModule,
+    // Rate limiter turned off
     // ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
   ],
   controllers: [AppController],
