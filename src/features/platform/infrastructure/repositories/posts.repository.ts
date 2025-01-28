@@ -6,6 +6,7 @@ import { CreatePostDto, UpdatePostDto } from '../../dto/post-dto';
 import { Post } from '../../domain/post.entity';
 import { Blog } from '../../domain/blog.entity';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { LikeStatus } from '../../dto/interaction-dto';
 
 @Injectable()
 export class PostsRepository {
@@ -53,7 +54,11 @@ export class PostsRepository {
     return updateResult.affected > 0;
   }
 
-  async createInteraction(postId: string, userId: string, action: string) {
+  async createInteraction(
+    postId: string,
+    userId: string,
+    action: LikeStatus,
+  ): Promise<boolean> {
     return this.interactionsRepository.createPostInteraction(
       postId,
       userId,

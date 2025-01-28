@@ -6,6 +6,7 @@ import { User } from '../../../accounts/domain/user.entity';
 import { CommentsInteraction } from '../../domain/comments-interaction.entity';
 import { PostsInteraction } from '../../domain/posts-interaction.entity';
 import { Post } from '../../domain/post.entity';
+import { LikeStatus } from '../../dto/interaction-dto';
 
 @Injectable()
 export class InteractionsRepository {
@@ -56,7 +57,11 @@ export class InteractionsRepository {
     return updateResult.affected > 0;
   }
 
-  async createPostInteraction(postId: string, userId: string, action: string) {
+  async createPostInteraction(
+    postId: string,
+    userId: string,
+    action: LikeStatus,
+  ) {
     const interaction = this.postsInteractionsTypeOrmRepository.create({
       post: { id: postId } as Post,
       user: { id: userId } as User,
