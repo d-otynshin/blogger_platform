@@ -17,7 +17,7 @@ import { Comment } from './features/platform/domain/comment.entity';
 import { PostsInteraction } from './features/platform/domain/posts-interaction.entity';
 import { CommentsInteraction } from './features/platform/domain/comments-interaction.entity';
 import { Session } from './features/accounts/domain/session.entity';
-// import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -45,8 +45,7 @@ import { Session } from './features/accounts/domain/session.entity';
     AccountsModule,
     PlatformModule,
     NotificationsModule,
-    // Rate limiter turned off
-    // ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
+    ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
   ],
   controllers: [AppController],
   providers: [AppService],
