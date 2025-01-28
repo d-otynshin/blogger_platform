@@ -20,9 +20,11 @@ export class PostsQueryRepository {
   ) {}
 
   async getById(postId: string, userId?: string): Promise<PostSQLOutputDto> {
-    const postData = await this.postsRepository.findById(postId);
+    const post = await this.postsRepository.findById(postId);
 
-    if (!postData) {
+    console.log('postData by id', post);
+
+    if (!post) {
       throw NotFoundDomainException.create('Post not found');
     }
 
@@ -31,7 +33,7 @@ export class PostsQueryRepository {
 
     return PostSQLOutputDto.mapToView(
       {
-        ...postData,
+        ...post,
         interactions: postInteractions,
       },
       userId,
