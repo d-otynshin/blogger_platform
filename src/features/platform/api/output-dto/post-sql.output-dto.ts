@@ -1,10 +1,9 @@
 import { isBefore } from 'date-fns';
 import { LikeStatus, TInteractionView } from '../../dto/interaction-dto';
 import { Post } from '../../domain/post.entity';
-import { PostsInteraction } from '../../domain/posts-interaction.entity';
 
 type PostView = Post & {
-  interactions?: PostsInteraction[];
+  interactions?: any;
 };
 
 export class PostSQLOutputDto {
@@ -30,7 +29,7 @@ export class PostSQLOutputDto {
 
     if (userId) {
       const myInteraction = interactions.find(
-        (interaction) => interaction.user.id === userId,
+        (interaction) => interaction.user_id === userId,
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;
@@ -44,8 +43,8 @@ export class PostSQLOutputDto {
       .slice(0, 3)
       .map((like) => ({
         addedAt: like.added_at,
-        userId: like.user.id,
-        login: like.user.login,
+        userId: like.user_id,
+        login: like.user_login,
       }));
 
     const dto = new PostSQLOutputDto();
@@ -54,7 +53,9 @@ export class PostSQLOutputDto {
     dto.title = post.title;
     dto.shortDescription = post.short_description;
     dto.content = post.content;
-    dto.blogId = post.blog.id;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    dto.blogId = post.blog_id;
     dto.blogName = post.blog_name;
     dto.createdAt = post.created_at;
 
