@@ -29,7 +29,7 @@ export class PostsRepository {
   }
 
   async findById(id: string) {
-    return this.postsTypeOrmRepository.findOne({ where: { id } });
+    return this.postsTypeOrmRepository.findOne({ where: { id }, relations: ['blog'] });
   }
 
   async delete(id: string): Promise<boolean> {
