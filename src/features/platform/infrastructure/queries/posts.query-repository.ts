@@ -6,6 +6,7 @@ import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { BaseSortablePaginationParams } from '../../../../core/dto/base.query-params.input-dto';
+import { Post } from '../../domain/post.entity';
 
 export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
   sortBy = 'createdAt';
@@ -68,14 +69,15 @@ export class PostsQueryRepository {
       [query.pageSize, (query.pageNumber - 1) * query.pageSize],
     );
 
-    // Count total number of posts without limit/offset
     const countQuery = `SELECT COUNT(*) AS total_count FROM posts`;
 
     const countResult = await this.dataSource.query(countQuery, []);
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 
-    const items = posts.map((post) => PostSQLOutputDto.mapToView(post, userId));
+    const items = posts.map((post: Post) =>
+      PostSQLOutputDto.mapToView(post, userId),
+    );
 
     return PaginatedViewDto.mapToView({
       items,
@@ -126,7 +128,11 @@ export class PostsQueryRepository {
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 
-    const items = posts.map((post) => PostSQLOutputDto.mapToView(post, userId));
+    console.log(posts);
+
+    const items = posts.map((post: Post) =>
+      PostSQLOutputDto.mapToView(post, userId),
+    );
 
     return PaginatedViewDto.mapToView({
       items,
