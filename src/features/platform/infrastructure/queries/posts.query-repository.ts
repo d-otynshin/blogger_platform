@@ -47,7 +47,7 @@ export class PostsQueryRepository {
     let sqlQuery = `
       FROM posts p
       LEFT JOIN posts_interactions pi ON p.id = pi."postId"
-      LEFT JOIN users u ON pi.user_id = u.id
+      LEFT JOIN users u ON pi."userId" = u.id
       GROUP BY p.id
     `;
 
@@ -61,7 +61,7 @@ export class PostsQueryRepository {
         SELECT p.*,
         JSON_AGG(
             JSON_BUILD_OBJECT(
-                'user_id', pi.user_id, 
+                'user_id', pi."userId", 
                 'action', pi.action, 
                 'added_at', pi.added_at,
                 'user_login', u.login
