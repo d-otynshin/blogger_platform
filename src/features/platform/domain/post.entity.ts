@@ -44,7 +44,7 @@ export class Post {
   @ManyToOne(() => Blog, (blog) => blog.posts, { onDelete: 'CASCADE' })
   blog: Blog;
 
-  @OneToMany(() => Post, (post) => post.interactions, { cascade: true })
+  @OneToMany(() => Post, (post) => post.interactions)
   interactions: PostsInteraction[];
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
