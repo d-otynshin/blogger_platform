@@ -1,4 +1,6 @@
 import { DataSource } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { Blog } from '../../domain/blog.entity';
 import { GetBlogsQueryParams } from '../../api/input-dto/helpers/get-blogs-query-params.input-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { BlogsRepository } from '../repositories/blogs.repository';
@@ -7,7 +9,6 @@ import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
 import { PostsQueryRepository } from './posts.query-repository';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { GetPostsQueryParams } from './get-posts-query-params';
-import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -18,13 +19,13 @@ export class BlogsQueryRepository {
   ) {}
 
   async getById(id: string) {
-    const blogData = await this.blogsRepository.findById(id);
+    const blog: Blog = await this.blogsRepository.findById(id);
 
-    if (!blogData) {
+    if (!blog) {
       throw NotFoundDomainException.create('blog not found', 'id');
     }
 
-    return BlogSQLOutputDto.mapToView(blogData);
+    return BlogSQLOutputDto.mapToView(blog);
   }
 
   async getAll(
@@ -79,9 +80,9 @@ export class BlogsQueryRepository {
     query: GetPostsQueryParams,
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    const blogData = await this.blogsRepository.findById(id);
+    const blog: Blog = await this.blogsRepository.findById(id);
 
-    if (!blogData) {
+    if (!blog) {
       throw NotFoundDomainException.create('blog not found', 'id');
     }
 
