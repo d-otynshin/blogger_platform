@@ -1,5 +1,11 @@
 import { isBefore } from 'date-fns';
 import { LikeStatus, TInteractionView } from '../../dto/interaction-dto';
+import { Post } from '../../domain/post.entity';
+import { PostsInteraction } from '../../domain/posts-interaction.entity';
+
+type PostView = Post & {
+  interactions?: PostsInteraction[];
+};
 
 export class PostSQLOutputDto {
   id: string;
@@ -17,14 +23,14 @@ export class PostSQLOutputDto {
     newestLikes: TInteractionView[];
   };
 
-  static mapToView(post, userId?: string): PostSQLOutputDto {
+  static mapToView(post: PostView, userId?: string): PostSQLOutputDto {
     let myStatus = LikeStatus.None;
 
     const interactions = post.interactions ?? [];
 
     if (userId) {
       const myInteraction = interactions.find(
-        (interaction) => interaction.user_id === userId,
+        (interaction) => interaction.user.id === userId,
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;
@@ -38,8 +44,8 @@ export class PostSQLOutputDto {
       .slice(0, 3)
       .map((like) => ({
         addedAt: like.added_at,
-        userId: like.user_id,
-        login: like.user_login,
+        userId: like.user.id,
+        login: like.user.login,
       }));
 
     const dto = new PostSQLOutputDto();
@@ -48,7 +54,7 @@ export class PostSQLOutputDto {
     dto.title = post.title;
     dto.shortDescription = post.short_description;
     dto.content = post.content;
-    dto.blogId = post.blog_id;
+    dto.blogId = post.blog.id;
     dto.blogName = post.blog_name;
     dto.createdAt = post.created_at;
 

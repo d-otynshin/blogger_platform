@@ -5,8 +5,9 @@ import {
   ManyToOne,
   CreateDateColumn,
 } from 'typeorm';
-import { User } from '../../accounts/domain/user.entity';
 import { Post } from './post.entity';
+import { LikeStatus } from '../dto/interaction-dto';
+import { User } from '../../accounts/domain/user.entity';
 
 @Entity('posts_interactions')
 export class PostsInteraction {
@@ -20,7 +21,7 @@ export class PostsInteraction {
   user: User;
 
   @Column()
-  action: string;
+  action: LikeStatus;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   added_at: Date;
