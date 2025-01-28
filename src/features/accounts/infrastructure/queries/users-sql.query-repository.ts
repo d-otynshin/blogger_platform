@@ -20,13 +20,13 @@ export class UsersQueryRepository {
 
     // Apply search filters
     if (query.searchLoginTerm) {
-      queryBuilder.andWhere('user.login ILIKE :login', {
+      queryBuilder.orWhere('user.login ILIKE :login', {
         login: `%${query.searchLoginTerm}%`,
       });
     }
 
     if (query.searchEmailTerm) {
-      queryBuilder.andWhere('user.email ILIKE :email', {
+      queryBuilder.orWhere('user.email ILIKE :email', {
         email: `%${query.searchEmailTerm}%`,
       });
     }
