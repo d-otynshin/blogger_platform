@@ -33,8 +33,8 @@ export class UsersQueryRepository {
 
     // Apply sorting
     const sortBy = query.sortBy ? query.sortBy : 'created_at';
-    const sortDirection = query.sortDirection || 'ASC';
-    queryBuilder.orderBy(sortBy, sortDirection);
+    const sortDirection = query.sortDirection.toUpperCase() || 'ASC';
+    queryBuilder.orderBy(sortBy, sortDirection as 'ASC' | 'DESC');
 
     // Apply pagination
     queryBuilder.skip((query.pageNumber - 1) * query.pageSize);
