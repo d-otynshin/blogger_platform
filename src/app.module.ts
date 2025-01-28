@@ -16,6 +16,7 @@ import { Post } from './features/platform/domain/post.entity';
 import { Comment } from './features/platform/domain/comment.entity';
 import { PostsInteraction } from './features/platform/domain/posts-interaction.entity';
 import { CommentsInteraction } from './features/platform/domain/comments-interaction.entity';
+import { Session } from './features/accounts/domain/session.entity';
 // import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
@@ -35,6 +36,7 @@ import { CommentsInteraction } from './features/platform/domain/comments-interac
         Blog,
         Post,
         Comment,
+        Session,
         PostsInteraction,
         CommentsInteraction,
       ],
