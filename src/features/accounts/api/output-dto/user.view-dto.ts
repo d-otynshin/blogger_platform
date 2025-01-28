@@ -42,7 +42,7 @@ export class UserSQLViewDto {
   email: string;
   createdAt: Date;
 
-  static mapToView(user: any): UserSQLViewDto {
+  static mapToView(user: User): UserSQLViewDto {
     const dto = new UserViewDto();
 
     dto.email = user.email;

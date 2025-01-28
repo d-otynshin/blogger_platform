@@ -7,7 +7,7 @@ import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { GetUsersQueryParams } from '../../api/input-dto/get-users-query-params.input-dto';
 
 @Injectable()
-export class UsersSQLQueryRepository {
+export class UsersQueryRepository {
   constructor(
     @InjectRepository(User)
     private usersTypeOrmRepository: Repository<User>,
@@ -32,7 +32,7 @@ export class UsersSQLQueryRepository {
     }
 
     // Apply sorting
-    const sortBy = query.sortBy ? query.sortBy : 'createdAt';
+    const sortBy = query.sortBy ? query.sortBy : 'created_at';
     const sortDirection = query.sortDirection || 'ASC';
     queryBuilder.orderBy(sortBy, sortDirection);
 

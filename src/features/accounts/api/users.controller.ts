@@ -18,21 +18,21 @@ import { BasicAuthGuard } from '../guards/basic/basic-auth.guard';
 
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
-import { UsersSQLQueryRepository } from '../infrastructure/queries/users-sql.query-repository';
+import { UsersQueryRepository } from '../infrastructure/queries/users-sql.query-repository';
 
 @Controller('sa/users')
 @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private usersSQLQueryRepository: UsersSQLQueryRepository,
+    private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @Get()
   async getAll(
     @Query() query: GetUsersQueryParams,
   ): Promise<PaginatedViewDto<UserSQLViewDto[]>> {
-    return this.usersSQLQueryRepository.getAll(query);
+    return this.usersQueryRepository.getAll(query);
   }
 
   @Post()

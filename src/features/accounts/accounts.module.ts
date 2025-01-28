@@ -22,7 +22,7 @@ import { SecurityController } from './api/security.controller';
 import { UsersRepository } from './infrastructure/repositories/users.repository';
 import { AuthQueryRepository } from './infrastructure/queries/auth.query-repository';
 import { SecurityRepository } from './infrastructure/repositories/security.repository';
-import { UsersSQLQueryRepository } from './infrastructure/queries/users-sql.query-repository';
+import { UsersQueryRepository } from './infrastructure/queries/users-sql.query-repository';
 
 /* Use Cases */
 import { LoginUserUseCase } from './application/use-cases/login-user.use-case';
@@ -63,7 +63,7 @@ import { Session } from './domain/session.entity';
     UsersRepository,
     SecurityRepository,
     AuthQueryRepository,
-    UsersSQLQueryRepository,
+    UsersQueryRepository,
 
     /* Use Cases */
     ValidateUserUseCase,
