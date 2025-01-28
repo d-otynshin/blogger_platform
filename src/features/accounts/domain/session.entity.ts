@@ -5,10 +5,10 @@ export class Session {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   user_id: string;
 
-  @Column({ unique: true })
+  @Column()
   device_id: string;
 
   @Column()
