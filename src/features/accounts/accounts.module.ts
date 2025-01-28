@@ -81,7 +81,7 @@ import { Session } from './domain/session.entity';
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.ACCESS_TOKEN_SECRET,
-          signOptions: { expiresIn: '10s' },
+          signOptions: { expiresIn: '5m' },
         });
       },
       inject: [
@@ -93,7 +93,7 @@ import { Session } from './domain/session.entity';
       useFactory: (): JwtService => {
         return new JwtService({
           secret: process.env.REFRESH_TOKEN_SECRET, //TODO: move to env. will be in the following lessons
-          signOptions: { expiresIn: '20s' },
+          signOptions: { expiresIn: '20m' },
         });
       },
       inject: [
