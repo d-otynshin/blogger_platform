@@ -130,8 +130,6 @@ export class PostsQueryRepository {
 
     const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
 
-    console.log(posts);
-
     const items = posts.map((post: Post) =>
       PostSQLOutputDto.mapToView(post, userId),
     );

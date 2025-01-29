@@ -54,7 +54,8 @@ export class PostSQLOutputDto {
     dto.shortDescription = post.short_description;
     dto.content = post.content;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    dto.blogId = post.blog?.id;
+    // @ts-ignore
+    dto.blogId = post.blog?.id || post.blogId;
     dto.blogName = post.blog_name;
     dto.createdAt = post.created_at;
 
