@@ -105,6 +105,8 @@ export class PostsQueryRepository {
       .leftJoinAndSelect('users', 'u', 'u.id = pi.user_id')
       .where('p.blog_id = :blogId', { blogId })
       .groupBy('p.id')
+      .addGroupBy('pi.id')
+      .addGroupBy('u.id')
       .orderBy(
         sortByDict[query.sortBy] || query.sortBy,
         query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
