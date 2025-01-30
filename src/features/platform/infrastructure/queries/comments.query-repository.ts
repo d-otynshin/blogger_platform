@@ -70,8 +70,8 @@ export class CommentsQueryRepository {
     // Base QueryBuilder for comments
     const commentsQueryBuilder = this.commentsTypeOrmRepository
       .createQueryBuilder('c')
-      .leftJoinAndSelect('c.commentator', 'u')
-      .leftJoinAndSelect('c.interactions', 'ci')
+      .leftJoinAndSelect('users', 'u')
+      .leftJoinAndSelect('comments_interactions', 'ci')
       .where('c.post.id = :postId', { postId })
       .groupBy('c.id')
       .addGroupBy('u.id')

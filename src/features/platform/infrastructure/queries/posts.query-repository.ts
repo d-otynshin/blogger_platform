@@ -52,7 +52,7 @@ export class PostsQueryRepository {
 
     const postsQueryBuilder = this.postsTypeOrmRepository
       .createQueryBuilder('p')
-      .leftJoinAndSelect('p.interactions', 'pi')
+      .leftJoinAndSelect('posts_interactions', 'pi')
       .leftJoinAndSelect('pi.user', 'u')
       .groupBy('p.id')
       .addGroupBy('pi.user_id')
@@ -101,7 +101,7 @@ export class PostsQueryRepository {
     // Base QueryBuilder for posts
     const postsQueryBuilder = this.postsTypeOrmRepository
       .createQueryBuilder('p')
-      .leftJoinAndSelect('p.interactions', 'pi')
+      .leftJoinAndSelect('posts_interactions', 'pi')
       .leftJoinAndSelect('pi.user', 'u')
       .where('p.blog.id = :blogId', { blogId })
       .groupBy('p.id')
