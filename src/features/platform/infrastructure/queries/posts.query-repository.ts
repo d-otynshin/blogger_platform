@@ -127,7 +127,15 @@ export class PostsQueryRepository {
       .skip((query.pageNumber - 1) * query.pageSize); // OFFSET
 
     // Fetch paginated posts
-    const posts = await postsQueryBuilder.getMany();
+    const { raw, entities } = await postsQueryBuilder.getRawAndEntities();
+
+    // Combine the raw data with entities
+    const posts = entities.map((post, index) => ({
+      ...post,
+      interactions: raw[index]?.interactions
+        ? JSON.parse(raw[index].interactions)
+        : [],
+    }));
 
     console.log('getPostsByBlogId', posts);
 
