@@ -96,7 +96,7 @@ export class PostsQueryRepository {
     query: GetPostsQueryParams,
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    const sortByDict = { createdAt: 'created_at' };
+    // const sortByDict = { createdAt: 'created_at' };
 
     // Base QueryBuilder for posts
     const postsQueryBuilder = this.postsTypeOrmRepository
@@ -107,15 +107,17 @@ export class PostsQueryRepository {
       .groupBy('p.id')
       .addGroupBy('pi.id')
       .addGroupBy('u.id')
-      .orderBy(
-        sortByDict[query.sortBy] || query.sortBy,
-        query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
-      ) // Sorting
+      // .orderBy(
+      //   sortByDict[query.sortBy] || query.sortBy,
+      //   query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+      // ) // Sorting
       .take(query.pageSize) // LIMIT
       .skip((query.pageNumber - 1) * query.pageSize); // OFFSET
 
     // Fetch paginated posts
     const posts = await postsQueryBuilder.getMany();
+
+    console.log('getPostsByBlogId', posts);
 
     // Total count query
     const totalCount = await this.postsTypeOrmRepository
