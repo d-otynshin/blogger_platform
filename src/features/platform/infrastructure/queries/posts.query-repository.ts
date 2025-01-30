@@ -120,7 +120,7 @@ export class PostsQueryRepository {
     // Total count query
     const totalCount = await this.postsTypeOrmRepository
       .createQueryBuilder('p')
-      .where('p.blog.id = :blogId', { blogId })
+      .where('p.blog_id = :blogId', { blogId })
       .getCount();
 
     // Transform interactions into desired JSON format

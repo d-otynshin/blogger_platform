@@ -41,10 +41,10 @@ export class Post {
   @Column()
   blog_name: string;
 
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  created_at: Date;
+
   @ManyToOne(() => Blog, (blog) => blog.posts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'blog_id' })
   blog: Blog;
-
-  @CreateDateColumn({ type: 'timestamp with time zone' })
-  created_at: Date;
 }
