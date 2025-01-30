@@ -25,8 +25,12 @@ export class CommentsService {
       throw NotFoundDomainException.create('No interactions found.');
     }
 
+    console.log('comment interactions', interactions);
+
     const myInteraction = interactions.find(
-      (interaction): boolean => interaction.user.id === dto.userId,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      (interaction): boolean => interaction.user_id === dto.userId,
     );
 
     if (!myInteraction) {
@@ -37,7 +41,9 @@ export class CommentsService {
       return;
     }
 
-    if (myInteraction.user.id !== dto.userId) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    if (myInteraction.user_id !== dto.userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

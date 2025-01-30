@@ -27,9 +27,9 @@ export class UpdateLikePostUseCase
   async execute(command: UpdateLikePostCommand) {
     const { postId, userId, dto } = command;
 
-    const postData = await this.postsRepository.findById(postId);
+    const post = await this.postsRepository.findById(postId);
 
-    if (!postData) {
+    if (!post) {
       throw NotFoundDomainException.create('Post not found', 'postId');
     }
 
@@ -37,8 +37,12 @@ export class UpdateLikePostUseCase
     const postInteractions =
       await this.postsRepository.getInteractionsById(postId);
 
+    console.log('post interactions', postInteractions);
+
     const interaction = postInteractions.find(
-      (interaction) => interaction.user.id === userId,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      (interaction) => interaction.user_id === userId,
     );
 
     if (!interaction) {
@@ -54,7 +58,9 @@ export class UpdateLikePostUseCase
     }
 
     // Verify that the user is authorized to update the comment
-    if (interaction.user.id !== userId) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    if (interaction.user_id !== userId) {
       throw ForbiddenDomainException.create('Forbidden', 'userId');
     }
 
