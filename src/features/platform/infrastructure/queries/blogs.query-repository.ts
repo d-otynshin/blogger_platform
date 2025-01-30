@@ -1,5 +1,6 @@
-import { DataSource } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from '../../domain/blog.entity';
 import { GetBlogsQueryParams } from '../../api/input-dto/helpers/get-blogs-query-params.input-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
@@ -13,7 +14,9 @@ import { GetPostsQueryParams } from './get-posts-query-params';
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
-    private dataSource: DataSource,
+    @InjectRepository(Blog)
+    private blogsTypeOrmRepository: Repository<Blog>,
+
     private blogsRepository: BlogsRepository,
     private postsQueryRepository: PostsQueryRepository,
   ) {}
@@ -31,40 +34,28 @@ export class BlogsQueryRepository {
   async getAll(
     query: GetBlogsQueryParams,
   ): Promise<PaginatedViewDto<BlogSQLOutputDto[]>> {
-    let sqlQuery = `FROM blogs`;
+    const queryBuilder = this.blogsTypeOrmRepository.createQueryBuilder('blog');
 
-    const sortByDict = { createdAt: 'created_at' };
-
-    const params = [];
-    const conditions = [];
-
+    // Apply search filters
     if (query.searchNameTerm) {
-      conditions.push(`name ILIKE $${params.length + 1}`);
-      params.push(`%${query.searchNameTerm}%`);
+      queryBuilder.orWhere('blog.name ILIKE :name', {
+        name: `%${query.searchNameTerm}%`,
+      });
     }
 
-    if (conditions.length > 0) {
-      sqlQuery = sqlQuery + ' WHERE ' + conditions.join(' OR ');
-    }
+    // Apply sorting
+    const sortBy = query.sortBy ? query.sortBy : 'created_at';
+    const sortDirection = query.sortDirection.toUpperCase() || 'ASC';
+    queryBuilder.orderBy(sortBy, sortDirection as 'ASC' | 'DESC');
 
-    const sqlQueryCount = sqlQuery;
-    const countParams = [...params];
-
-    // Add sorting and pagination
-    sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
-    sqlQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-
-    params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
+    // Apply pagination
+    queryBuilder.skip((query.pageNumber - 1) * query.pageSize);
+    queryBuilder.take(query.pageSize);
 
     // Fetch paginated blogs
-    const blogs = await this.dataSource.query(`SELECT * ${sqlQuery}`, params);
+    const [blogs, totalCount] = await queryBuilder.getManyAndCount();
 
-    // Count total number of blogs without limit/offset
-    const countQuery = `SELECT COUNT(*) AS total_count ${sqlQueryCount}`;
-    const countResult = await this.dataSource.query(countQuery, countParams);
-
-    const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
-
+    // Map the blogs to the SQL View DTO
     const items = blogs.map(BlogSQLOutputDto.mapToView);
 
     return PaginatedViewDto.mapToView({

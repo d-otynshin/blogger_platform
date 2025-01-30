@@ -30,7 +30,11 @@ export class PostsRepository {
   }
 
   async findById(id: string) {
-    return this.postsTypeOrmRepository.findOne({ where: { id }, relations: ['blog'] });
+    return this.postsTypeOrmRepository.findOne({
+      where: { id },
+      // TODO: remove relations
+      relations: ['blog'],
+    });
   }
 
   async delete(id: string): Promise<boolean> {

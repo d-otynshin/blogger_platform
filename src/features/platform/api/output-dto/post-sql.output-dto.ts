@@ -2,7 +2,7 @@ import { isBefore } from 'date-fns';
 import { LikeStatus, TInteractionView } from '../../dto/interaction-dto';
 import { Post } from '../../domain/post.entity';
 
-type PostView = Post & {
+export type PostView = Post & {
   interactions?: any;
 };
 

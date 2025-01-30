@@ -1,12 +1,16 @@
-import { DataSource } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
+import { Post } from '../../domain/post.entity';
 import { PostsRepository } from '../repositories/posts.repository';
-import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
+import {
+  PostSQLOutputDto,
+  PostView,
+} from '../../api/output-dto/post-sql.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { BaseSortablePaginationParams } from '../../../../core/dto/base.query-params.input-dto';
-import { Post } from '../../domain/post.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
   sortBy = 'createdAt';
@@ -15,7 +19,9 @@ export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
 @Injectable()
 export class PostsQueryRepository {
   constructor(
-    private dataSource: DataSource,
+    @InjectRepository(Post)
+    private postsTypeOrmRepository: Repository<Post>,
+
     private postsRepository: PostsRepository,
   ) {}
 
@@ -24,9 +30,7 @@ export class PostsQueryRepository {
 
     console.log('postData by id', post);
 
-    if (!post) {
-      throw NotFoundDomainException.create('Post not found');
-    }
+    if (!post) throw NotFoundDomainException.create('Post not found');
 
     const postInteractions =
       await this.postsRepository.getInteractionsById(postId);
@@ -44,43 +48,41 @@ export class PostsQueryRepository {
     query: GetPostsQueryParams,
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    let sqlQuery = `
-      FROM posts p
-      LEFT JOIN posts_interactions pi ON p.id = pi.post_id
-      LEFT JOIN users u ON pi.user_id = u.id
-      GROUP BY p.id
-    `;
-
     const sortByDict = { createdAt: 'created_at', blogName: 'blog_name' };
 
-    sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
-    sqlQuery += ` LIMIT $1 OFFSET $2`;
+    const postsQueryBuilder = this.postsTypeOrmRepository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.interactions', 'pi')
+      .leftJoinAndSelect('pi.user', 'u')
+      .groupBy('p.id')
+      .addGroupBy('pi.user_id')
+      .addGroupBy('u.id')
+      .orderBy(
+        sortByDict[query.sortBy] || query.sortBy,
+        query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+      ) // Sorting
+      .take(query.pageSize) // Limit
+      .skip((query.pageNumber - 1) * query.pageSize); // Offset
 
-    const posts = await this.dataSource.query(
-      `
-        SELECT p.*,
-        JSON_AGG(
-            JSON_BUILD_OBJECT(
-                'user_id', pi.user_id, 
-                'action', pi.action, 
-                'added_at', pi.added_at,
-                'user_login', u.login
-            )
-        ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}
-      `,
-      [query.pageSize, (query.pageNumber - 1) * query.pageSize],
-    );
+    const posts = await postsQueryBuilder.getMany();
 
-    const countQuery = `SELECT COUNT(*) AS total_count FROM posts`;
+    const totalCount = await this.postsTypeOrmRepository
+      .createQueryBuilder('p')
+      .getCount();
 
-    const countResult = await this.dataSource.query(countQuery, []);
+    // Transform interactions into desired JSON format
+    const items = posts.map((post: PostView) => {
+      post.interactions = post.interactions.map((interaction: any) => ({
+        user_id: interaction.user.id,
+        user_login: interaction.user.login,
+        action: interaction.action,
+        added_at: interaction.addedAt,
+      }));
 
-    const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
+      return PostSQLOutputDto.mapToView(post, userId);
+    });
 
-    const items = posts.map((post: Post) =>
-      PostSQLOutputDto.mapToView(post, userId),
-    );
-
+    // Return paginated result
     return PaginatedViewDto.mapToView({
       items,
       totalCount,
@@ -94,46 +96,46 @@ export class PostsQueryRepository {
     query: GetPostsQueryParams,
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    let sqlQuery = `
-      FROM posts p
-      LEFT JOIN posts_interactions pi ON p.id = pi.post_id
-      LEFT JOIN users u ON pi.user_id = u.id
-      WHERE p.blog_id = $1
-      GROUP BY p.id
-    `;
-
     const sortByDict = { createdAt: 'created_at' };
-    const params: (string | number)[] = [blogId];
 
-    sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
-    sqlQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    // Base QueryBuilder for posts
+    const postsQueryBuilder = this.postsTypeOrmRepository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.interactions', 'pi')
+      .leftJoinAndSelect('pi.user', 'u')
+      .where('p.blog.id = :blogId', { blogId })
+      .groupBy('p.id')
+      .addGroupBy('pi.id')
+      .addGroupBy('u.id')
+      .orderBy(
+        sortByDict[query.sortBy] || query.sortBy,
+        query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+      ) // Sorting
+      .take(query.pageSize) // LIMIT
+      .skip((query.pageNumber - 1) * query.pageSize); // OFFSET
 
-    params.push(query.pageSize, (query.pageNumber - 1) * query.pageSize);
+    // Fetch paginated posts
+    const posts = await postsQueryBuilder.getMany();
 
-    const posts = await this.dataSource.query(
-      `SELECT p.*,
-        JSON_AGG(
-            JSON_BUILD_OBJECT(
-                'user_id', pi.user_id,
-                'action', pi.action, 
-                'added_at', pi.added_at,
-                'user_login', u.login
-            )
-        ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}`,
-      params,
-    );
+    // Total count query
+    const totalCount = await this.postsTypeOrmRepository
+      .createQueryBuilder('p')
+      .where('p.blog.id = :blogId', { blogId })
+      .getCount();
 
-    const countResult = await this.dataSource.query(
-      `SELECT COUNT(*) AS total_count FROM posts WHERE blog_id = $1`,
-      [blogId],
-    );
+    // Transform interactions into desired JSON format
+    const items = posts.map((post: PostView) => {
+      post.interactions = post.interactions.map((interaction: any) => ({
+        user_id: interaction.user.id,
+        user_login: interaction.user.login,
+        action: interaction.action,
+        added_at: interaction.addedAt,
+      }));
 
-    const totalCount = parseInt(countResult[0]?.total_count, 10) || 0;
+      return PostSQLOutputDto.mapToView(post, userId);
+    });
 
-    const items = posts.map((post: Post) =>
-      PostSQLOutputDto.mapToView(post, userId),
-    );
-
+    // Return paginated result
     return PaginatedViewDto.mapToView({
       items,
       totalCount,

@@ -1,20 +1,25 @@
-import { DataSource } from 'typeorm';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
+
+import { Comment } from '../../domain/comment.entity';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
-import {
-  BadRequestDomainException,
-  NotFoundDomainException,
-} from '../../../../core/exceptions/domain-exceptions';
 import { GetPostsQueryParams } from './get-posts-query-params';
 import { CommentsRepository } from '../repositories/comments.repository';
 import { PostsRepository } from '../repositories/posts.repository';
 import { UsersRepository } from '../../../accounts/infrastructure/repositories/users.repository';
+import {
+  BadRequestDomainException,
+  NotFoundDomainException,
+} from '../../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
-    private dataSource: DataSource,
+    @InjectRepository(Comment)
+    private commentsTypeOrmRepository: Repository<Comment>,
+
     private readonly postsRepository: PostsRepository,
     private readonly commentRepository: CommentsRepository,
     private readonly usersRepository: UsersRepository,
@@ -60,45 +65,49 @@ export class CommentsQueryRepository {
       throw NotFoundDomainException.create('Post not found', 'postId');
     }
 
-    let sqlQuery = `
-      FROM comments c
-      LEFT JOIN users u ON c.commentator_id = u.id
-      LEFT JOIN comments_interactions ci ON c.id = ci.comment_id
-      WHERE post_id = $3
-      GROUP BY c.id, u.id, u.login
-    `;
-
     const sortByDict = { createdAt: 'created_at' };
 
-    sqlQuery += ` ORDER BY "${sortByDict[query.sortBy] || query.sortBy}" ${query.sortDirection}`;
-    sqlQuery += ` LIMIT $1 OFFSET $2`;
+    // Base QueryBuilder for comments
+    const commentsQueryBuilder = this.commentsTypeOrmRepository
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.commentator', 'u')
+      .leftJoinAndSelect('c.interactions', 'ci')
+      .where('c.post.id = :postId', { postId })
+      .groupBy('c.id')
+      .addGroupBy('u.id')
+      .orderBy(
+        sortByDict[query.sortBy] || query.sortBy,
+        query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+      ) // Sorting
+      .take(query.pageSize) // LIMIT
+      .skip((query.pageNumber - 1) * query.pageSize); // OFFSET
 
-    const comments = await this.dataSource.query(
-      `
-         SELECT c.*,
-         u.id AS user_id, u.login AS user_login,
-         JSON_AGG(
-            JSON_BUILD_OBJECT(
-                'user_id', ci.user_id, 
-                'action', ci.action, 
-                'added_at', ci.added_at
-            )
-        ) FILTER (WHERE ci.user_id IS NOT NULL) AS interactions ${sqlQuery}
-      `,
-      [query.pageSize, (query.pageNumber - 1) * query.pageSize, postId],
-    );
+    // Fetch paginated comments
+    const comments = await commentsQueryBuilder.getMany();
 
-    const countResult = await this.dataSource.query(
-      'SELECT COUNT(*) AS total_count FROM comments WHERE post_id = $1',
-      [postId],
-    );
+    // Total count query
+    const totalCount = await this.commentsTypeOrmRepository
+      .createQueryBuilder('c')
+      .where('c.post.id = :postId', { postId })
+      .getCount();
 
-    const totalCount = parseInt(countResult[0].total_count, 10);
+    type CommentView = Comment & {
+      interactions?: any;
+    };
 
-    const items = comments.map((comment: any) =>
-      CommentOutputDto.mapToView(comment, userId),
-    );
+    // Transform interactions into desired JSON format
+    const items = comments.map((comment: CommentView) => {
+      comment.interactions = comment.interactions.map((interaction: any) => ({
+        user_id: interaction.user.id,
+        user_login: interaction.user.login,
+        action: interaction.action,
+        added_at: interaction.addedAt,
+      }));
 
+      return CommentOutputDto.mapToView(comment, userId);
+    });
+
+    // Return paginated result
     return PaginatedViewDto.mapToView({
       items,
       totalCount,
