@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { Post } from './post.entity';
 import { LikeStatus } from '../dto/interaction-dto';
@@ -15,9 +16,11 @@ export class PostsInteraction {
   id: string;
 
   @ManyToOne(() => Post, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'post_id' })
   post: Post;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column()

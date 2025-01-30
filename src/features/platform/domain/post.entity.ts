@@ -3,11 +3,11 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  CreateDateColumn, JoinColumn, OneToMany
+  CreateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 
 import { Blog } from './blog.entity';
-import { PostsInteraction } from './posts-interaction.entity';
 
 export const titleConstraints = {
   minLength: 1,
@@ -42,6 +42,7 @@ export class Post {
   blog_name: string;
 
   @ManyToOne(() => Blog, (blog) => blog.posts, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'blog_id' })
   blog: Blog;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })

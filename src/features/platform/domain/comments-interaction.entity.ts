@@ -3,7 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  CreateDateColumn,
+  CreateDateColumn, JoinColumn
 } from 'typeorm';
 import { Comment } from './comment.entity';
 import { User } from '../../accounts/domain/user.entity';
@@ -14,9 +14,11 @@ export class CommentsInteraction {
   id: string;
 
   @ManyToOne(() => Comment, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'comment_id' })
   comment: Comment;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column()

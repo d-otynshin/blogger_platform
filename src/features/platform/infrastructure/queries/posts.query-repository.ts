@@ -46,8 +46,8 @@ export class PostsQueryRepository {
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     let sqlQuery = `
       FROM posts p
-      LEFT JOIN posts_interactions pi ON p.id = pi."postId"
-      LEFT JOIN users u ON pi."userId" = u.id
+      LEFT JOIN posts_interactions pi ON p.id = pi.post_id
+      LEFT JOIN users u ON pi.user_id = u.id
       GROUP BY p.id
     `;
 
@@ -61,12 +61,12 @@ export class PostsQueryRepository {
         SELECT p.*,
         JSON_AGG(
             JSON_BUILD_OBJECT(
-                'user_id', pi."userId", 
+                'user_id', pi.user_id, 
                 'action', pi.action, 
                 'added_at', pi.added_at,
                 'user_login', u.login
             )
-        ) FILTER (WHERE pi."userId" IS NOT NULL) AS interactions ${sqlQuery}
+        ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}
       `,
       [query.pageSize, (query.pageNumber - 1) * query.pageSize],
     );
@@ -96,9 +96,9 @@ export class PostsQueryRepository {
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     let sqlQuery = `
       FROM posts p
-      LEFT JOIN posts_interactions pi ON p.id = pi."postId"
-      LEFT JOIN users u ON pi."userId" = u.id
-      WHERE p."blogId" = $1
+      LEFT JOIN posts_interactions pi ON p.id = pi.post_id
+      LEFT JOIN users u ON pi.user_id = u.id
+      WHERE p.blog_id = $1
       GROUP BY p.id
     `;
 
@@ -114,17 +114,17 @@ export class PostsQueryRepository {
       `SELECT p.*,
         JSON_AGG(
             JSON_BUILD_OBJECT(
-                'user_id', pi."userId",
+                'user_id', pi.user_id,
                 'action', pi.action, 
                 'added_at', pi.added_at,
                 'user_login', u.login
             )
-        ) FILTER (WHERE pi."userId" IS NOT NULL) AS interactions ${sqlQuery}`,
+        ) FILTER (WHERE pi.user_id IS NOT NULL) AS interactions ${sqlQuery}`,
       params,
     );
 
     const countResult = await this.dataSource.query(
-      `SELECT COUNT(*) AS total_count FROM posts WHERE "blogId" = $1`,
+      `SELECT COUNT(*) AS total_count FROM posts WHERE blog_id = $1`,
       [blogId],
     );
 

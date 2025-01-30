@@ -22,16 +22,12 @@ import {
   UpdatePostInputDto,
 } from './input-dto/posts.input-dto';
 import { CommentsQueryRepository } from '../infrastructure/queries/comments.query-repository';
-
-/* From core module */
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import {
   ExtractUserFromRequest,
   ExtractUserIfExistsFromRequest,
   UserContextDto,
 } from '../../../core/decorators/extract-user-from-request';
-
-/* From Accounts module */
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
 import {
   JwtAuthGuard,
