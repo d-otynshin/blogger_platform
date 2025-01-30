@@ -101,12 +101,10 @@ export class PostsQueryRepository {
     // Base QueryBuilder for posts
     const postsQueryBuilder = this.postsTypeOrmRepository
       .createQueryBuilder('p')
-      .leftJoinAndSelect('posts_interactions', 'pi')
-      .leftJoinAndSelect('pi.user', 'u')
-      .where('p.blog.id = :blogId', { blogId })
+      .leftJoinAndSelect('posts_interactions', 'pi', 'pi.post_id = p.id')
+      .leftJoinAndSelect('users', 'u', 'u.id = pi.user_id')
+      .where('p.blog_id = :blogId', { blogId })
       .groupBy('p.id')
-      .addGroupBy('pi.id')
-      .addGroupBy('u.id')
       .orderBy(
         sortByDict[query.sortBy] || query.sortBy,
         query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
