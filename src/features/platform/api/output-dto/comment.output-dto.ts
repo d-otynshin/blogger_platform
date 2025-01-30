@@ -32,7 +32,7 @@ export class CommentOutputDto {
     dto.id = comment.id;
     dto.content = comment.content;
     dto.commentatorInfo = {
-      userId: comment.userId || comment.commentator_id,
+      userId: comment.userId || comment.commentator?.id,
       userLogin: comment.user_login || comment.commentator_login,
     };
     dto.createdAt = comment.created_at;

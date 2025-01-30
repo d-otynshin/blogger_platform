@@ -28,7 +28,10 @@ export class CommentsRepository {
   }
 
   async getById(id: string) {
-    return this.commentsTypeOrmRepository.findOne({ where: { id } });
+    return this.commentsTypeOrmRepository.findOne({
+      where: { id },
+      relations: ['commentator'],
+    });
   }
 
   async updateInstance(commentId: string, dto: UpdateCommentDto) {

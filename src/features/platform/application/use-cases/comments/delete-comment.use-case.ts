@@ -19,13 +19,13 @@ export class DeleteCommentUseCase
   constructor(private commentsRepository: CommentsRepository) {}
 
   async execute({ id, userId }: DeleteCommentCommand) {
-    const commentData = await this.commentsRepository.getById(id);
+    const comment = await this.commentsRepository.getById(id);
 
-    if (!commentData) {
+    if (!comment) {
       throw NotFoundDomainException.create('Comment not found', 'commentId');
     }
 
-    if (commentData.commentator.id !== userId) {
+    if (comment.commentator.id !== userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

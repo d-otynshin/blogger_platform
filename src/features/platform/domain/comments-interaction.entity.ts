@@ -13,7 +13,9 @@ export class CommentsInteraction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Comment, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Comment, (comment) => comment.interactions, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'comment_id' })
   comment: Comment;
 

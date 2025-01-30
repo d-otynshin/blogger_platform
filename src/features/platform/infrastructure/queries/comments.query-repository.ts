@@ -65,25 +65,19 @@ export class CommentsQueryRepository {
       throw NotFoundDomainException.create('Post not found', 'postId');
     }
 
-    const sortByDict = { createdAt: 'created_at' };
+    // const sortByDict = { createdAt: 'created_at' };
 
-    // Base QueryBuilder for comments
-    const commentsQueryBuilder = this.commentsTypeOrmRepository
-      .createQueryBuilder('c')
-      .leftJoinAndSelect('users', 'u')
-      .leftJoinAndSelect('comments_interactions', 'ci')
-      .where('c.post.id = :postId', { postId })
-      .groupBy('c.id')
-      .addGroupBy('u.id')
-      .orderBy(
-        sortByDict[query.sortBy] || query.sortBy,
-        query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
-      ) // Sorting
-      .take(query.pageSize) // LIMIT
-      .skip((query.pageNumber - 1) * query.pageSize); // OFFSET
+    const comments = await this.commentsTypeOrmRepository.find({
+      where: { post: { id: postId } },
+      relations: ['interactions', 'interactions.user'],
+      // order: {
+      //   [sortByDict[query.sortBy] || query.sortBy]: query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+      // },
+      take: query.pageSize, // Limit
+      skip: (query.pageNumber - 1) * query.pageSize, // Offset
+    });
 
-    // Fetch paginated comments
-    const comments = await commentsQueryBuilder.getMany();
+    console.log(comments);
 
     // Total count query
     const totalCount = await this.commentsTypeOrmRepository
