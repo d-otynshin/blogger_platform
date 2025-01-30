@@ -4,7 +4,8 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
-  JoinColumn, OneToMany
+  JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../../accounts/domain/user.entity';
 import { Post } from './post.entity';

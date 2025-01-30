@@ -35,6 +35,8 @@ export class PostsQueryRepository {
     const postInteractions =
       await this.postsRepository.getInteractionsById(postId);
 
+    console.log('postInteractions', postInteractions);
+
     return PostSQLOutputDto.mapToView(
       {
         ...post,
