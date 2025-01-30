@@ -109,6 +109,7 @@ export class PostsQueryRepository {
     });
 
     console.log('getPostsByBlogId', posts);
+    console.log(posts[0]?.interactions[0]);
 
     // Total count query
     const totalCount = await this.postsTypeOrmRepository

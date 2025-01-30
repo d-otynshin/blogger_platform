@@ -27,6 +27,8 @@ export class CommentOutputDto {
 
     const dto = new CommentOutputDto();
 
+    console.log('comment', comment);
+
     dto.id = comment.id;
     dto.content = comment.content;
     dto.commentatorInfo = {

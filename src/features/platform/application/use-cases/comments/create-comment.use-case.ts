@@ -43,6 +43,8 @@ export class CreateCommentUseCase
       commentatorId: user.id,
     });
 
+    console.log('commentData', commentData);
+
     if (!commentData) {
       // TODO: update error details
       throw BadRequestDomainException.create('Invalid comment');
