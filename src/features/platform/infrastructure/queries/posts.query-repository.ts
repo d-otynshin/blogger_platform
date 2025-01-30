@@ -101,8 +101,20 @@ export class PostsQueryRepository {
     // Base QueryBuilder for posts
     const postsQueryBuilder = this.postsTypeOrmRepository
       .createQueryBuilder('p')
-      .leftJoinAndSelect('posts_interactions', 'pi', 'pi.post_id = p.id')
-      .leftJoinAndSelect('users', 'u', 'u.id = pi.user_id')
+      .leftJoin('posts_interactions', 'pi', 'pi.post_id = p.id')
+      .leftJoin('users', 'u', 'u.id = pi.user_id')
+      .addSelect(
+        `JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'id', pi.id,
+            'action', pi.action,
+            'addedAt', pi.added_at,
+            'userId', pi.user_id,
+            'userLogin', u.login
+          )
+        ) FILTER (WHERE pi.id IS NOT NULL)`,
+        'interactions',
+      )
       .where('p.blog_id = :blogId', { blogId })
       .groupBy('p.id')
       .addGroupBy('pi.id')
