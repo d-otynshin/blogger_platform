@@ -98,44 +98,15 @@ export class PostsQueryRepository {
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     // const sortByDict = { createdAt: 'created_at' };
 
-    // Base QueryBuilder for posts
-    const postsQueryBuilder = this.postsTypeOrmRepository
-      .createQueryBuilder('p')
-      .leftJoin('posts_interactions', 'pi', 'pi.post_id = p.id')
-      .leftJoin('users', 'u', 'u.id = pi.user_id')
-      .addSelect(
-        `JSON_AGG(
-          JSON_BUILD_OBJECT(
-            'id', pi.id,
-            'action', pi.action,
-            'addedAt', pi.added_at,
-            'userId', pi.user_id,
-            'userLogin', u.login
-          )
-        ) FILTER (WHERE pi.id IS NOT NULL)`,
-        'interactions',
-      )
-      .where('p.blog_id = :blogId', { blogId })
-      .groupBy('p.id')
-      .addGroupBy('pi.id')
-      .addGroupBy('u.id')
-      // .orderBy(
-      //   sortByDict[query.sortBy] || query.sortBy,
-      //   query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
-      // ) // Sorting
-      .take(query.pageSize) // LIMIT
-      .skip((query.pageNumber - 1) * query.pageSize); // OFFSET
-
-    // Fetch paginated posts
-    const { raw, entities } = await postsQueryBuilder.getRawAndEntities();
-
-    // Combine the raw data with entities
-    const posts = entities.map((post, index) => ({
-      ...post,
-      interactions: raw[index]?.interactions
-        ? JSON.parse(raw[index].interactions)
-        : [],
-    }));
+    const posts = await this.postsTypeOrmRepository.find({
+      where: { blog: { id: blogId } },
+      relations: ['interactions', 'interactions.user'],
+      // order: {
+      //   [sortByDict[query.sortBy] || query.sortBy]: query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+      // },
+      take: query.pageSize, // Limit
+      skip: (query.pageNumber - 1) * query.pageSize, // Offset
+    });
 
     console.log('getPostsByBlogId', posts);
 

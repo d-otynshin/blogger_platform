@@ -15,7 +15,7 @@ export class PostsInteraction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Post, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Post, (post) => post.interactions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post: Post;
 
