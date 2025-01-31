@@ -22,13 +22,15 @@ export class UpdateCommentUseCase
   constructor(private commentsRepository: CommentsRepository) {}
 
   async execute({ commentId, dto, userId }: UpdateCommentCommand) {
-    const commentData = await this.commentsRepository.getById(commentId);
+    const comment = await this.commentsRepository.getById(commentId);
 
-    if (!commentData) {
+    console.log('UpdateCommentUseCase', comment);
+
+    if (!comment) {
       throw NotFoundDomainException.create('Invalid comment', 'content');
     }
 
-    if (commentData.commentator.id !== userId) {
+    if (comment.commentator.id !== userId) {
       throw ForbiddenDomainException.create('Forbidden');
     }
 

@@ -2,10 +2,6 @@ import { isBefore } from 'date-fns';
 import { LikeStatus, TInteractionView } from '../../dto/interaction-dto';
 import { Post } from '../../domain/post.entity';
 
-export type PostView = Post & {
-  interactions?: any;
-};
-
 export class PostSQLOutputDto {
   id: string;
   title: string;
@@ -22,20 +18,18 @@ export class PostSQLOutputDto {
     newestLikes: TInteractionView[];
   };
 
-  static mapToView(post: PostView, userId?: string): PostSQLOutputDto {
+  static mapToView(post: Post, userId?: string): PostSQLOutputDto {
     let myStatus = LikeStatus.None;
 
-    const interactions = post.interactions ?? [];
-
     if (userId) {
-      const myInteraction = interactions.find(
+      const myInteraction = post.interactions.find(
         (interaction) => interaction.user_id === userId,
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;
     }
 
-    const newestLikes = interactions
+    const newestLikes = post.interactions
       .filter((interaction) => interaction.action === LikeStatus.Like)
       .sort((likeA, likeB) =>
         isBefore(likeA.added_at, likeB.added_at) ? 1 : -1,
@@ -60,10 +54,10 @@ export class PostSQLOutputDto {
     dto.createdAt = post.created_at;
 
     dto.extendedLikesInfo = {
-      likesCount: interactions.filter(
+      likesCount: post.interactions.filter(
         (interaction) => interaction.action === LikeStatus.Like,
       ).length,
-      dislikesCount: interactions.filter(
+      dislikesCount: post.interactions.filter(
         (interaction) => interaction.action === LikeStatus.Dislike,
       ).length,
       myStatus,

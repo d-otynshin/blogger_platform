@@ -2,16 +2,11 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 import { Post } from '../../domain/post.entity';
-import { PostsRepository } from '../repositories/posts.repository';
-import {
-  PostSQLOutputDto,
-  PostView,
-} from '../../api/output-dto/post-sql.output-dto';
+import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { BaseSortablePaginationParams } from '../../../../core/dto/base.query-params.input-dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PostsInteraction } from '../../domain/posts-interaction.entity';
 
 export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
   sortBy = 'createdAt';
@@ -22,32 +17,20 @@ export class PostsQueryRepository {
   constructor(
     @InjectRepository(Post)
     private postsTypeOrmRepository: Repository<Post>,
-
-    @InjectRepository(PostsInteraction)
-    private postsInteractionsTypeOrmRepository: Repository<PostsInteraction>,
-
-    private postsRepository: PostsRepository,
   ) {}
 
   async getById(postId: string, userId?: string): Promise<PostSQLOutputDto> {
-    const post = await this.postsRepository.findById(postId);
-
-    console.log('postData by id', post);
+    const post = await this.postsTypeOrmRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.interactions', 'interaction')
+      .leftJoinAndSelect('interaction.user', 'user')
+      .leftJoinAndSelect('post.blog', 'blog')
+      .where('post.id = :postId', { postId })
+      .execute();
 
     if (!post) throw NotFoundDomainException.create('Post not found');
 
-    const postInteractions =
-      await this.postsRepository.getInteractionsById(postId);
-
-    console.log('postInteractions', postInteractions);
-
-    return PostSQLOutputDto.mapToView(
-      {
-        ...post,
-        interactions: postInteractions,
-      },
-      userId,
-    );
+    return PostSQLOutputDto.mapToView(post, userId);
   }
 
   async getAllPosts(
@@ -77,14 +60,7 @@ export class PostsQueryRepository {
       .getCount();
 
     // Transform interactions into desired JSON format
-    const items = posts.map((post: PostView) => {
-      post.interactions = post.interactions.map((interaction: any) => ({
-        user_id: interaction.user.id,
-        user_login: interaction.user.login,
-        action: interaction.action,
-        added_at: interaction.addedAt,
-      }));
-
+    const items = posts.map((post: Post) => {
       return PostSQLOutputDto.mapToView(post, userId);
     });
 
@@ -114,41 +90,29 @@ export class PostsQueryRepository {
     //   skip: (query.pageNumber - 1) * query.pageSize, // Offset
     // });
 
-    const generatedQuery = this.postsTypeOrmRepository
+    const posts = await this.postsTypeOrmRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.interactions', 'interaction')
       .leftJoinAndSelect('interaction.user', 'user')
       .leftJoinAndSelect('post.blog', 'blog')
-      .where('blog.id = :blogId', { blogId });
-
-    const posts = await generatedQuery.getMany();
+      .where('blog.id = :blogId', { blogId })
+      .getMany();
 
     const items = posts.map((post) => {
+      const interaction = post.interactions[0];
+      console.log('INTERACTION', interaction);
+
       return PostSQLOutputDto.mapToView(post, userId);
     });
 
     console.log('POSTS WITH INTERACTIONS:', items);
 
-    // Total count query
     const totalCount = await this.postsTypeOrmRepository
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.blog', 'blog')
       .where('blog.id = :blogId', { blogId })
       .getCount();
 
-    // Transform interactions into desired JSON format
-    // const items = posts.map((post: PostView) => {
-    //   post.interactions = post.interactions.map((interaction: any) => ({
-    //     user_id: interaction.user.id,
-    //     user_login: interaction.user.login,
-    //     action: interaction.action,
-    //     added_at: interaction.addedAt,
-    //   }));
-    //
-    //   return PostSQLOutputDto.mapToView(post, userId);
-    // });
-
-    // Return paginated result
     return PaginatedViewDto.mapToView({
       items: [],
       totalCount,
