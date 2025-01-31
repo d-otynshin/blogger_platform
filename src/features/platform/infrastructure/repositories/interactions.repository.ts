@@ -79,9 +79,6 @@ export class InteractionsRepository {
   async getPostsInteractions(postId: string) {
     return this.postsInteractionsTypeOrmRepository.find({
       where: { post: { id: postId } },
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      select: ['id', 'post_id', 'user_id', 'action', 'added_at'],
     });
   }
 
