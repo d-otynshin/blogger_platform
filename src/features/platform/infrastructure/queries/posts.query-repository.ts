@@ -114,17 +114,35 @@ export class PostsQueryRepository {
     //   skip: (query.pageNumber - 1) * query.pageSize, // Offset
     // });
 
-    const [interactions, totalCount] =
-      await this.postsInteractionsTypeOrmRepository.findAndCount({
-        relations: ['post', 'user'], // Include related entities
-        skip: (query.pageNumber - 1) * query.pageSize, // Offset
-        take: query.pageSize, // Limit
-        order: {
-          added_at: 'DESC', // Optional: Sort interactions by creation date
-        },
-      });
+    const posts = await this.postsTypeOrmRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.interactions', 'interaction') // join posts_interactions
+      .leftJoinAndSelect('interaction.user', 'user') // join users
+      .where('post.blog.id = :blogId', { blogId }) // filter by blog_id
+      .select([
+        'post.id',
+        'post.title',
+        'post.short_description',
+        'post.content',
+        'post.created_at',
+        'interaction.added_at',
+        'interaction.action',
+        'user.id as userId',
+        'user.login as userLogin',
+      ])
+      .getMany();
 
-    console.log('get posts by blog_id INTERACTIONS:', interactions);
+    const items = posts.map((post) => ({
+      ...post,
+      interactions: post.interactions.map((interaction) => ({
+        addedAt: interaction.added_at,
+        action: interaction.action,
+        userId: interaction.user.id,
+        userLogin: interaction.user.login,
+      })),
+    }));
+
+    console.log('POSTS WITH INTERACTIONS:', items);
 
     // Total count query
     // const totalCount = await this.postsTypeOrmRepository
@@ -147,7 +165,7 @@ export class PostsQueryRepository {
     // Return paginated result
     return PaginatedViewDto.mapToView({
       items: [],
-      totalCount,
+      totalCount: 0,
       page: query.pageNumber,
       size: query.pageSize,
     });
