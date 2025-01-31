@@ -117,16 +117,10 @@ export class PostsQueryRepository {
     const generatedQuery = this.postsTypeOrmRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.interactions', 'interaction')
-      .leftJoinAndSelect('interaction.user', 'user');
+      .leftJoinAndSelect('interaction.user', 'user')
+      .where('p.blog_id = :blogId', { blogId });
 
-    console.log('QUERY', generatedQuery);
     const posts = await generatedQuery.getMany();
-
-    console.log('UNMAPPED POSTS WITH INTERACTIONS:', posts);
-
-    const interaction = posts[0].interactions[0];
-
-    console.log('INTERACTION', interaction);
 
     const items = posts.map((post) => ({
       ...post,
@@ -138,13 +132,17 @@ export class PostsQueryRepository {
       })),
     }));
 
+    const interaction = items[0].interactions[0];
+
+    console.log('INTERACTION', interaction);
+
     console.log('POSTS WITH INTERACTIONS:', items);
 
     // Total count query
-    // const totalCount = await this.postsTypeOrmRepository
-    //   .createQueryBuilder('p')
-    //   .where('p.blog_id = :blogId', { blogId })
-    //   .getCount();
+    const totalCount = await this.postsTypeOrmRepository
+      .createQueryBuilder('p')
+      .where('p.blog_id = :blogId', { blogId })
+      .getCount();
 
     // Transform interactions into desired JSON format
     // const items = posts.map((post: PostView) => {
@@ -161,7 +159,7 @@ export class PostsQueryRepository {
     // Return paginated result
     return PaginatedViewDto.mapToView({
       items: [],
-      totalCount: 0,
+      totalCount,
       page: query.pageNumber,
       size: query.pageSize,
     });
