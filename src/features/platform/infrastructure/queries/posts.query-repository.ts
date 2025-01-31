@@ -114,23 +114,13 @@ export class PostsQueryRepository {
     //   skip: (query.pageNumber - 1) * query.pageSize, // Offset
     // });
 
-    const posts = await this.postsTypeOrmRepository
+    const generatedQuery = this.postsTypeOrmRepository
       .createQueryBuilder('post')
-      .leftJoinAndSelect('post.interactions', 'interaction') // join posts_interactions
-      .leftJoinAndSelect('interaction.user', 'user') // join users
-      .where('post.blog.id = :blogId', { blogId }) // filter by blog_id
-      .select([
-        'post.id',
-        'post.title',
-        'post.short_description',
-        'post.content',
-        'post.created_at',
-        'interaction.added_at',
-        'interaction.action',
-        'user.id as userId',
-        'user.login as userLogin',
-      ])
-      .getMany();
+      .leftJoinAndSelect('post.interactions', 'interaction')
+      .leftJoinAndSelect('interaction.user', 'user');
+
+    console.log('QUERY', generatedQuery);
+    const posts = await generatedQuery.getMany();
 
     console.log('UNMAPPED POSTS WITH INTERACTIONS:', posts);
 
