@@ -67,37 +67,25 @@ export class CommentsQueryRepository {
 
     // const sortByDict = { createdAt: 'created_at' };
 
-    const comments = await this.commentsTypeOrmRepository.find({
-      where: { post: { id: postId } },
-      relations: ['interactions', 'interactions.user'],
-      // order: {
-      //   [sortByDict[query.sortBy] || query.sortBy]: query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
-      // },
-      take: query.pageSize, // Limit
-      skip: (query.pageNumber - 1) * query.pageSize, // Offset
-    });
+    const comments = await this.commentsTypeOrmRepository
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.interactions', 'interaction')
+      .leftJoinAndSelect('interaction.user', 'user')
+      .leftJoinAndSelect('comment.post', 'post')
+      .where('post.id = :postId', { postId })
+      .getMany();
 
     console.log(comments);
 
     // Total count query
     const totalCount = await this.commentsTypeOrmRepository
-      .createQueryBuilder('c')
-      .where('c.post.id = :postId', { postId })
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.post', 'post')
+      .where('post.id = :postId', { postId })
       .getCount();
 
-    type CommentView = Comment & {
-      interactions?: any;
-    };
-
     // Transform interactions into desired JSON format
-    const items = comments.map((comment: CommentView) => {
-      comment.interactions = comment.interactions.map((interaction: any) => ({
-        user_id: interaction.user.id,
-        user_login: interaction.user.login,
-        action: interaction.action,
-        added_at: interaction.addedAt,
-      }));
-
+    const items = comments.map((comment: Comment) => {
       return CommentOutputDto.mapToView(comment, userId);
     });
 
