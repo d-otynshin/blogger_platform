@@ -83,7 +83,7 @@ export class PostsRepository {
   async updateInteractionById(
     postId: string,
     userId: string,
-    action: string,
+    action: LikeStatus,
   ): Promise<boolean> {
     return this.interactionsRepository.updatePostsInteractionById(
       postId,

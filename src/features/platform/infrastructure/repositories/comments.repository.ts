@@ -7,6 +7,7 @@ import { User } from '../../../accounts/domain/user.entity';
 import { Comment } from '../../domain/comment.entity';
 import { CreateCommentDto, UpdateCommentDto } from '../../dto/comment-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { LikeStatus } from '../../dto/interaction-dto';
 
 @Injectable()
 export class CommentsRepository {
@@ -28,10 +29,12 @@ export class CommentsRepository {
   }
 
   async getById(id: string) {
-    return this.commentsTypeOrmRepository.findOne({
-      where: { id },
-      relations: ['commentator'],
-    });
+    return this.commentsTypeOrmRepository
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.interactions', 'interaction')
+      .leftJoinAndSelect('interaction.commentator', 'commentator')
+      .where('id = :id', { id })
+      .getOne();
   }
 
   async updateInstance(commentId: string, dto: UpdateCommentDto) {
@@ -51,7 +54,11 @@ export class CommentsRepository {
     return deleteResult.affected > 0;
   }
 
-  async createInteraction(commentId: string, userId: string, action: string) {
+  async createInteraction(
+    commentId: string,
+    userId: string,
+    action: LikeStatus,
+  ) {
     return this.interactionsRepository.createCommentInteraction(
       commentId,
       userId,
@@ -72,7 +79,7 @@ export class CommentsRepository {
   async updateInteractionById(
     commentId: string,
     userId: string,
-    action: string,
+    action: LikeStatus,
   ): Promise<boolean> {
     return this.interactionsRepository.updateCommentsInteractionById(
       commentId,

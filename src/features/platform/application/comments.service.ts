@@ -25,12 +25,8 @@ export class CommentsService {
       throw NotFoundDomainException.create('No interactions found.');
     }
 
-    console.log('comment interactions', interactions);
-
     const myInteraction = interactions.find(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      (interaction): boolean => interaction.user_id === dto.userId,
+      (interaction): boolean => interaction.user.id === dto.userId,
     );
 
     if (!myInteraction) {

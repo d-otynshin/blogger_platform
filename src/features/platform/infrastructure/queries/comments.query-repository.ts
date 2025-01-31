@@ -6,13 +6,8 @@ import { Comment } from '../../domain/comment.entity';
 import { CommentOutputDto } from '../../api/output-dto/comment.output-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { GetPostsQueryParams } from './get-posts-query-params';
-import { CommentsRepository } from '../repositories/comments.repository';
 import { PostsRepository } from '../repositories/posts.repository';
-import { UsersRepository } from '../../../accounts/infrastructure/repositories/users.repository';
-import {
-  BadRequestDomainException,
-  NotFoundDomainException,
-} from '../../../../core/exceptions/domain-exceptions';
+import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -21,38 +16,20 @@ export class CommentsQueryRepository {
     private commentsTypeOrmRepository: Repository<Comment>,
 
     private readonly postsRepository: PostsRepository,
-    private readonly commentRepository: CommentsRepository,
-    private readonly usersRepository: UsersRepository,
   ) {}
 
   async getCommentById(
     commentId: string,
     userId?: string,
   ): Promise<CommentOutputDto> {
-    const commentData = await this.commentRepository.getById(commentId);
+    const comment = await this.commentsTypeOrmRepository
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.interactions', 'interaction')
+      .leftJoinAndSelect('comment.commentator', 'commentator')
+      .where('comment.id = :commentId', { commentId })
+      .getOne();
 
-    if (!commentData) {
-      throw NotFoundDomainException.create('Comment not found', 'id');
-    }
-
-    const commentatorData = await this.usersRepository.findById(
-      commentData.commentator.id,
-    );
-
-    if (!commentatorData) {
-      throw BadRequestDomainException.create('Not Found', 'user');
-    }
-
-    const interactions =
-      await this.commentRepository.getInteractions(commentId);
-
-    const commentWithLogin = {
-      ...commentData,
-      interactions,
-      commentator_login: commentatorData.login,
-    };
-
-    return CommentOutputDto.mapToView(commentWithLogin, userId);
+    return CommentOutputDto.mapToView(comment, userId);
   }
 
   async getCommentsByPostId(
@@ -75,7 +52,7 @@ export class CommentsQueryRepository {
       .where('post.id = :postId', { postId })
       .getMany();
 
-    console.log(comments);
+    console.log('COMMENTS BY POST ID', comments);
 
     // Total count query
     const totalCount = await this.commentsTypeOrmRepository

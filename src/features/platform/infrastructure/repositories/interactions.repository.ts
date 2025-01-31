@@ -21,7 +21,7 @@ export class InteractionsRepository {
   async createCommentInteraction(
     commentId: string,
     userId: string,
-    action: string,
+    action: LikeStatus,
   ) {
     const interaction = this.commentsInteractionsTypeOrmRepository.create({
       comment: { id: commentId } as Comment,
@@ -44,7 +44,7 @@ export class InteractionsRepository {
   async updateCommentsInteractionById(
     commentId: string,
     userId: string,
-    action: string,
+    action: LikeStatus,
   ): Promise<boolean> {
     const updateResult = await this.commentsInteractionsTypeOrmRepository
       .createQueryBuilder()
@@ -85,7 +85,7 @@ export class InteractionsRepository {
   async updatePostsInteractionById(
     postId: string,
     userId: string,
-    action: string,
+    action: LikeStatus,
   ): Promise<boolean> {
     const updateResult = await this.postsInteractionsTypeOrmRepository
       .createQueryBuilder()

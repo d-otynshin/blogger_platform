@@ -141,8 +141,6 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
   ): Promise<PostSQLOutputDto> {
-    console.log('postId', postId);
-    console.log('blogId', blogId);
     const isDeleted = await this.blogsService.deletePostByBlogId(
       blogId,
       postId,

@@ -1,5 +1,6 @@
 import { LikeStatus } from '../../dto/interaction-dto';
 import { TCommentator } from '../../dto/comment-dto';
+import { Comment } from '../../domain/comment.entity';
 
 export class CommentOutputDto {
   id: string;
@@ -12,14 +13,12 @@ export class CommentOutputDto {
     myStatus: LikeStatus;
   };
 
-  static mapToView(comment: any, userId?: string): CommentOutputDto {
+  static mapToView(comment: Comment, userId?: string): CommentOutputDto {
     let myStatus = LikeStatus.None;
 
-    const interactions = comment.interactions ?? [];
-
     if (userId) {
-      const myInteraction = interactions.find(
-        (interaction) => interaction.user_id === userId,
+      const myInteraction = comment.interactions.find(
+        (interaction) => interaction.user.id === userId,
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;
@@ -27,20 +26,20 @@ export class CommentOutputDto {
 
     const dto = new CommentOutputDto();
 
-    console.log('comment', comment);
+    console.log('Comment in CommentOutputDto', comment);
 
     dto.id = comment.id;
     dto.content = comment.content;
     dto.commentatorInfo = {
-      userId: comment.userId || comment.commentator?.id,
-      userLogin: comment.user_login || comment.commentator_login,
+      userId: comment.commentator.id,
+      userLogin: comment.commentator.login,
     };
     dto.createdAt = comment.created_at;
     dto.likesInfo = {
-      likesCount: interactions.filter(
+      likesCount: comment.interactions.filter(
         (interaction) => interaction.action === LikeStatus.Like,
       ).length,
-      dislikesCount: interactions.filter(
+      dislikesCount: comment.interactions.filter(
         (interaction) => interaction.action === LikeStatus.Dislike,
       ).length,
       myStatus,

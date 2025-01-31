@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Comment } from './comment.entity';
+import { LikeStatus } from '../dto/interaction-dto';
 import { User } from '../../accounts/domain/user.entity';
 
 @Entity('comments_interactions')
@@ -15,7 +16,7 @@ export class CommentsInteraction {
   id: string;
 
   @Column()
-  action: string;
+  action: LikeStatus;
 
   @ManyToOne(() => Comment, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'comment_id' })
