@@ -134,12 +134,16 @@ export class PostsQueryRepository {
 
     console.log('UNMAPPED POSTS WITH INTERACTIONS:', posts);
 
+    const interaction = posts[0].interactions[0];
+
+    console.log('INTERACTION', interaction);
+
     const items = posts.map((post) => ({
       ...post,
       interactions: post.interactions.map((interaction) => ({
         addedAt: interaction.added_at,
         action: interaction.action,
-        userId: interaction.user?.id,
+        userId: interaction.user.id,
         userLogin: interaction.user.login,
       })),
     }));
