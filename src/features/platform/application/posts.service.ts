@@ -13,9 +13,9 @@ export class PostsService {
     private blogsRepository: BlogsRepository,
   ) {}
   async createPost(dto: CreatePostInputDto): Promise<PostSQLOutputDto> {
-    const blogData = await this.blogsRepository.findById(dto.blogId);
+    const blog = await this.blogsRepository.findById(dto.blogId);
 
-    if (!blogData) {
+    if (!blog) {
       throw NotFoundDomainException.create('Blog not found', 'blogId');
     }
 
@@ -25,7 +25,7 @@ export class PostsService {
         title: dto.title,
         content: dto.content,
         shortDescription: dto.shortDescription,
-        blogName: blogData.name,
+        blogName: blog.name,
       },
     );
 

@@ -5,7 +5,6 @@ import { InteractionsRepository } from './interactions.repository';
 import { CreatePostDto, UpdatePostDto } from '../../dto/post-dto';
 import { Post } from '../../domain/post.entity';
 import { Blog } from '../../domain/blog.entity';
-import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { LikeStatus } from '../../dto/interaction-dto';
 
 @Injectable()
@@ -31,7 +30,7 @@ export class PostsRepository {
 
   async findById(id: string) {
     return this.postsTypeOrmRepository
-      .createQueryBuilder('c')
+      .createQueryBuilder('post')
       .leftJoinAndSelect('post.blog', 'blog')
       .leftJoinAndSelect('post.interactions', 'interaction')
       .leftJoinAndSelect('interaction.user', 'user')
@@ -70,16 +69,6 @@ export class PostsRepository {
       userId,
       action,
     );
-  }
-
-  async getInteractionsById(postId: string) {
-    const post = await this.findById(postId);
-
-    if (!post) {
-      throw NotFoundDomainException.create('No comment found');
-    }
-
-    return this.interactionsRepository.getPostsInteractions(postId);
   }
 
   async updateInteractionById(

@@ -40,14 +40,14 @@ export class BlogsService {
     blogId: string,
     dto: CreatePostByBlogIdInputDto,
   ): Promise<PostSQLOutputDto | null> {
-    const blogData = await this.blogsRepository.findById(blogId);
-    if (!blogData) return null;
+    const blog = await this.blogsRepository.findById(blogId);
+    if (!blog) return null;
 
     const createdPost = await this.postsRepository.createInstance(blogId, {
       title: dto.title,
       content: dto.content,
       shortDescription: dto.shortDescription,
-      blogName: blogData.name,
+      blogName: blog.name,
     });
 
     const post = await this.postsRepository.findById(createdPost.id);
