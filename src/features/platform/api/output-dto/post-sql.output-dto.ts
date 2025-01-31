@@ -22,7 +22,7 @@ export class PostSQLOutputDto {
     let myStatus = LikeStatus.None;
 
     if (userId) {
-      const myInteraction = post.interactions.find(
+      const myInteraction = post.interactions?.find(
         // TODO: check relations
         (interaction) => interaction.user?.id === userId,
       );

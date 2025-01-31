@@ -30,6 +30,8 @@ export class PostsQueryRepository {
 
     if (!post) throw NotFoundDomainException.create('Post not found');
 
+    console.log('POST', post);
+
     return PostSQLOutputDto.mapToView(post, userId);
   }
 
