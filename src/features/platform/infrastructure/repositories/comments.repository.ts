@@ -33,7 +33,7 @@ export class CommentsRepository {
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.interactions', 'interaction')
       .leftJoinAndSelect('comment.commentator', 'commentator')
-      .where('id = :id', { id })
+      .where('comment.id = :id', { id })
       .getOne();
   }
 
