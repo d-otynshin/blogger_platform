@@ -118,7 +118,8 @@ export class PostsQueryRepository {
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.interactions', 'interaction')
       .leftJoinAndSelect('interaction.user', 'user')
-      .where('p.blog_id = :blogId', { blogId });
+      .leftJoinAndSelect('post.blog', 'blog')
+      .where('blog.id = :blogId', { blogId });
 
     const posts = await generatedQuery.getMany();
 
@@ -141,7 +142,8 @@ export class PostsQueryRepository {
     // Total count query
     const totalCount = await this.postsTypeOrmRepository
       .createQueryBuilder('p')
-      .where('p.blog_id = :blogId', { blogId })
+      .leftJoinAndSelect('p.blog', 'blog')
+      .where('blog.id = :blogId', { blogId })
       .getCount();
 
     // Transform interactions into desired JSON format
