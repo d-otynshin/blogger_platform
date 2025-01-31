@@ -4,11 +4,10 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
-  JoinColumn, OneToMany
+  JoinColumn,
 } from 'typeorm';
 
 import { Blog } from './blog.entity';
-import { PostsInteraction } from './posts-interaction.entity';
 
 export const titleConstraints = {
   minLength: 1,
@@ -48,7 +47,4 @@ export class Post {
   @ManyToOne(() => Blog, (blog) => blog.posts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'blog_id' })
   blog: Blog;
-
-  @OneToMany(() => PostsInteraction, (interaction) => interaction.post)
-  interactions: PostsInteraction[];
 }

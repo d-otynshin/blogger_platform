@@ -5,11 +5,9 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
-  OneToMany,
 } from 'typeorm';
 import { User } from '../../accounts/domain/user.entity';
 import { Post } from './post.entity';
-import { CommentsInteraction } from './comments-interaction.entity';
 
 @Entity('comments')
 export class Comment {
@@ -19,6 +17,9 @@ export class Comment {
   @Column()
   content: string;
 
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  created_at: Date;
+
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'commentator_id' })
   commentator: User;
@@ -26,10 +27,4 @@ export class Comment {
   @ManyToOne(() => Post, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post: Post;
-
-  @OneToMany(() => CommentsInteraction, (interaction) => interaction.comment)
-  interactions: CommentsInteraction[];
-
-  @CreateDateColumn({ type: 'timestamp with time zone' })
-  created_at: Date;
 }

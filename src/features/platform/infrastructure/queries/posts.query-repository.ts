@@ -11,6 +11,7 @@ import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { BaseSortablePaginationParams } from '../../../../core/dto/base.query-params.input-dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PostsInteraction } from '../../domain/posts-interaction.entity';
 
 export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
   sortBy = 'createdAt';
@@ -21,6 +22,9 @@ export class PostsQueryRepository {
   constructor(
     @InjectRepository(Post)
     private postsTypeOrmRepository: Repository<Post>,
+
+    @InjectRepository(PostsInteraction)
+    private postsInteractionsTypeOrmRepository: Repository<PostsInteraction>,
 
     private postsRepository: PostsRepository,
   ) {}
@@ -99,41 +103,50 @@ export class PostsQueryRepository {
     userId?: string,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     // const sortByDict = { createdAt: 'created_at' };
+    //
+    // const posts = await this.postsTypeOrmRepository.find({
+    //   where: { blog: { id: blogId } },
+    //   order: {
+    //     [sortByDict[query.sortBy] || query.sortBy]:
+    //       query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+    //   },
+    //   take: query.pageSize, // Limit
+    //   skip: (query.pageNumber - 1) * query.pageSize, // Offset
+    // });
 
-    const posts = await this.postsTypeOrmRepository.find({
-      where: { blog: { id: blogId } },
-      relations: ['interactions', 'interactions.user'],
-      // order: {
-      //   [sortByDict[query.sortBy] || query.sortBy]: query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
-      // },
-      take: query.pageSize, // Limit
-      skip: (query.pageNumber - 1) * query.pageSize, // Offset
-    });
+    const [interactions, totalCount] =
+      await this.postsInteractionsTypeOrmRepository.findAndCount({
+        relations: ['post', 'user'], // Include related entities
+        skip: (query.pageNumber - 1) * query.pageSize, // Offset
+        take: query.pageSize, // Limit
+        order: {
+          added_at: 'DESC', // Optional: Sort interactions by creation date
+        },
+      });
 
-    console.log('getPostsByBlogId', posts);
-    console.log(posts[0]?.interactions[0]);
+    console.log('getPostsByBlogId INTERACTIONS:', interactions);
 
     // Total count query
-    const totalCount = await this.postsTypeOrmRepository
-      .createQueryBuilder('p')
-      .where('p.blog_id = :blogId', { blogId })
-      .getCount();
+    // const totalCount = await this.postsTypeOrmRepository
+    //   .createQueryBuilder('p')
+    //   .where('p.blog_id = :blogId', { blogId })
+    //   .getCount();
 
     // Transform interactions into desired JSON format
-    const items = posts.map((post: PostView) => {
-      post.interactions = post.interactions.map((interaction: any) => ({
-        user_id: interaction.user.id,
-        user_login: interaction.user.login,
-        action: interaction.action,
-        added_at: interaction.addedAt,
-      }));
-
-      return PostSQLOutputDto.mapToView(post, userId);
-    });
+    // const items = posts.map((post: PostView) => {
+    //   post.interactions = post.interactions.map((interaction: any) => ({
+    //     user_id: interaction.user.id,
+    //     user_login: interaction.user.login,
+    //     action: interaction.action,
+    //     added_at: interaction.addedAt,
+    //   }));
+    //
+    //   return PostSQLOutputDto.mapToView(post, userId);
+    // });
 
     // Return paginated result
     return PaginatedViewDto.mapToView({
-      items,
+      items: [],
       totalCount,
       page: query.pageNumber,
       size: query.pageSize,
