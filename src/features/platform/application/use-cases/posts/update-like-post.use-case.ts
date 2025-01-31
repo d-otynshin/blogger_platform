@@ -29,20 +29,14 @@ export class UpdateLikePostUseCase
 
     const post = await this.postsRepository.findById(postId);
 
+    console.log('POST UpdateLikePostUseCase', post);
+
     if (!post) {
       throw NotFoundDomainException.create('Post not found', 'postId');
     }
 
-    // Retrieve the post document by its ID
-    const postInteractions =
-      await this.postsRepository.getInteractionsById(postId);
-
-    console.log('post interactions', postInteractions);
-
-    const interaction = postInteractions.find(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      (interaction) => interaction.user_id === userId,
+    const interaction = post.interactions.find(
+      (interaction) => interaction.user.id === userId,
     );
 
     if (!interaction) {
@@ -57,10 +51,7 @@ export class UpdateLikePostUseCase
       return;
     }
 
-    // Verify that the user is authorized to update the comment
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    if (interaction.user_id !== userId) {
+    if (interaction.user.id !== userId) {
       throw ForbiddenDomainException.create('Forbidden', 'userId');
     }
 

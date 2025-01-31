@@ -30,11 +30,13 @@ export class PostsRepository {
   }
 
   async findById(id: string) {
-    return this.postsTypeOrmRepository.findOne({
-      where: { id },
-      // TODO: remove relations
-      relations: ['blog', 'interactions'],
-    });
+    return this.postsTypeOrmRepository
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('post.blog', 'blog')
+      .leftJoinAndSelect('post.interactions', 'interaction')
+      .leftJoinAndSelect('interaction.user', 'user')
+      .where('post.id = :id', { id })
+      .getOne();
   }
 
   async delete(id: string): Promise<boolean> {
