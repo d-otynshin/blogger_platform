@@ -68,6 +68,8 @@ export class InteractionsRepository {
       action,
     });
 
+    console.log('CREATE POST INTERACTION:', interaction);
+
     const postInteraction =
       await this.postsInteractionsTypeOrmRepository.save(interaction);
 

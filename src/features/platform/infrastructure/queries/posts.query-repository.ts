@@ -124,7 +124,7 @@ export class PostsQueryRepository {
         },
       });
 
-    console.log('getPostsByBlogId INTERACTIONS:', interactions);
+    console.log('get posts by blog_id INTERACTIONS:', interactions);
 
     // Total count query
     // const totalCount = await this.postsTypeOrmRepository
