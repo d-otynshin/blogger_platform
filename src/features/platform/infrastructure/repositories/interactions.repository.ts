@@ -89,7 +89,7 @@ export class InteractionsRepository {
   ): Promise<boolean> {
     const updateResult = await this.postsInteractionsTypeOrmRepository
       .createQueryBuilder()
-      .update(CommentsInteraction)
+      .update(PostsInteraction)
       .set({ action })
       .where('post.id = :postId', { postId })
       .andWhere('user.id = :userId', { userId })
