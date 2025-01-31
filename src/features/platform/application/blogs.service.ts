@@ -50,7 +50,9 @@ export class BlogsService {
       blogName: blogData.name,
     });
 
-    return PostSQLOutputDto.mapToView(createdPost);
+    const post = await this.postsRepository.findById(createdPost.id);
+
+    return PostSQLOutputDto.mapToView(post);
   }
 
   async updatePostByBlogId(
@@ -69,13 +71,11 @@ export class BlogsService {
   }
 
   async deletePostByBlogId(blogId: string, postId: string) {
-    const blogData = await this.blogsRepository.findById(blogId);
-    console.log('blogData', blogData);
-    if (!blogData) return null;
+    const blog = await this.blogsRepository.findById(blogId);
+    if (!blog) return null;
 
-    const postData = await this.postsRepository.findById(postId);
-    console.log('postData', postData);
-    if (!postData) return null;
+    const post = await this.postsRepository.findById(postId);
+    if (!post) return null;
 
     return this.postsRepository.delete(postId);
   }

@@ -33,7 +33,7 @@ export class PostsRepository {
     return this.postsTypeOrmRepository.findOne({
       where: { id },
       // TODO: remove relations
-      relations: ['blog'],
+      relations: ['blog', 'interactions'],
     });
   }
 

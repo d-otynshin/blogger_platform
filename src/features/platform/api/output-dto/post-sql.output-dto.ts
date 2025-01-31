@@ -23,7 +23,8 @@ export class PostSQLOutputDto {
 
     if (userId) {
       const myInteraction = post.interactions.find(
-        (interaction) => interaction.user_id === userId,
+        // TODO: check relations
+        (interaction) => interaction.user?.id === userId,
       );
 
       myStatus = myInteraction?.action || LikeStatus.None;
@@ -37,8 +38,8 @@ export class PostSQLOutputDto {
       .slice(0, 3)
       .map((like) => ({
         addedAt: like.added_at,
-        userId: like.user_id,
-        login: like.user_login,
+        userId: like.user?.id, // TODO: check relations
+        login: like.user?.login, // TODO: check relations
       }));
 
     const dto = new PostSQLOutputDto();
@@ -54,10 +55,10 @@ export class PostSQLOutputDto {
     dto.createdAt = post.created_at;
 
     dto.extendedLikesInfo = {
-      likesCount: post.interactions.filter(
+      likesCount: post.interactions?.filter(
         (interaction) => interaction.action === LikeStatus.Like,
       ).length,
-      dislikesCount: post.interactions.filter(
+      dislikesCount: post.interactions?.filter(
         (interaction) => interaction.action === LikeStatus.Dislike,
       ).length,
       myStatus,
