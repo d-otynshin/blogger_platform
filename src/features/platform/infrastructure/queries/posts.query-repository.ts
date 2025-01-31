@@ -26,7 +26,7 @@ export class PostsQueryRepository {
       .leftJoinAndSelect('interaction.user', 'user')
       .leftJoinAndSelect('post.blog', 'blog')
       .where('post.id = :postId', { postId })
-      .execute();
+      .getOne();
 
     if (!post) throw NotFoundDomainException.create('Post not found');
 
@@ -99,6 +99,8 @@ export class PostsQueryRepository {
       .leftJoinAndSelect('post.blog', 'blog')
       .where('blog.id = :blogId', { blogId })
       .getMany();
+
+    console.log('POSTS', posts);
 
     const items = posts.map((post) => {
       const interaction = post.interactions[0];
