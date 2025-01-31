@@ -39,6 +39,7 @@ import { CreateCommentCommand } from '../application/use-cases/comments/create-c
 import { PostSQLOutputDto } from './output-dto/post-sql.output-dto';
 import { PostsQueryRepository } from '../infrastructure/queries/posts.query-repository';
 import { GetPostsQueryParams } from '../infrastructure/queries/get-posts-query-params';
+import { Comment } from '../domain/comment.entity';
 
 @Controller('posts')
 export class PostsController {
@@ -121,11 +122,11 @@ export class PostsController {
     @Body() createCommentDto: CommentsInputDto,
     @ExtractUserFromRequest() user: UserContextDto,
   ) {
-    const commentDataWithLogin = await this.commandBus.execute(
+    const comment: Comment = await this.commandBus.execute(
       new CreateCommentCommand(postId, createCommentDto, user),
     );
 
-    return CommentOutputDto.mapToView(commentDataWithLogin);
+    return CommentOutputDto.mapToView(comment);
   }
 
   @Put(':id/like-status')

@@ -1,10 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentsInputDto } from '../../../api/input-dto/comments.input-dto';
 import { UserContextDto } from '../../../../accounts/dto/auth.dto';
-
+import { Comment } from '../../../domain/comment.entity';
 import { CommentsRepository } from '../../../infrastructure/repositories/comments.repository';
 import { PostsRepository } from '../../../infrastructure/repositories/posts.repository';
-import { UsersRepository } from '../../../../accounts/infrastructure/repositories/users.repository';
 
 import {
   BadRequestDomainException,
@@ -26,38 +25,26 @@ export class CreateCommentUseCase
   constructor(
     private postsRepository: PostsRepository,
     private commentsRepository: CommentsRepository,
-    private usersRepository: UsersRepository,
   ) {}
 
-  async execute({ user, postId, dto }: CreateCommentCommand) {
+  async execute({ user, postId, dto }: CreateCommentCommand): Promise<Comment> {
     const postData = await this.postsRepository.findById(postId);
 
     if (!postData) {
-      // TODO: update error details
       throw NotFoundDomainException.create('Not Found', 'postId');
     }
 
-    const commentData = await this.commentsRepository.createInstance({
+    const createdComment = await this.commentsRepository.createInstance({
       postId: postId,
       content: dto.content,
       commentatorId: user.id,
     });
 
-    console.log('commentData', commentData);
-
-    if (!commentData) {
+    if (!createdComment) {
       // TODO: update error details
       throw BadRequestDomainException.create('Invalid comment');
     }
 
-    const userData = await this.usersRepository.findById(user.id);
-    if (!userData) {
-      throw BadRequestDomainException.create('Not Found', 'user');
-    }
-
-    return {
-      ...commentData,
-      commentator_login: userData.login,
-    };
+    return this.commentsRepository.getById(createdComment.id);
   }
 }
