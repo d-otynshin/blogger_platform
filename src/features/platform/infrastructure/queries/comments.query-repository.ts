@@ -56,7 +56,7 @@ export class CommentsQueryRepository {
       .leftJoinAndSelect('comment.post', 'post')
       .where('post.id = :postId', { postId })
       .orderBy(
-        toSnakeCase(query.sortBy),
+        `comment.${toSnakeCase(query.sortBy)}`,
         query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
       )
       .take(query.pageSize)

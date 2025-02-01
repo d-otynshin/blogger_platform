@@ -43,6 +43,7 @@ export class PostsQueryRepository {
     const posts = await this.postsTypeOrmRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.interactions', 'interaction')
+      .leftJoinAndSelect('post.blog', 'blog')
       .leftJoinAndSelect('interaction.user', 'user')
       .orderBy(
         `post.${toSnakeCase(query.sortBy)}`,
