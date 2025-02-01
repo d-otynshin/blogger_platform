@@ -10,6 +10,7 @@ import { PostSQLOutputDto } from '../../api/output-dto/post-sql.output-dto';
 import { PostsQueryRepository } from './posts.query-repository';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { GetPostsQueryParams } from './get-posts-query-params';
+import { toSnakeCase } from '../../../../core/libs/transfrom-snake-case';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -36,19 +37,19 @@ export class BlogsQueryRepository {
   ): Promise<PaginatedViewDto<BlogSQLOutputDto[]>> {
     const queryBuilder = this.blogsTypeOrmRepository.createQueryBuilder('blog');
 
-    // Apply search filters
     if (query.searchNameTerm) {
       queryBuilder.orWhere('blog.name ILIKE :name', {
         name: `%${query.searchNameTerm}%`,
       });
     }
 
-    // Apply sorting
-    const sortBy = query.sortBy ? query.sortBy : 'created_at';
     const sortDirection = query.sortDirection.toUpperCase() || 'ASC';
-    queryBuilder.orderBy(sortBy, sortDirection as 'ASC' | 'DESC');
 
-    // Apply pagination
+    queryBuilder.orderBy(
+      toSnakeCase(query.sortBy),
+      sortDirection as 'ASC' | 'DESC',
+    );
+
     queryBuilder.skip((query.pageNumber - 1) * query.pageSize);
     queryBuilder.take(query.pageSize);
 

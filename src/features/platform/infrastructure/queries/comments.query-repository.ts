@@ -26,6 +26,7 @@ export class CommentsQueryRepository {
     const comment = await this.commentsTypeOrmRepository
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.interactions', 'interaction')
+      .leftJoinAndSelect('interaction.user', 'user')
       .leftJoinAndSelect('comment.commentator', 'commentator')
       .where('comment.id = :commentId', { commentId })
       .getOne();

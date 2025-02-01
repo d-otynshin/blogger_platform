@@ -16,6 +16,8 @@ export class CommentOutputDto {
   static mapToView(comment: Comment, userId?: string): CommentOutputDto {
     let userStatus = LikeStatus.None;
 
+    console.log('COMMENT INTERACTIONS', comment);
+
     if (userId) {
       if (comment.interactions.length === 0) {
         userStatus = LikeStatus.None;
