@@ -13,7 +13,10 @@ export class CommentOutputDto {
     myStatus: LikeStatus;
   };
 
-  static mapToView(comment: Comment, userId?: string): CommentOutputDto {
+  static mapToView(
+    comment: Comment,
+    userId: string | undefined,
+  ): CommentOutputDto {
     let userStatus = LikeStatus.None;
 
     console.log('COMMENT INTERACTIONS', comment);
@@ -26,7 +29,7 @@ export class CommentOutputDto {
           (interaction) => interaction.user.id === userId,
         );
 
-        userStatus = userInteraction.action || LikeStatus.None;
+        userStatus = userInteraction ? userInteraction.action : LikeStatus.None;
       }
     }
 
