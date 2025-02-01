@@ -42,7 +42,7 @@ export class CommentsRepository {
       .createQueryBuilder()
       .update(Comment)
       .set({ content: dto.content })
-      .where('id = :id', { commentId })
+      .where('id = :commentId', { commentId })
       .execute();
 
     return updateResult.affected > 0;
