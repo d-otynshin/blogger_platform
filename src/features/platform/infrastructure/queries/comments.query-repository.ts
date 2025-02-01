@@ -29,16 +29,21 @@ export class CommentsQueryRepository {
       .where('comment.id = :commentId', { commentId })
       .getOne();
 
+    if (!comment) {
+      throw NotFoundDomainException.create('Not Found', 'commentId');
+    }
+
     return CommentOutputDto.mapToView(comment, userId);
   }
 
   async getCommentsByPostId(
     postId: string,
     query: GetPostsQueryParams,
-    userId?: string,
+    userId: string | undefined,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
-    const postData = await this.postsRepository.findById(postId);
-    if (!postData) {
+    const post = await this.postsRepository.findById(postId);
+
+    if (!post) {
       throw NotFoundDomainException.create('Post not found', 'postId');
     }
 
@@ -46,6 +51,7 @@ export class CommentsQueryRepository {
 
     const comments = await this.commentsTypeOrmRepository
       .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.commentator', 'commentator')
       .leftJoinAndSelect('comment.interactions', 'interaction')
       .leftJoinAndSelect('interaction.user', 'user')
       .leftJoinAndSelect('comment.post', 'post')

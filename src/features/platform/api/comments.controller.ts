@@ -44,9 +44,7 @@ export class CommentsController {
     @Param('id') commentId: string,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<CommentOutputDto> {
-    const userId = user?.id;
-
-    return this.commentsQueryRepository.getCommentById(commentId, userId);
+    return this.commentsQueryRepository.getCommentById(commentId, user?.id);
   }
 
   @Put(':id')

@@ -56,9 +56,7 @@ export class PostsController {
     @Query() query: GetPostsQueryParams,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    const userId = user?.id;
-
-    return this.postsQueryRepository.getAllPosts(query, userId);
+    return this.postsQueryRepository.getAllPosts(query, user?.id);
   }
 
   @Post()
@@ -105,12 +103,10 @@ export class PostsController {
     @Query() query: GetPostsQueryParams,
     @ExtractUserIfExistsFromRequest() user: UserContextDto,
   ): Promise<PaginatedViewDto<CommentOutputDto[]>> {
-    const userId = user?.id;
-
     return this.commentsQueryRepository.getCommentsByPostId(
       postId,
       query,
-      userId,
+      user?.id,
     );
   }
 

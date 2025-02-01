@@ -69,7 +69,7 @@ export class BlogsQueryRepository {
   async getAllPosts(
     id: string,
     query: GetPostsQueryParams,
-    userId?: string,
+    userId: string | undefined,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
     const blog: Blog = await this.blogsRepository.findById(id);
 

@@ -7,6 +7,7 @@ import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
 import { BaseSortablePaginationParams } from '../../../../core/dto/base.query-params.input-dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { toSnakeCase } from '../../../../core/libs/transfrom-snake-case';
 
 export class GetPostsQueryParams extends BaseSortablePaginationParams<string> {
   sortBy = 'createdAt';
@@ -37,28 +38,24 @@ export class PostsQueryRepository {
 
   async getAllPosts(
     query: GetPostsQueryParams,
-    userId?: string,
+    userId: string | undefined,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    const sortByDict = { createdAt: 'created_at', blogName: 'blog_name' };
-
-    const postsQueryBuilder = this.postsTypeOrmRepository
-      .createQueryBuilder('p')
-      .leftJoinAndSelect('posts_interactions', 'pi')
-      .leftJoinAndSelect('pi.user', 'u')
-      .groupBy('p.id')
-      .addGroupBy('pi.user_id')
-      .addGroupBy('u.id')
+    const posts = await this.postsTypeOrmRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.interactions', 'interaction')
+      .leftJoinAndSelect('interaction.user', 'user')
       .orderBy(
-        sortByDict[query.sortBy] || query.sortBy,
+        toSnakeCase(query.sortBy),
         query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
-      ) // Sorting
-      .take(query.pageSize) // Limit
-      .skip((query.pageNumber - 1) * query.pageSize); // Offset
+      )
+      .take(query.pageSize)
+      .skip((query.pageNumber - 1) * query.pageSize)
+      .getMany();
 
-    const posts = await postsQueryBuilder.getMany();
+    console.log('POSTs', posts);
 
     const totalCount = await this.postsTypeOrmRepository
-      .createQueryBuilder('p')
+      .createQueryBuilder('post')
       .getCount();
 
     // Transform interactions into desired JSON format
@@ -78,26 +75,20 @@ export class PostsQueryRepository {
   async getPostsByBlogId(
     blogId: string,
     query: GetPostsQueryParams,
-    userId?: string,
+    userId: string | undefined,
   ): Promise<PaginatedViewDto<PostSQLOutputDto[]>> {
-    // const sortByDict = { createdAt: 'created_at' };
-    //
-    // const posts = await this.postsTypeOrmRepository.find({
-    //   where: { blog: { id: blogId } },
-    //   order: {
-    //     [sortByDict[query.sortBy] || query.sortBy]:
-    //       query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
-    //   },
-    //   take: query.pageSize, // Limit
-    //   skip: (query.pageNumber - 1) * query.pageSize, // Offset
-    // });
-
     const posts = await this.postsTypeOrmRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.interactions', 'interaction')
       .leftJoinAndSelect('interaction.user', 'user')
       .leftJoinAndSelect('post.blog', 'blog')
       .where('blog.id = :blogId', { blogId })
+      .orderBy(
+        toSnakeCase(query.sortBy),
+        query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+      )
+      .take(query.pageSize)
+      .skip((query.pageNumber - 1) * query.pageSize)
       .getMany();
 
     console.log('POSTS', posts);
@@ -112,13 +103,13 @@ export class PostsQueryRepository {
     console.log('POSTS WITH INTERACTIONS:', items);
 
     const totalCount = await this.postsTypeOrmRepository
-      .createQueryBuilder('p')
-      .leftJoinAndSelect('p.blog', 'blog')
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.blog', 'blog')
       .where('blog.id = :blogId', { blogId })
       .getCount();
 
     return PaginatedViewDto.mapToView({
-      items: [],
+      items,
       totalCount,
       page: query.pageNumber,
       size: query.pageSize,

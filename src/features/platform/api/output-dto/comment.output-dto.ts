@@ -14,14 +14,18 @@ export class CommentOutputDto {
   };
 
   static mapToView(comment: Comment, userId?: string): CommentOutputDto {
-    let myStatus = LikeStatus.None;
+    let userStatus = LikeStatus.None;
 
     if (userId) {
-      const myInteraction = comment.interactions.find(
-        (interaction) => interaction.user.id === userId,
-      );
+      if (comment.interactions.length === 0) {
+        userStatus = LikeStatus.None;
+      } else {
+        const userInteraction = comment.interactions.find(
+          (interaction) => interaction.user.id === userId,
+        );
 
-      myStatus = myInteraction?.action || LikeStatus.None;
+        userStatus = userInteraction.action || LikeStatus.None;
+      }
     }
 
     const dto = new CommentOutputDto();
@@ -42,7 +46,7 @@ export class CommentOutputDto {
       dislikesCount: comment.interactions.filter(
         (interaction) => interaction.action === LikeStatus.Dislike,
       ).length,
-      myStatus,
+      myStatus: userStatus,
     };
 
     return dto;
