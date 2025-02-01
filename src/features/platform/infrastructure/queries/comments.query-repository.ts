@@ -8,6 +8,7 @@ import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { GetPostsQueryParams } from './get-posts-query-params';
 import { PostsRepository } from '../repositories/posts.repository';
 import { NotFoundDomainException } from '../../../../core/exceptions/domain-exceptions';
+import { toSnakeCase } from '../../../../core/libs/transfrom-snake-case';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -20,7 +21,7 @@ export class CommentsQueryRepository {
 
   async getCommentById(
     commentId: string,
-    userId?: string,
+    userId: string | undefined,
   ): Promise<CommentOutputDto> {
     const comment = await this.commentsTypeOrmRepository
       .createQueryBuilder('comment')
@@ -47,8 +48,6 @@ export class CommentsQueryRepository {
       throw NotFoundDomainException.create('Post not found', 'postId');
     }
 
-    // const sortByDict = { createdAt: 'created_at' };
-
     const comments = await this.commentsTypeOrmRepository
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.commentator', 'commentator')
@@ -56,6 +55,12 @@ export class CommentsQueryRepository {
       .leftJoinAndSelect('interaction.user', 'user')
       .leftJoinAndSelect('comment.post', 'post')
       .where('post.id = :postId', { postId })
+      .orderBy(
+        toSnakeCase(query.sortBy),
+        query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+      )
+      .take(query.pageSize)
+      .skip((query.pageNumber - 1) * query.pageSize)
       .getMany();
 
     console.log('COMMENTS BY POST ID', comments);

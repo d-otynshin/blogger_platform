@@ -45,7 +45,7 @@ export class PostsQueryRepository {
       .leftJoinAndSelect('post.interactions', 'interaction')
       .leftJoinAndSelect('interaction.user', 'user')
       .orderBy(
-        toSnakeCase(query.sortBy),
+        `post.${toSnakeCase(query.sortBy)}`,
         query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
       )
       .take(query.pageSize)
@@ -84,7 +84,7 @@ export class PostsQueryRepository {
       .leftJoinAndSelect('post.blog', 'blog')
       .where('blog.id = :blogId', { blogId })
       .orderBy(
-        toSnakeCase(query.sortBy),
+        `post.${toSnakeCase(query.sortBy)}`,
         query.sortDirection.toUpperCase() as 'ASC' | 'DESC',
       )
       .take(query.pageSize)
