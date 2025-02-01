@@ -36,9 +36,12 @@ export class InteractionsRepository {
   }
 
   async getCommentsInteractions(commentId: string) {
-    return this.commentsInteractionsTypeOrmRepository.find({
-      where: { comment: { id: commentId } },
-    });
+    return this.commentsInteractionsTypeOrmRepository
+      .createQueryBuilder('interaction')
+      .leftJoinAndSelect('interaction.comment', 'comment')
+      .leftJoinAndSelect('interaction.user', 'user')
+      .where('comment.id = :commentId', { commentId })
+      .getMany();
   }
 
   async updateCommentsInteractionById(
