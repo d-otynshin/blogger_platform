@@ -18,6 +18,7 @@ import { PostsInteraction } from './features/platform/domain/posts-interaction.e
 import { CommentsInteraction } from './features/platform/domain/comments-interaction.entity';
 import { Session } from './features/accounts/domain/session.entity';
 // import { ThrottlerModule } from '@nestjs/throttler';
+import { QuizModule } from './features/quiz/quiz.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { Session } from './features/accounts/domain/session.entity';
     AccountsModule,
     PlatformModule,
     NotificationsModule,
+    QuizModule,
     // ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
   ],
   controllers: [AppController],

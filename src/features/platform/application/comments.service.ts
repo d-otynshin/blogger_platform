@@ -17,15 +17,15 @@ export class CommentsService {
   ) {}
 
   async interact(dto: CommentInteractionDto): Promise<null | void> {
-    const interactions = await this.commentsRepository.getInteractions(
+    const commentsInteractions = await this.commentsRepository.getInteractions(
       dto.commentId,
     );
 
-    if (!interactions) {
+    if (!commentsInteractions) {
       throw NotFoundDomainException.create('No interactions found.');
     }
 
-    const userInteraction = interactions.find(
+    const userInteraction = commentsInteractions.find(
       (interaction): boolean => interaction.user.id === dto.userId,
     );
 
