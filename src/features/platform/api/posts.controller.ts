@@ -122,7 +122,7 @@ export class PostsController {
       new CreateCommentCommand(postId, createCommentDto, user),
     );
 
-    return CommentOutputDto.mapToView(comment);
+    return CommentOutputDto.mapToView(comment, undefined);
   }
 
   @Put(':id/like-status')
