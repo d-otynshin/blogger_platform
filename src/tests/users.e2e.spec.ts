@@ -20,7 +20,7 @@ describe('users', () => {
   let userTestManger: UsersTestManager;
 
   beforeAll(async () => {
-    const result = await initSettings((moduleBuilder) =>
+    const settings = await initSettings((moduleBuilder) =>
       moduleBuilder.overrideProvider(JwtService).useValue(
         new JwtService({
           secret: process.env.ACCESS_TOKEN_SECRET,
@@ -29,8 +29,8 @@ describe('users', () => {
       ),
     );
 
-    app = result.app;
-    userTestManger = result.userTestManger;
+    app = settings.app;
+    userTestManger = settings.userTestManger;
   });
 
   afterAll(async () => {

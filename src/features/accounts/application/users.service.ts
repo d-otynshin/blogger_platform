@@ -8,8 +8,8 @@ import { UsersRepository } from '../infrastructure/repositories/users.repository
 @Injectable()
 export class UsersService {
   constructor(
-    private cryptoService: CryptoService,
     private jwtService: JwtService,
+    private cryptoService: CryptoService,
     private usersRepository: UsersRepository,
   ) {}
 

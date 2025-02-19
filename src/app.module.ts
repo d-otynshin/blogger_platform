@@ -17,8 +17,8 @@ import { Comment } from './features/platform/domain/comment.entity';
 import { PostsInteraction } from './features/platform/domain/posts-interaction.entity';
 import { CommentsInteraction } from './features/platform/domain/comments-interaction.entity';
 import { Session } from './features/accounts/domain/session.entity';
-// import { ThrottlerModule } from '@nestjs/throttler';
 import { QuizModule } from './features/quiz/quiz.module';
+// import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -42,11 +42,11 @@ import { QuizModule } from './features/quiz/quiz.module';
         CommentsInteraction,
       ],
     }),
-    TestingModule,
-    AccountsModule,
-    PlatformModule,
-    NotificationsModule,
     QuizModule,
+    TestingModule,
+    PlatformModule,
+    AccountsModule,
+    NotificationsModule,
     // ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
   ],
   controllers: [AppController],

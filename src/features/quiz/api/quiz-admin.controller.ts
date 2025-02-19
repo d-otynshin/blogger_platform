@@ -1,24 +1,31 @@
 import {
+  Get,
   Post,
   Put,
   Delete,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
   Controller,
 } from '@nestjs/common';
 
+import { GetQuestionsQueryParams } from './helpers';
 import { CreateQuestionDto } from '../dto/question.dto';
 import { QuestionsService } from '../application/questions.service';
+import { QuestionsQueryRepository } from '../infrastructure/queries/questions-query.repository';
 
-@Controller('quiz')
-export class QuizController {
-  constructor(private questionsService: QuestionsService) {}
-  // @Get('sa/questions')
-  // async findAll() {
-  //
-  // }
+@Controller('quiz/sa')
+export class QuizAdminController {
+  constructor(
+    private questionsService: QuestionsService,
+    private questionsQueryRepository: QuestionsQueryRepository,
+  ) {}
+  @Get('questions')
+  async findAll(@Query() query: GetQuestionsQueryParams) {
+    return this.questionsQueryRepository.findAll(query);
+  }
 
   @HttpCode(HttpStatus.CREATED)
   @Post('questions')

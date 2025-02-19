@@ -25,7 +25,6 @@ export const initSettings = async (
 
   const app = testingAppModule.createNestApplication();
 
-  // TODO: should export?
   appSetup(app);
 
   await app.init();
