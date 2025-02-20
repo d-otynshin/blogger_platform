@@ -18,6 +18,7 @@ import { PostsInteraction } from './features/platform/domain/posts-interaction.e
 import { CommentsInteraction } from './features/platform/domain/comments-interaction.entity';
 import { Session } from './features/accounts/domain/session.entity';
 import { QuizModule } from './features/quiz/quiz.module';
+import { Question } from './features/quiz/domain/question.entity';
 // import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
@@ -40,6 +41,7 @@ import { QuizModule } from './features/quiz/quiz.module';
         Session,
         PostsInteraction,
         CommentsInteraction,
+        Question,
       ],
     }),
     QuizModule,

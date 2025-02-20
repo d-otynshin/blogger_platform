@@ -49,7 +49,7 @@ export class QuizAdminController {
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Put('questions/:id')
+  @Put('questions/:id/publish')
   async publishQuestion(@Param('id') id: string) {
     return this.questionsService.publishQuestion(id);
   }

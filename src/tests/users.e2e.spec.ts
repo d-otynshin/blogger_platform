@@ -1,7 +1,7 @@
 import process from 'node:process';
 import request from 'supertest';
-import { HttpStatus, INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { deleteAllData } from './helpers/delete-all-data';
 import { delay } from './helpers/delay';
 import { initSettings } from './helpers/init';

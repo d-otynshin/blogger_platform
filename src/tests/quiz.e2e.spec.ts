@@ -1,11 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { UsersTestManager } from './helpers/users-test.manager';
 import { CreateUserInputDto } from '../features/accounts/api/input-dto/users.input-dto';
 import { UserViewDto } from '../features/accounts/api/output-dto/user.view-dto';
 import { INestApplication } from '@nestjs/common';
-import { User } from '../features/accounts/domain/user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppModule } from '../app.module';
+import { appSetup } from '../setup/app.setup';
 
 describe('quiz', () => {
   let app: INestApplication;
@@ -13,23 +12,21 @@ describe('quiz', () => {
 
   beforeAll(async () => {
     console.log('beforeAll');
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          synchronize: true,
-          url: process.env.DB_URL,
-          ssl: { rejectUnauthorized: false },
-          entities: [User],
-        }),
-      ],
+    const testingAppModule = await Test.createTestingModule({
+      imports: [AppModule],
     }).compile();
+
+    app = testingAppModule.createNestApplication();
+
+    appSetup(app);
+
+    await app.init();
 
     console.log('DB URL', 'process.env.DB_URL');
 
-    app = moduleFixture.createNestApplication();
     await app.init();
+
+    userTestManger = new UsersTestManager(app);
   });
 
   it('should create user', async () => {

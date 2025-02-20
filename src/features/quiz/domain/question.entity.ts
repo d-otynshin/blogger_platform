@@ -14,7 +14,7 @@ export class Question {
   @Column()
   body: string;
 
-  @Column()
+  @Column('text', { array: true })
   correct_answers: string[];
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
