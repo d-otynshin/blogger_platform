@@ -2,6 +2,7 @@ import { Injectable, UseGuards } from '@nestjs/common';
 import { CreateQuestionDto } from '../dto/question.dto';
 import { QuestionsRepository } from '../infrastructure/repositories/qustions.repository';
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
+import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class QuestionsService {
@@ -14,7 +15,12 @@ export class QuestionsService {
 
   @UseGuards(BasicAuthGuard)
   async deleteQuestion(id: string): Promise<boolean> {
-    return this.questionsRepository.deleteInstance(id);
+    const isDeleted = await this.questionsRepository.deleteInstance(id);
+    if (!isDeleted) {
+      throw NotFoundDomainException.create('Question does not exist');
+    }
+
+    return isDeleted;
   }
 
   @UseGuards(BasicAuthGuard)

@@ -95,8 +95,10 @@ export class QuizRepository {
       .select('DISTINCT guq.question_id', 'questionId')
       .getRawMany();
 
-    if (gameQuestions.length === 0)
+    if (gameQuestions.length === 0) {
+      console.log('Games questions', gameQuestions);
       throw NotFoundDomainException.create('No questions found for this game');
+    }
 
     const newEntries = gameQuestions.map(({ questionId }) =>
       this.gameUserQuestionsOrm.create({

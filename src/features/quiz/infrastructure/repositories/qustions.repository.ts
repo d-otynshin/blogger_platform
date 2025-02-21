@@ -49,7 +49,7 @@ export class QuestionsRepository {
     const updateResult = await this.questionsTypeOrmRepository
       .createQueryBuilder()
       .update(Question)
-      .set({ published: true })
+      .set({ published: true, updated_at: new Date() })
       .where('id = :id', { id: questionId })
       .execute();
 
