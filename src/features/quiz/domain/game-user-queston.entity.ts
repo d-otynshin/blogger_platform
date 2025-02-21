@@ -4,7 +4,6 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  CreateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -30,9 +29,9 @@ export class GameUserQuestion {
   @JoinColumn({ name: 'question_id' })
   question: Question;
 
-  @CreateDateColumn()
-  answered_at: Date;
+  @Column({ nullable: true })
+  answered_at: Date | null;
 
-  @Column()
-  is_correct: boolean;
+  @Column({ nullable: true })
+  is_correct: boolean | null;
 }

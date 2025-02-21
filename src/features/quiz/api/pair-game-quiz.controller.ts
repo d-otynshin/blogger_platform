@@ -1,41 +1,39 @@
-import { Get, Post, Body, Param, UseGuards, Controller } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Post, Controller, UseGuards, Get, Param, Body } from '@nestjs/common';
 
 import { GameDto } from '../dto/game.dto';
 import { QuizService } from '../application/quiz.service';
-import { GamesRepository } from '../infrastructure/repositories/games.repository';
-import { QuizRepository } from '../infrastructure/repositories/quiz.repository';
-import {
-  UserContextDto,
-  ExtractUserFromRequest,
-} from '../../../core/decorators/extract-user-from-request';
+import { JwtAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
+import { UserContextDto } from '../../accounts/dto/auth.dto';
+import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
 
 @Controller('pair-game-quiz/pairs')
 export class PairGameQuizController {
-  constructor(
-    private readonly quizService: QuizService,
-    private readonly quizRepository: QuizRepository,
-    private readonly gamesRepository: GamesRepository,
-  ) {}
+  constructor(private readonly quizService: QuizService) {}
 
   @Get('my-current')
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   async getCurrentGame(@ExtractUserFromRequest() user: UserContextDto) {
-    return this.quizRepository.findCurrentGame(user.id);
+    return this.quizService.getActiveGame(user.id);
   }
 
   @Get(':id')
-  async getGameById(@Param('id') gameId: number) {
-    return this.gamesRepository.findById(gameId);
+  async getGameById(@Param('id') gameId: string) {
+    return this.quizService.findGameById(gameId);
   }
 
   @Post('connection')
-  async connect() {
-    return this.quizService.connect();
+  @UseGuards(JwtAuthGuard)
+  async connect(@ExtractUserFromRequest() user: UserContextDto) {
+    console.log('CONNECTION user:', user);
+    return this.quizService.connect(user.id);
   }
 
   @Post('my-current/answers')
-  async sendAnswer(@Body() dto: GameDto) {
-    return this.quizService.sendAnswer(dto);
+  @UseGuards(JwtAuthGuard)
+  async sendAnswer(
+    @Body() dto: GameDto,
+    @ExtractUserFromRequest() user: UserContextDto,
+  ) {
+    return this.quizService.sendAnswer(dto, user.id);
   }
 }

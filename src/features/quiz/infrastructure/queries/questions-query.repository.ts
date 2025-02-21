@@ -5,7 +5,7 @@ import { Question } from '../../domain/question.entity';
 import {
   GetQuestionsQueryParams,
   QnPublicationStatus,
-} from '../../api/helpers';
+} from '../../lib/helpers';
 import {
   formatSortDirection,
   toSnakeCase,

@@ -11,7 +11,7 @@ import {
   Controller,
 } from '@nestjs/common';
 
-import { GetQuestionsQueryParams } from './helpers';
+import { GetQuestionsQueryParams } from '../lib/helpers';
 import { CreateQuestionDto } from '../dto/question.dto';
 import { QuestionsService } from '../application/questions.service';
 import { QuestionsQueryRepository } from '../infrastructure/queries/questions-query.repository';

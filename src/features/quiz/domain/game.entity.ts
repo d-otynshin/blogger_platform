@@ -28,6 +28,6 @@ export class Game {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(() => GameUserQuestion, (guq) => guq.user)
-  players_questions: GameUserQuestion[];
+  @OneToMany(() => GameUserQuestion, (guq) => guq.game)
+  games_users_questions: GameUserQuestion[];
 }
