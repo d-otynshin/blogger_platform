@@ -2,7 +2,6 @@ import {
   Entity,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -20,7 +19,7 @@ export class Question {
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;
 
-  @UpdateDateColumn({ nullable: true })
+  @Column({ type: 'time with time zone', nullable: true })
   updated_at: Date | null;
 
   @Column({ default: false })
