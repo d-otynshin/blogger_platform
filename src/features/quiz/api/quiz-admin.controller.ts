@@ -20,6 +20,7 @@ import { QuestionViewDto } from '../dto/question-view.dto';
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
 
 @Controller('sa/quiz')
+@UseGuards(BasicAuthGuard)
 export class QuizAdminController {
   constructor(
     private questionsService: QuestionsService,
@@ -32,21 +33,18 @@ export class QuizAdminController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post('questions')
-  @UseGuards(BasicAuthGuard)
   async createQuestion(@Body() dto: CreateQuestionDto) {
     const createdQuestion = await this.questionsService.createQuestion(dto);
     return QuestionViewDto.mapToView(createdQuestion);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(BasicAuthGuard)
   @Delete('questions/:id')
   async deleteQuestion(@Param('id') id: string) {
     return this.questionsService.deleteQuestion(id);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(BasicAuthGuard)
   @Put('questions/:id')
   async updateQuestion(
     @Param('id') id: string,
@@ -56,7 +54,6 @@ export class QuizAdminController {
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(BasicAuthGuard)
   @Put('questions/:id/publish')
   async publishQuestion(
     @Param('id') id: string,
