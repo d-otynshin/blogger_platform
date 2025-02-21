@@ -16,7 +16,7 @@ import { CreateQuestionDto } from '../dto/question.dto';
 import { QuestionsService } from '../application/questions.service';
 import { QuestionsQueryRepository } from '../infrastructure/queries/questions-query.repository';
 
-@Controller('quiz/sa')
+@Controller('sa/quiz')
 export class QuizAdminController {
   constructor(
     private questionsService: QuestionsService,
