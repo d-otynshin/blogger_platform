@@ -20,7 +20,7 @@ export class Question {
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp with time zone' })
+  @UpdateDateColumn({ nullable: true, type: 'timestamp with time zone' })
   updated_at: Date;
 
   @Column({ default: false })
