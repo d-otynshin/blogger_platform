@@ -28,12 +28,22 @@ export const parseGameInfo = (gameData: any) => {
     }
   });
 
-  return {
+  const gameViewDto: any = {
     id: gameData.id,
     status: gameData.status,
     pairCreatedDate: gameData.created_at,
     updatedAt: gameData.updated_at,
-    firstPlayerProgress: Object.values(playerProgresses)[0],
-    secondPlayerProgress: Object.values(playerProgresses)[1],
   };
+
+  Object.values(playerProgresses).forEach((entry: any, index) => {
+    if (index === 0) {
+      gameViewDto.firstPlayerProgress = entry;
+    }
+
+    if (index === 1) {
+      gameViewDto.secondPlayerProgress = entry;
+    }
+  });
+
+  return gameViewDto;
 };

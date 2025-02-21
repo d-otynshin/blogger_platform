@@ -3,7 +3,7 @@ import { GameDto } from '../dto/game.dto';
 import { GameStatus } from '../domain/game.entity';
 import { parseGameInfo } from '../lib/parseGameInfo';
 import { QuizRepository } from '../infrastructure/repositories/quiz.repository';
-import { ForbiddenDomainException } from '../../../core/exceptions/domain-exceptions';
+import { ForbiddenDomainException, NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class QuizService {
@@ -11,6 +11,7 @@ export class QuizService {
 
   async getActiveGame(userId: string) {
     const activeGame = await this.quizRepository.findActiveGame(userId);
+    if (!activeGame) throw NotFoundDomainException.create('Game not found');
 
     return parseGameInfo(activeGame);
   }
@@ -23,7 +24,7 @@ export class QuizService {
 
   async connect(userId: string) {
     const isPlaying = await this.quizRepository.isPlaying(userId);
-    if (!isPlaying) {
+    if (isPlaying) {
       throw ForbiddenDomainException.create('User is already in a game.');
     }
 
@@ -34,7 +35,9 @@ export class QuizService {
 
       await this.quizRepository.initGame({ userId, gameId: createdGame.id });
 
-      return createdGame;
+      const game = await this.quizRepository.findGameById(createdGame.id);
+
+      return parseGameInfo(game);
     }
 
     await this.quizRepository.addPlayer({ userId, gameId: pendingGame.id });
@@ -44,7 +47,9 @@ export class QuizService {
       GameStatus.ACTIVE,
     );
 
-    return pendingGame;
+    const game = await this.quizRepository.findGameById(pendingGame.id);
+
+    return parseGameInfo(game);
   }
 
   async sendAnswer(dto: GameDto, userId: string) {
@@ -67,12 +72,19 @@ export class QuizService {
 
     const isCorrect = guqToAnswer.question.correct_answers.includes(dto.answer);
 
+    const addedAt = new Date();
+
     await this.quizRepository.addAnswerToGame(
       userId,
       guqToAnswer.question.id,
       isCorrect,
+      addedAt,
     );
 
-    return guqs;
+    return {
+      questionId: guqToAnswer.question.id,
+      answerStatus: isCorrect ? 'Correct' : 'Incorrect',
+      addedAt,
+    };
   }
 }

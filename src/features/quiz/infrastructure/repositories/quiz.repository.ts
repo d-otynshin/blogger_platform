@@ -62,9 +62,13 @@ export class QuizRepository {
   }
 
   async countPlayersInGame(gameId: string): Promise<number> {
-    return await this.gameUserQuestionsOrm.count({
-      where: { game: { id: gameId } },
-    });
+    const userCount = await this.gameUserQuestionsOrm
+      .createQueryBuilder('guq')
+      .select('COUNT(DISTINCT guq.user_id)', 'count')
+      .where('guq.game_id = :gameId', { gameId })
+      .getRawOne();
+
+    return Number(userCount.count);
   }
 
   async addPlayer({ gameId, userId }) {
@@ -177,11 +181,12 @@ export class QuizRepository {
     userId: string,
     questionId: string,
     isCorrect: boolean,
+    addedAt: Date,
   ): Promise<void> {
     await this.gameUserQuestionsOrm
       .createQueryBuilder()
       .update()
-      .set({ answered_at: () => 'NOW()', is_correct: isCorrect })
+      .set({ answered_at: addedAt, is_correct: isCorrect })
       .where('question_id = :questionId', { questionId })
       .andWhere('user_id = :userId', { userId })
       .execute();
