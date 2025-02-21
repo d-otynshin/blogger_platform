@@ -25,11 +25,23 @@ export class QuestionsService {
 
   @UseGuards(BasicAuthGuard)
   async updateQuestion(id: string, dto: CreateQuestionDto): Promise<boolean> {
-    return this.questionsRepository.updateInstance(id, dto);
+    const isUpdated = await this.questionsRepository.updateInstance(id, dto);
+
+    if (!isUpdated) {
+      throw NotFoundDomainException.create('Question does not exist');
+    }
+
+    return isUpdated;
   }
 
   @UseGuards(BasicAuthGuard)
   async publishQuestion(id: string) {
-    return this.questionsRepository.publish(id);
+    const isPublished = await this.questionsRepository.publish(id);
+
+    if (!isPublished) {
+      throw NotFoundDomainException.create('Question does not exist');
+    }
+
+    return isPublished;
   }
 }
