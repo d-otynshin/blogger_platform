@@ -1,4 +1,13 @@
-import { Post, Controller, UseGuards, Get, Param, Body } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Controller,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 
 import { GameDto } from '../dto/game.dto';
 import { QuizService } from '../application/quiz.service';
@@ -23,6 +32,7 @@ export class PairGameQuizController {
 
   @Post('connection')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   async connect(@ExtractUserFromRequest() user: UserContextDto) {
     return this.quizService.connect(user.id);
   }
