@@ -90,6 +90,7 @@ import { CreateInteractionCommentUseCase } from './application/use-cases/comment
     CreateInteractionPostUseCase,
   ],
   exports: [
+    TypeOrmModule,
     // TODO: check if I need them all
     PostsRepository,
     BlogsRepository,

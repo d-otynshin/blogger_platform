@@ -33,5 +33,5 @@ export class GameUserQuestion {
   answered_at: Date | null;
 
   @Column({ nullable: true })
-  is_correct: boolean | null;
+  points: number | null;
 }

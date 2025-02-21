@@ -26,5 +26,6 @@ import { GameUserQuestion } from './domain/game-user-queston.entity';
     QuestionsRepository,
     QuestionsQueryRepository,
   ],
+  exports: [QuestionsRepository, TypeOrmModule],
 })
 export class QuizModule {}

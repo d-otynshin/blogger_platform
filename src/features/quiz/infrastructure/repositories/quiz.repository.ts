@@ -181,13 +181,13 @@ export class QuizRepository {
   async addAnswerToGame(
     userId: string,
     questionId: string,
-    isCorrect: boolean,
+    points: number,
     addedAt: Date,
   ): Promise<void> {
     await this.gameUserQuestionsOrm
       .createQueryBuilder()
       .update()
-      .set({ answered_at: addedAt, is_correct: isCorrect })
+      .set({ answered_at: addedAt, points })
       .where('question_id = :questionId', { questionId })
       .andWhere('user_id = :userId', { userId })
       .execute();

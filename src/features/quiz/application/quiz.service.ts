@@ -77,7 +77,7 @@ export class QuizService {
     await this.quizRepository.addAnswerToGame(
       userId,
       guqToAnswer.question.id,
-      isCorrect,
+      isCorrect ? 1 : 0,
       addedAt,
     );
 

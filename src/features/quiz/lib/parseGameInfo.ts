@@ -19,11 +19,11 @@ export const parseGameInfo = (gameData: any) => {
       playerProgresses[playerId].answers.push({
         questionId: entry.question.id,
         addedAt: entry.answered_at,
-        answerStatus: entry.is_correct ? 'Correct' : 'Incorrect',
+        answerStatus: entry.points ? 'Correct' : 'Incorrect',
       });
 
-      if (entry.is_correct) {
-        playerProgresses[playerId].score += 1;
+      if (entry.points) {
+        playerProgresses[playerId].score += entry.points;
       }
     }
   });
