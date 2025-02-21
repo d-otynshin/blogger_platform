@@ -3,7 +3,10 @@ import { GameDto } from '../dto/game.dto';
 import { GameStatus } from '../domain/game.entity';
 import { parseGameInfo } from '../lib/parseGameInfo';
 import { QuizRepository } from '../infrastructure/repositories/quiz.repository';
-import { ForbiddenDomainException, NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
+import {
+  ForbiddenDomainException,
+  NotFoundDomainException,
+} from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
 export class QuizService {

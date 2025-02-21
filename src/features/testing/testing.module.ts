@@ -9,6 +9,7 @@ import { PlatformModule } from '../platform/platform.module';
 import { TestingController } from './testing.controller';
 
 /* Repositories */
+import { GamesRepository } from '../quiz/infrastructure/repositories/games.repository';
 import { BlogsRepository } from '../platform/infrastructure/repositories/blogs.repository';
 import { UsersRepository } from '../accounts/infrastructure/repositories/users.repository';
 import { PostsRepository } from '../platform/infrastructure/repositories/posts.repository';
@@ -21,6 +22,7 @@ import { InteractionsRepository } from '../platform/infrastructure/repositories/
   imports: [AccountsModule, PlatformModule, QuizModule],
   controllers: [TestingController],
   providers: [
+    GamesRepository,
     BlogsRepository,
     UsersRepository,
     PostsRepository,

@@ -5,6 +5,7 @@ import { CommentsRepository } from '../platform/infrastructure/repositories/comm
 import { BlogsRepository } from '../platform/infrastructure/repositories/blogs.repository';
 import { PostsRepository } from '../platform/infrastructure/repositories/posts.repository';
 import { QuestionsRepository } from '../quiz/infrastructure/repositories/qustions.repository';
+import { GamesRepository } from '../quiz/infrastructure/repositories/games.repository';
 
 @Controller('testing')
 export class TestingController {
@@ -15,6 +16,7 @@ export class TestingController {
     private commentsRepository: CommentsRepository,
     private securityRepository: SecurityRepository,
     private questionsRepository: QuestionsRepository,
+    private gamesRepository: GamesRepository,
   ) {}
 
   @Delete('all-data')
@@ -27,6 +29,7 @@ export class TestingController {
       await this.postsRepository.deleteAll(),
       await this.commentsRepository.deleteAll(),
       await this.questionsRepository.deleteAll(),
+      await this.gamesRepository.deleteAll(),
     ]);
   }
 }

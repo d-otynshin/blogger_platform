@@ -1,17 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-/* Infrastructure */
+/* Repositories */
+import { GamesRepository } from './infrastructure/repositories/games.repository';
 import { QuizRepository } from './infrastructure/repositories/quiz.repository';
 import { QuestionsRepository } from './infrastructure/repositories/qustions.repository';
 import { QuestionsQueryRepository } from './infrastructure/queries/questions-query.repository';
+
 /* Controllers */
 import { QuizAdminController } from './api/quiz-admin.controller';
 import { PairGameQuizController } from './api/pair-game-quiz.controller';
-/* Application */
+
+/* Services */
 import { QuizService } from './application/quiz.service';
 import { QuestionsService } from './application/questions.service';
-/* Domain */
+
+/* Entities */
 import { Game } from './domain/game.entity';
 import { Question } from './domain/question.entity';
 import { GameUserQuestion } from './domain/game-user-queston.entity';
@@ -23,9 +27,10 @@ import { GameUserQuestion } from './domain/game-user-queston.entity';
     QuizService,
     QuestionsService,
     QuizRepository,
+    GamesRepository,
     QuestionsRepository,
     QuestionsQueryRepository,
   ],
-  exports: [QuestionsRepository, TypeOrmModule],
+  exports: [QuestionsRepository, GamesRepository, TypeOrmModule],
 })
 export class QuizModule {}
