@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 
 import { GetQuestionsQueryParams } from '../lib/helpers';
-import { CreateQuestionDto } from '../dto/question.dto';
+import { CreateQuestionDto, PublishQuestionDto } from '../dto/question.dto';
 import { QuestionsService } from '../application/questions.service';
 import { QuestionsQueryRepository } from '../infrastructure/queries/questions-query.repository';
 import { QuestionViewDto } from '../dto/question-view.dto';
@@ -58,7 +58,10 @@ export class QuizAdminController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(BasicAuthGuard)
   @Put('questions/:id/publish')
-  async publishQuestion(@Param('id') id: string) {
-    return this.questionsService.publishQuestion(id);
+  async publishQuestion(
+    @Param('id') id: string,
+    @Body() dto: PublishQuestionDto,
+  ) {
+    return this.questionsService.publishQuestion(id, dto);
   }
 }

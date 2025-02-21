@@ -1,5 +1,5 @@
 import { Injectable, UseGuards } from '@nestjs/common';
-import { CreateQuestionDto } from '../dto/question.dto';
+import { CreateQuestionDto, PublishQuestionDto } from '../dto/question.dto';
 import { QuestionsRepository } from '../infrastructure/repositories/qustions.repository';
 import { BasicAuthGuard } from '../../accounts/guards/basic/basic-auth.guard';
 import { NotFoundDomainException } from '../../../core/exceptions/domain-exceptions';
@@ -35,8 +35,8 @@ export class QuestionsService {
   }
 
   @UseGuards(BasicAuthGuard)
-  async publishQuestion(id: string) {
-    const isPublished = await this.questionsRepository.publish(id);
+  async publishQuestion(id: string, dto: PublishQuestionDto) {
+    const isPublished = await this.questionsRepository.publish(id, dto);
 
     if (!isPublished) {
       throw NotFoundDomainException.create('Question does not exist');

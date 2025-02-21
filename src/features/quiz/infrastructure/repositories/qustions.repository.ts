@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from '../../domain/question.entity';
-import { CreateQuestionDto } from '../../dto/question.dto';
+import { CreateQuestionDto, PublishQuestionDto } from '../../dto/question.dto';
 
 @Injectable()
 export class QuestionsRepository {
@@ -45,11 +45,11 @@ export class QuestionsRepository {
     return updateResult.affected > 0;
   }
 
-  async publish(questionId: string) {
+  async publish(questionId: string, dto: PublishQuestionDto) {
     const updateResult = await this.questionsTypeOrmRepository
       .createQueryBuilder()
       .update(Question)
-      .set({ published: true, updated_at: new Date() })
+      .set({ published: dto.published, updated_at: new Date() })
       .where('id = :id', { id: questionId })
       .execute();
 
