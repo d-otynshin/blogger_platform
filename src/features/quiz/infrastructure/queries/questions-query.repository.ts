@@ -49,6 +49,8 @@ export class QuestionsQueryRepository {
 
     const items = questions.map(QuestionViewDto.mapToView);
 
+    console.log('QUESTION VIEW DTOs', items);
+
     return PaginatedViewDto.mapToView({
       items,
       totalCount,

@@ -15,6 +15,7 @@ import { GetQuestionsQueryParams } from '../lib/helpers';
 import { CreateQuestionDto } from '../dto/question.dto';
 import { QuestionsService } from '../application/questions.service';
 import { QuestionsQueryRepository } from '../infrastructure/queries/questions-query.repository';
+import { QuestionViewDto } from '../dto/question-view.dto';
 
 @Controller('sa/quiz')
 export class QuizAdminController {
@@ -30,7 +31,8 @@ export class QuizAdminController {
   @HttpCode(HttpStatus.CREATED)
   @Post('questions')
   async createQuestion(@Body() dto: CreateQuestionDto) {
-    return this.questionsService.createQuestion(dto);
+    const createdQuestion = await this.questionsService.createQuestion(dto);
+    return QuestionViewDto.mapToView(createdQuestion);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

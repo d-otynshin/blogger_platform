@@ -43,6 +43,7 @@ export class QuizRepository {
     const questions = await this.questionsOrm
       .createQueryBuilder()
       .orderBy('RANDOM()')
+      .where('published = true')
       .limit(5)
       .getMany();
 
