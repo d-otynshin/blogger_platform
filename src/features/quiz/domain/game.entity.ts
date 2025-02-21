@@ -3,7 +3,6 @@ import {
   Entity,
   OneToMany,
   CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { GameUserQuestion } from './game-user-queston.entity';
@@ -25,8 +24,11 @@ export class Game {
   @CreateDateColumn()
   created_at: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @Column({ nullable: true })
+  started_at: Date | null;
+
+  @Column({ nullable: true })
+  finished_at: Date | null;
 
   @OneToMany(() => GameUserQuestion, (guq) => guq.game)
   games_users_questions: GameUserQuestion[];

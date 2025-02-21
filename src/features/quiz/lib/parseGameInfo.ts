@@ -1,31 +1,39 @@
 export const parseGameInfo = (gameData: any) => {
-  const groupedData = {};
+  const playerProgresses = {};
 
   gameData.games_users_questions.forEach((entry: any) => {
     const playerId = entry.user.id;
-    if (!groupedData[playerId]) {
-      groupedData[playerId] = {
+
+    if (!playerProgresses[playerId]) {
+      playerProgresses[playerId] = {
         player: {
           id: playerId,
           login: entry.user.login,
-          email: entry.user.email,
         },
-        questions: [],
+        answers: [],
+        score: 0,
       };
     }
 
-    groupedData[playerId].questions.push({
-      question: entry.question.body,
-      answeredAt: entry.answered_at,
-      isCorrect: entry.is_correct,
-    });
+    if (entry.answered_at) {
+      playerProgresses[playerId].answers.push({
+        questionId: entry.question.id,
+        addedAt: entry.answered_at,
+        answerStatus: entry.is_correct ? 'Correct' : 'Incorrect',
+      });
+
+      if (entry.is_correct) {
+        playerProgresses[playerId].score += 1;
+      }
+    }
   });
 
   return {
-    gameId: gameData.id,
+    id: gameData.id,
     status: gameData.status,
-    createdAt: gameData.created_at,
+    pairCreatedDate: gameData.created_at,
     updatedAt: gameData.updated_at,
-    players: Object.values(groupedData),
+    firstPlayerProgress: Object.values(playerProgresses)[0],
+    secondPlayerProgress: Object.values(playerProgresses)[1],
   };
-}
+};

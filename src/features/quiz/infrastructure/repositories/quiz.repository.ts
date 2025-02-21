@@ -101,6 +101,13 @@ export class QuizRepository {
       }),
     );
 
+    await this.gamesOrm
+      .createQueryBuilder('game')
+      .update()
+      .set({ started_at: () => 'NOW()' })
+      .where('game.id = :id', { id: gameId })
+      .execute();
+
     await this.gameUserQuestionsOrm.save(newEntries);
   }
 
@@ -174,10 +181,7 @@ export class QuizRepository {
     await this.gameUserQuestionsOrm
       .createQueryBuilder()
       .update()
-      .set({
-        answered_at: () => 'NOW()',
-        is_correct: isCorrect,
-      })
+      .set({ answered_at: () => 'NOW()', is_correct: isCorrect })
       .where('question_id = :questionId', { questionId })
       .andWhere('user_id = :userId', { userId })
       .execute();

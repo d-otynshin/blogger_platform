@@ -24,7 +24,6 @@ export class PairGameQuizController {
   @Post('connection')
   @UseGuards(JwtAuthGuard)
   async connect(@ExtractUserFromRequest() user: UserContextDto) {
-    console.log('CONNECTION user:', user);
     return this.quizService.connect(user.id);
   }
 
