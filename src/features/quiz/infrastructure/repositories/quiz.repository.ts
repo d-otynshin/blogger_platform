@@ -178,7 +178,7 @@ export class QuizRepository {
       .innerJoinAndSelect('guq.question', 'question')
       .where('guq.game_id = :gameId', { gameId })
       .where('guq.user_id = :userId', { userId })
-      .andWhere('guq.is_correct IS NULL')
+      .andWhere('guq.points IS NULL')
       .getMany();
   }
 
