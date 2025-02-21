@@ -16,10 +16,10 @@ export class Question {
   @Column('text', { array: true })
   correct_answers: string[];
 
-  @CreateDateColumn({ type: 'timestamp with time zone' })
+  @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @Column({ type: 'time with time zone', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   updated_at: Date | null;
 
   @Column({ default: false })
