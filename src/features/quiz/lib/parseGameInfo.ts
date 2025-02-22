@@ -29,10 +29,13 @@ export const parseGameInfo = (gameData: any) => {
   });
 
   const gameViewDto: any = {
-    id: gameData.id,
+    id: String(gameData.id),
     status: gameData.status,
     pairCreatedDate: gameData.created_at,
     updatedAt: gameData.updated_at,
+    finishGameDate: gameData.finish_at,
+    startGameDate: gameData.start_at,
+    questions: null, // Change
   };
 
   Object.values(playerProgresses).forEach((entry: any, index) => {
