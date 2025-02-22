@@ -59,6 +59,8 @@ export class QuizService {
 
       const game = await this.quizRepository.findGameById(createdGame.id);
 
+      console.log('CREATED GAME VIEW', parseGameInfo(game));
+
       return parseGameInfo(game);
     }
 
@@ -70,6 +72,8 @@ export class QuizService {
     );
 
     const game = await this.quizRepository.findGameById(pendingGame.id);
+
+    console.log('PENDING GAME VIEW', parseGameInfo(game));
 
     return parseGameInfo(game);
   }
