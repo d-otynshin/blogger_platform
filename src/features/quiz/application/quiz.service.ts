@@ -4,8 +4,9 @@ import { GameStatus } from '../domain/game.entity';
 import { parseGameInfo } from '../lib/parseGameInfo';
 import { QuizRepository } from '../infrastructure/repositories/quiz.repository';
 import {
+  BadRequestDomainException,
   ForbiddenDomainException,
-  NotFoundDomainException,
+  NotFoundDomainException
 } from '../../../core/exceptions/domain-exceptions';
 
 @Injectable()
@@ -21,7 +22,11 @@ export class QuizService {
     return parseGameInfo(activeGame);
   }
 
-  async findGameById(gameId: string, userId: string) {
+  async findGameById(gameId: number, userId: string) {
+    if (!Number(gameId)) {
+      throw BadRequestDomainException.create('Invalid game id');
+    }
+
     const activeGame = await this.quizRepository.findGameById(gameId);
 
     const isParticipating = activeGame.games_users_questions.some(

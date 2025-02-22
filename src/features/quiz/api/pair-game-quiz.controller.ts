@@ -28,7 +28,7 @@ export class PairGameQuizController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getGameById(
-    @Param('id') gameId: string,
+    @Param('id') gameId: number,
     @ExtractUserFromRequest() user: UserContextDto,
   ) {
     return this.quizService.findGameById(gameId, user.id);

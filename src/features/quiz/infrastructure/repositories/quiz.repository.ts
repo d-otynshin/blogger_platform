@@ -120,7 +120,7 @@ export class QuizRepository {
     await this.gameUserQuestionsOrm.save(newEntries);
   }
 
-  async updateGameStatus(gameId: string, status: GameStatus) {
+  async updateGameStatus(gameId: number, status: GameStatus) {
     return await this.gamesOrm
       .createQueryBuilder('game')
       .update()
@@ -155,7 +155,7 @@ export class QuizRepository {
       .getOne();
   }
 
-  async findGameById(gameId: string): Promise<Game | null> {
+  async findGameById(gameId: number): Promise<Game | null> {
     return this.gamesOrm
       .createQueryBuilder('game')
       .innerJoinAndSelect('game.games_users_questions', 'guq')
@@ -172,7 +172,7 @@ export class QuizRepository {
       .getOne();
   }
 
-  async getQuestionsByGameId(gameId: string, userId: string) {
+  async getQuestionsByGameId(gameId: number, userId: string) {
     return await this.gameUserQuestionsOrm
       .createQueryBuilder('guq')
       .innerJoinAndSelect('guq.question', 'question')

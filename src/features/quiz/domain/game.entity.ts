@@ -16,7 +16,7 @@ export enum GameStatus {
 @Entity()
 export class Game {
   @PrimaryGeneratedColumn('increment')
-  public id: string;
+  public id: number;
 
   @Column({ default: GameStatus.PENDING })
   status: GameStatus;

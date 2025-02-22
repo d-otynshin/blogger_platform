@@ -4,7 +4,7 @@ import { TQuestion } from './question';
 import { Question } from '../domain/question.entity';
 
 export class GameViewDto {
-  id: string;
+  id: number;
   firstPlayerProgress: TProgressPlayer;
   secondPlayerProgress: TProgressPlayer;
   questions: TQuestion[];
