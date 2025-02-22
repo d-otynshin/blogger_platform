@@ -46,6 +46,10 @@ export const parseGameInfo = (gameData: any) => {
 
   console.log('GAME View QNS', questions);
 
+  if (Object.values(playerProgresses).length === 0) {
+    gameViewDto.questions = null;
+  }
+
   Object.values(playerProgresses).forEach((entry: any, index) => {
     if (index === 0) {
       gameViewDto.firstPlayerProgress = entry;
