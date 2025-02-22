@@ -46,7 +46,7 @@ export const parseGameInfo = (gameData: any) => {
 
   console.log('GAME View QNS', questions);
 
-  if (Object.values(playerProgresses).length === 0) {
+  if (Object.values(playerProgresses).length === 1) {
     gameViewDto.questions = null;
   }
 
