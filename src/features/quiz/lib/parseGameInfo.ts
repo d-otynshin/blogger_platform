@@ -1,6 +1,8 @@
 export const parseGameInfo = (gameData: any) => {
   const playerProgresses = {};
 
+  console.log('parseGameInfo', gameData);
+
   gameData.games_users_questions.forEach((entry: any) => {
     const playerId = entry.user.id;
 
