@@ -1,5 +1,6 @@
 export const parseGameInfo = (gameData: any) => {
   const playerProgresses = {};
+  const questions = new Set();
 
   console.log('parseGameInfo', gameData);
 
@@ -16,6 +17,8 @@ export const parseGameInfo = (gameData: any) => {
         score: 0,
       };
     }
+
+    questions.add({ id: entry.question.id, body: entry.question.body }); // Change
 
     if (entry.answered_at) {
       playerProgresses[playerId].answers.push({
@@ -34,10 +37,11 @@ export const parseGameInfo = (gameData: any) => {
     id: String(gameData.id),
     status: gameData.status,
     pairCreatedDate: gameData.created_at,
-    updatedAt: gameData.updated_at,
-    finishGameDate: gameData.finish_at,
-    startGameDate: gameData.start_at,
-    questions: null, // Change
+    finishGameDate: gameData.finished_at,
+    startGameDate: gameData.started_at,
+    questions: Array.from(questions),
+    firstPlayerProgress: null,
+    secondPlayerProgress: null,
   };
 
   Object.values(playerProgresses).forEach((entry: any, index) => {
