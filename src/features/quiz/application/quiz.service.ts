@@ -26,12 +26,13 @@ export class QuizService {
   }
 
   async findGameById(gameId: string, userId: string) {
-    // TODO: move logic, or change it
-    if (!(Number(gameId) || uuidRegex.test(String(gameId)))) {
-      console.log('gameId', gameId);
-      console.log('Number(gameId)', Number(gameId));
-      console.log('isUUID(gameId, all)', uuidRegex.test(String(gameId)));
+    if (!Number(gameId)) {
       throw BadRequestDomainException.create('Invalid game id');
+    }
+
+    // TODO: move logic, or change it
+    if (uuidRegex.test(String(gameId))) {
+      throw NotFoundDomainException.create('Invalid game id');
     }
 
     const activeGame = await this.quizRepository.findGameById(Number(gameId));
