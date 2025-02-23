@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -28,6 +29,9 @@ export class GameUserQuestion {
   @ManyToOne(() => Question)
   @JoinColumn({ name: 'question_id' })
   question: Question;
+
+  @CreateDateColumn()
+  created_at: Date;
 
   @Column({ nullable: true })
   answered_at: Date | null;
