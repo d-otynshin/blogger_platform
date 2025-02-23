@@ -25,7 +25,7 @@ export class QuizService {
     return parseGameInfo(activeGame);
   }
 
-  async findGameById(gameId: number, userId: string) {
+  async findGameById(gameId: string, userId: string) {
     // TODO: move logic, or change it
     if (!(Number(gameId) || uuidRegex.test(String(gameId)))) {
       console.log('gameId', gameId);
@@ -34,7 +34,7 @@ export class QuizService {
       throw BadRequestDomainException.create('Invalid game id');
     }
 
-    const activeGame = await this.quizRepository.findGameById(gameId);
+    const activeGame = await this.quizRepository.findGameById(Number(gameId));
 
     const isParticipating = activeGame.games_users_questions.some(
       (entry) => entry.user.id === userId,
