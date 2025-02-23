@@ -8,7 +8,9 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
-import { isUUID } from 'class-validator';
+
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 @Injectable()
 export class QuizService {
@@ -25,10 +27,10 @@ export class QuizService {
 
   async findGameById(gameId: number, userId: string) {
     // TODO: move logic, or change it
-    if (!(Number(gameId) || isUUID(gameId))) {
+    if (!(Number(gameId) || uuidRegex.test(String(gameId)))) {
       console.log('gameId', gameId);
       console.log('Number(gameId)', Number(gameId));
-      console.log('isUUID(gameId, all)', isUUID(gameId, 'all'));
+      console.log('isUUID(gameId, all)', uuidRegex.test(String(gameId)));
       throw BadRequestDomainException.create('Invalid game id');
     }
 
