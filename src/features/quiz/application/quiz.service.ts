@@ -110,6 +110,13 @@ export class QuizService {
     )[0];
 
     const isCorrect = questionToAnswer.correct_answers.includes(dto.answer);
+    console.log(
+      'IS_CORRECT',
+      isCorrect,
+      questionToAnswer.correct_answers,
+      dto.answer,
+      questionToAnswer.id,
+    );
 
     const addedAt = new Date();
 
