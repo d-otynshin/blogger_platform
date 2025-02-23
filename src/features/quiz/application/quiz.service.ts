@@ -173,10 +173,18 @@ export class QuizService {
       addedAt,
     );
 
+    const log = {
+      questionId: questionToAnswer.id,
+      answerStatus: isCorrect ? 'Correct' : 'Incorrect',
+      addedAt: addedAt.toISOString(),
+    };
+
+    console.log('send answer', log);
+
     return {
       questionId: questionToAnswer.id,
       answerStatus: isCorrect ? 'Correct' : 'Incorrect',
-      addedAt,
+      addedAt: addedAt.toISOString(),
     };
   }
 }
