@@ -26,13 +26,13 @@ export class QuizService {
   }
 
   async findGameById(gameId: string, userId: string) {
-    if (!Number(gameId)) {
-      throw BadRequestDomainException.create('Invalid game id');
-    }
-
     // TODO: move logic, or change it
     if (uuidRegex.test(String(gameId))) {
       throw NotFoundDomainException.create('Invalid game id');
+    }
+
+    if (!Number(gameId)) {
+      throw BadRequestDomainException.create('Invalid game id');
     }
 
     const activeGame = await this.quizRepository.findGameById(Number(gameId));
