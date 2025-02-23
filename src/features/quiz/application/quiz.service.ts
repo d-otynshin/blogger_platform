@@ -161,7 +161,11 @@ export class QuizService {
         );
       }
 
-      return;
+      return {
+        questionId: questionToAnswer.id,
+        answerStatus: isCorrect ? 'Correct' : 'Incorrect',
+        addedAt: addedAt.toISOString(),
+      };
     }
 
     await this.quizRepository.addAnswerToGame(
