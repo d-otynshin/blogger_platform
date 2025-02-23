@@ -126,7 +126,8 @@ export class QuizService {
         opponentPlayerId,
       );
 
-      let points: number;
+      let correctPoints: number;
+      let inCorrectPoints: number;
 
       if (opponentQNs.length !== 0) {
         // check bonus
@@ -140,26 +141,28 @@ export class QuizService {
         console.log('game ID', activeGame.id);
         console.log('userId ', userId);
 
-        points = currentScore > 0 ? 2 : 1;
+        correctPoints = currentScore > 0 ? 2 : 1;
+        inCorrectPoints = currentScore > 0 ? 1 : 0;
 
-        console.log('POINTS', points);
+        console.log('POINTS', correctPoints);
 
         await this.quizRepository.addAnswerToGame(
           userId,
           questionToAnswer.id,
-          isCorrect ? points : 0,
+          isCorrect ? correctPoints : inCorrectPoints,
           addedAt,
         );
       }
 
       if (opponentQNs.length === 0) {
         // finish game
-        points = 1;
+        correctPoints = 1;
+        inCorrectPoints = 0;
 
         await this.quizRepository.addAnswerToGame(
           userId,
           questionToAnswer.id,
-          isCorrect ? points : 0,
+          isCorrect ? correctPoints : inCorrectPoints,
           addedAt,
         );
 
