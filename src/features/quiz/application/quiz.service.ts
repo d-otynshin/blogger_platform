@@ -24,7 +24,14 @@ export class QuizService {
   }
 
   async findGameById(gameId: number, userId: string) {
-    if (!Number(gameId) && !isUUID(gameId)) {
+    // TODO: move logic, or change it
+    if (
+      !(
+        typeof gameId === 'number' ||
+        (!isNaN(gameId) && !isNaN(parseFloat(gameId))) ||
+        isUUID(gameId)
+      )
+    ) {
       throw BadRequestDomainException.create('Invalid game id');
     }
 
