@@ -57,11 +57,9 @@ export class QuizService {
     }
 
     const pendingGame = await this.quizRepository.findPendingGame();
-    console.log('pendingGame', pendingGame);
 
     if (!pendingGame) {
       const createdGame = await this.quizRepository.createGameInstance();
-      console.log('createdGame', createdGame);
 
       await this.quizRepository.initGame({ userId, gameId: createdGame.id });
 

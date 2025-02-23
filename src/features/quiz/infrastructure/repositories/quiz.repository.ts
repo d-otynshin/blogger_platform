@@ -47,8 +47,6 @@ export class QuizRepository {
       .limit(5)
       .getMany();
 
-    console.log('INIT GAME questions', questions);
-
     const gameUserQuestions = [];
 
     for (const question of questions) {

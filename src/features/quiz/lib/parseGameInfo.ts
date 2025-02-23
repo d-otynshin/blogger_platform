@@ -2,9 +2,13 @@ export const parseGameInfo = (gameData: any) => {
   const playerProgresses = {};
   const questions = new Map();
 
-  console.log('parseGameInfo', gameData);
+  const guqs = gameData.games_users_questions.sort(
+    (a, b) => a.created_at - b.created_at,
+  );
 
-  gameData.games_users_questions.forEach((entry: any) => {
+  console.log('GUQ', guqs);
+
+  guqs.forEach((entry: any) => {
     const playerId = entry.user.id;
 
     if (!playerProgresses[playerId]) {
@@ -51,8 +55,6 @@ export const parseGameInfo = (gameData: any) => {
     firstPlayerProgress: null,
     secondPlayerProgress: null,
   };
-
-  console.log('GAME View QNS', questions);
 
   if (Object.values(playerProgresses).length === 1) {
     gameViewDto.questions = null;
