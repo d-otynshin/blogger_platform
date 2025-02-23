@@ -116,6 +116,7 @@ export class QuizService {
       questionToAnswer.correct_answers,
       dto.answer,
       questionToAnswer.id,
+      userId,
     );
 
     const addedAt = new Date();
