@@ -26,6 +26,9 @@ export class QuizService {
   async findGameById(gameId: number, userId: string) {
     // TODO: move logic, or change it
     if (!(Number(gameId) || isUUID(gameId))) {
+      console.log('gameId', gameId);
+      console.log('Number(gameId)', Number(gameId));
+      console.log('isUUID(gameId)', isUUID(gameId));
       throw BadRequestDomainException.create('Invalid game id');
     }
 
