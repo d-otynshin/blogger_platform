@@ -1,6 +1,6 @@
 export const parseGameInfo = (gameData: any) => {
   const playerProgresses = {};
-  const questions = new Set();
+  const questions = new Map();
 
   console.log('parseGameInfo', gameData);
 
@@ -18,7 +18,12 @@ export const parseGameInfo = (gameData: any) => {
       };
     }
 
-    questions.add({ id: entry.question.id, body: entry.question.body }); // Change
+    if (!questions.has(entry.question.id)) {
+      questions.set(entry.question.id, {
+        id: entry.question.id,
+        body: entry.question.body,
+      });
+    }
 
     if (entry.answered_at) {
       playerProgresses[playerId].answers.push({
@@ -39,7 +44,7 @@ export const parseGameInfo = (gameData: any) => {
     pairCreatedDate: gameData.created_at,
     finishGameDate: gameData.finished_at,
     startGameDate: gameData.started_at,
-    questions: Array.from(questions),
+    questions: Array.from(questions.values()),
     firstPlayerProgress: null,
     secondPlayerProgress: null,
   };
