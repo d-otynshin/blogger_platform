@@ -31,6 +31,11 @@ import { GameUserQuestion } from './domain/game-user-queston.entity';
     QuestionsRepository,
     QuestionsQueryRepository,
   ],
-  exports: [QuestionsRepository, GamesRepository, TypeOrmModule],
+  exports: [
+    TypeOrmModule,
+    QuizRepository,
+    GamesRepository,
+    QuestionsRepository,
+  ],
 })
 export class QuizModule {}

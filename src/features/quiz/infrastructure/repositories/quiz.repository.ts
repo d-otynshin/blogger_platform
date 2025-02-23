@@ -198,7 +198,7 @@ export class QuizRepository {
   }
 
   async deleteAll() {
-    const deleteResult = await this.gamesOrm.delete({});
+    const deleteResult = await this.gameUserQuestionsOrm.delete({});
 
     return deleteResult.affected > 0;
   }

@@ -17,11 +17,13 @@ import { CommentsRepository } from '../platform/infrastructure/repositories/comm
 import { SecurityRepository } from '../accounts/infrastructure/repositories/security.repository';
 import { QuestionsRepository } from '../quiz/infrastructure/repositories/qustions.repository';
 import { InteractionsRepository } from '../platform/infrastructure/repositories/interactions.repository';
+import { QuizRepository } from '../quiz/infrastructure/repositories/quiz.repository';
 
 @Module({
   imports: [AccountsModule, PlatformModule, QuizModule],
   controllers: [TestingController],
   providers: [
+    QuizRepository,
     GamesRepository,
     BlogsRepository,
     UsersRepository,
