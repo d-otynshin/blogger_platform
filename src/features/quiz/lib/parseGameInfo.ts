@@ -6,8 +6,6 @@ export const parseGameInfo = (gameData: any) => {
     (a, b) => a.created_at - b.created_at,
   );
 
-  console.log('GUQ', guqs);
-
   guqs.forEach((entry: any) => {
     const playerId = entry.user.id;
 
