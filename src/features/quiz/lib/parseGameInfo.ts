@@ -64,12 +64,18 @@ export const parseGameInfo = (gameData: any) => {
   }
 
   Object.values(playerProgresses).forEach((entry: any, index) => {
+    const sortedAnswers = entry.answers.sort((a, b) => a.addedAt - b.addedAt);
+    const modifiedEntry = {
+      ...entry,
+      answers: sortedAnswers,
+    };
+
     if (index === 0) {
-      gameViewDto.firstPlayerProgress = entry;
+      gameViewDto.firstPlayerProgress = modifiedEntry;
     }
 
     if (index === 1) {
-      gameViewDto.secondPlayerProgress = entry;
+      gameViewDto.secondPlayerProgress = modifiedEntry;
     }
   });
 
