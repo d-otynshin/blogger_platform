@@ -137,6 +137,7 @@ export class QuizService {
 
         console.log('currentScore', currentScore);
         console.log('opponentQNs.length', opponentQNs.length);
+        console.log('game ID', activeGame.id);
 
         points = currentScore > 0 ? 2 : 1;
 
