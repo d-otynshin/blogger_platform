@@ -36,8 +36,9 @@ export const parseGameInfo = (gameData: any) => {
       });
 
       if (entry.points) {
+        console.log('PARSER USER_ID', playerId);
         console.log(
-          'LOG SCORE',
+          'PARSER LOG SCORE',
           playerProgresses[playerId].score,
           entry.points,
         );
