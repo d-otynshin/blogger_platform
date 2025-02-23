@@ -22,6 +22,7 @@ export const parseGameInfo = (gameData: any) => {
       questions.set(entry.question.id, {
         id: entry.question.id,
         body: entry.question.body,
+        createdAt: entry.question.created_at,
       });
     }
 
@@ -44,7 +45,9 @@ export const parseGameInfo = (gameData: any) => {
     pairCreatedDate: gameData.created_at,
     finishGameDate: gameData.finished_at,
     startGameDate: gameData.started_at,
-    questions: Array.from(questions.values()),
+    questions: Array.from(questions.values())
+      .sort((a, b) => a.createdAt - b.createdAt)
+      .map((qn) => ({ id: qn.id, body: qn.body })),
     firstPlayerProgress: null,
     secondPlayerProgress: null,
   };

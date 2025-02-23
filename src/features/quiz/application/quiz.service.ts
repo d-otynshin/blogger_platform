@@ -28,7 +28,7 @@ export class QuizService {
     if (!(Number(gameId) || isUUID(gameId))) {
       console.log('gameId', gameId);
       console.log('Number(gameId)', Number(gameId));
-      console.log('isUUID(gameId)', isUUID(gameId));
+      console.log('isUUID(gameId, all)', isUUID(gameId, 'all'));
       throw BadRequestDomainException.create('Invalid game id');
     }
 
