@@ -94,22 +94,24 @@ export class QuizService {
     }
 
     // TODO: filter and get only questions
-    const guqs = await this.quizRepository.getQuestionsByGameId(
+    const questions = await this.quizRepository.getQuestionsByGameId(
       activeGame.id,
       userId,
     );
 
-    if (guqs.length === 0) {
+    if (questions.length === 0) {
       throw ForbiddenDomainException.create('All questions are answered.');
     }
 
-    const guqToAnswer = guqs[0];
+    const questionToAnswer = questions.sort(
+      (qnA: any, qnB: any) => qnA.created_at - qnB.created_at,
+    )[0];
 
-    const isCorrect = guqToAnswer.question.correct_answers.includes(dto.answer);
+    const isCorrect = questionToAnswer.correct_answers.includes(dto.answer);
 
     const addedAt = new Date();
 
-    if (guqs.length === 1) {
+    if (questions.length === 1) {
       const parsedGame = parseGameInfo(activeGame);
 
       const opponentPlayerId: string =
@@ -117,14 +119,14 @@ export class QuizService {
           ? parsedGame.secondPlayerProgress.player.id
           : parsedGame.firstPlayerProgress.player.id;
 
-      const opponentGUQs = await this.quizRepository.getQuestionsByGameId(
+      const opponentQNs = await this.quizRepository.getQuestionsByGameId(
         activeGame.id,
         opponentPlayerId,
       );
 
       let points: number;
 
-      if (opponentGUQs.length !== 0) {
+      if (opponentQNs.length !== 0) {
         // check bonus
         const currentScore: number =
           userId === parsedGame.firstPlayerProgress.player.id
@@ -135,19 +137,19 @@ export class QuizService {
 
         await this.quizRepository.addAnswerToGame(
           userId,
-          guqToAnswer.question.id,
+          questionToAnswer.id,
           isCorrect ? points : 0,
           addedAt,
         );
       }
 
-      if (opponentGUQs.length === 0) {
+      if (opponentQNs.length === 0) {
         // finish game
         points = 1;
 
         await this.quizRepository.addAnswerToGame(
           userId,
-          guqToAnswer.question.id,
+          questionToAnswer.id,
           isCorrect ? points : 0,
           addedAt,
         );
@@ -163,13 +165,13 @@ export class QuizService {
 
     await this.quizRepository.addAnswerToGame(
       userId,
-      guqToAnswer.question.id,
+      questionToAnswer.id,
       isCorrect ? 1 : 0,
       addedAt,
     );
 
     return {
-      questionId: guqToAnswer.question.id,
+      questionId: questionToAnswer.id,
       answerStatus: isCorrect ? 'Correct' : 'Incorrect',
       addedAt,
     };

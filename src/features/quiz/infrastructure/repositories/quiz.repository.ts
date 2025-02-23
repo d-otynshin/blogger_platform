@@ -173,13 +173,19 @@ export class QuizRepository {
   }
 
   async getQuestionsByGameId(gameId: number, userId: string) {
-    return await this.gameUserQuestionsOrm
+    const guqs = await this.gameUserQuestionsOrm
       .createQueryBuilder('guq')
       .innerJoinAndSelect('guq.question', 'question')
       .where('guq.game_id = :gameId', { gameId })
       .where('guq.user_id = :userId', { userId })
       .andWhere('guq.points IS NULL')
       .getMany();
+
+    if (guqs.length === 0) {
+      return [];
+    }
+
+    return guqs.map((guq) => guq.question);
   }
 
   async addAnswerToGame(
