@@ -140,6 +140,8 @@ export class QuizService {
 
         points = currentScore > 0 ? 2 : 1;
 
+        console.log('POINTS', points);
+
         await this.quizRepository.addAnswerToGame(
           userId,
           questionToAnswer.id,

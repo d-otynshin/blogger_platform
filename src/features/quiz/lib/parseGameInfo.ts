@@ -36,6 +36,11 @@ export const parseGameInfo = (gameData: any) => {
       });
 
       if (entry.points) {
+        console.log(
+          'LOG SCORE',
+          playerProgresses[playerId].score,
+          entry.points,
+        );
         playerProgresses[playerId].score += entry.points;
       }
     }
