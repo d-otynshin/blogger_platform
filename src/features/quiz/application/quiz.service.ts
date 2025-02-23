@@ -6,7 +6,7 @@ import { QuizRepository } from '../infrastructure/repositories/quiz.repository';
 import {
   BadRequestDomainException,
   ForbiddenDomainException,
-  NotFoundDomainException
+  NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
 import { isUUID } from 'class-validator';
 
@@ -18,7 +18,7 @@ export class QuizService {
     const activeGame = await this.quizRepository.findActiveGame(userId);
     if (!activeGame) throw NotFoundDomainException.create('Game not found');
 
-    console.log('MY CURRENT GAME', activeGame);
+    console.log('MY CURRENT GAME', parseGameInfo(activeGame));
 
     return parseGameInfo(activeGame);
   }
