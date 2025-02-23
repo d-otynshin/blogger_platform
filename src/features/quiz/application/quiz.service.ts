@@ -8,6 +8,7 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException
 } from '../../../core/exceptions/domain-exceptions';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class QuizService {
@@ -23,7 +24,7 @@ export class QuizService {
   }
 
   async findGameById(gameId: number, userId: string) {
-    if (!Number(gameId)) {
+    if (!Number(gameId) && !isUUID(gameId)) {
       throw BadRequestDomainException.create('Invalid game id');
     }
 
