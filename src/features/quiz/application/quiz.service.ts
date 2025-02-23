@@ -53,6 +53,7 @@ export class QuizService {
   async connect(userId: string) {
     const isPlaying = await this.quizRepository.isPlaying(userId);
     if (isPlaying) {
+      console.log('CONNECT USER_ID', userId);
       throw ForbiddenDomainException.create('User is already in a game.');
     }
 
@@ -134,6 +135,9 @@ export class QuizService {
             ? parsedGame.firstPlayerProgress.score
             : parsedGame.secondPlayerProgress.score;
 
+        console.log('currentScore', currentScore);
+        console.log('opponentQNs.length', opponentQNs.length);
+
         points = currentScore > 0 ? 2 : 1;
 
         await this.quizRepository.addAnswerToGame(
@@ -155,10 +159,7 @@ export class QuizService {
           addedAt,
         );
 
-        await this.quizRepository.updateGameStatus(
-          activeGame.id,
-          GameStatus.FINISHED,
-        );
+        await this.quizRepository.finsihGame(activeGame.id);
       }
 
       return {
@@ -180,8 +181,6 @@ export class QuizService {
       answerStatus: isCorrect ? 'Correct' : 'Incorrect',
       addedAt: addedAt.toISOString(),
     };
-
-    console.log('send answer', log);
 
     return {
       questionId: questionToAnswer.id,

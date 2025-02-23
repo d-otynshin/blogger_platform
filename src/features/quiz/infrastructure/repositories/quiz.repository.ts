@@ -127,6 +127,15 @@ export class QuizRepository {
       .execute();
   }
 
+  async finsihGame(gameId: number) {
+    return await this.gamesOrm
+      .createQueryBuilder('game')
+      .update()
+      .set({ status: GameStatus.FINISHED, finished_at: new Date() })
+      .where('game.id = :id', { id: gameId })
+      .execute();
+  }
+
   async findActiveGameId(userId: string): Promise<string | null> {
     const gameRow: { game_id: string } | null = await this.gamesOrm
       .createQueryBuilder('game')
