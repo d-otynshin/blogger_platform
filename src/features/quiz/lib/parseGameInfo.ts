@@ -47,15 +47,18 @@ export const parseGameInfo = (gameData: any) => {
       if (entry.points) {
         let pointsToAdd: number;
 
-        if (entry.status !== GameStatus.FINISHED) {
-          pointsToAdd = [3, 2].includes(Number(entry.points))
-            ? entry.points - 2
-            : entry.points;
-        } else {
+        if (entry.status === GameStatus.FINISHED) {
           pointsToAdd = [3, 2].includes(Number(entry.points))
             ? entry.points - 1
             : entry.points;
+        } else {
+          pointsToAdd = [3, 2].includes(Number(entry.points))
+            ? entry.points - 2
+            : entry.points;
         }
+
+        console.log('GAME STATUS', entry.status);
+        console.log('POINTS TO ADD', entry.points, pointsToAdd);
 
         playerProgresses[playerId].score += pointsToAdd;
       }

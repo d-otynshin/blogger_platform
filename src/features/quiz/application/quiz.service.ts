@@ -47,6 +47,8 @@ export class QuizService {
       );
     }
 
+    console.log('GAME BY ID', parseGameInfo(activeGame));
+
     return parseGameInfo(activeGame);
   }
 
