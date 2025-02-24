@@ -53,9 +53,9 @@ export class GameViewDto {
 
       if (entry.answered_at) {
         playerProgresses[playerId].answers.push({
-          questionId: entry.question.id,
           addedAt: entry.answered_at,
           answerStatus: detectCorrectAnswer(entry.points),
+          questionId: entry.question.id,
         });
 
         if (entry.points) {
