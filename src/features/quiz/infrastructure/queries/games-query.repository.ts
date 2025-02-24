@@ -27,18 +27,8 @@ export class GamesQueryRepository {
 
     console.log('query.sortBy', query.sortBy);
 
-    let sortKey: string;
-
-    if (query.sortBy === 'status') {
-      sortKey = 'game_status';
-    }
-
-    if (query.sortBy !== 'status') {
-      sortKey = query.sortBy;
-    }
-
     queryBuilder.orderBy(
-      toSnakeCase(sortKey),
+      toSnakeCase(`game.${query.sortBy}`),
       formatSortDirection(query.sortDirection),
     );
 
