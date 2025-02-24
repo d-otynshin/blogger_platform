@@ -53,8 +53,11 @@ export class QuizService {
   async connect(userId: string) {
     const isPlaying = await this.quizRepository.isPlaying(userId);
     if (isPlaying) {
-      console.log('CONNECT USER_ID', userId);
-      throw ForbiddenDomainException.create('User is already in a game.');
+      console.log('USER IS ALREADY PLAYING', userId);
+      const playingGame = await this.getActiveGame(userId);
+
+      return parseGameInfo(playingGame);
+      // throw ForbiddenDomainException.create('User is already in a game.');
     }
 
     const pendingGame = await this.quizRepository.findPendingGame();
