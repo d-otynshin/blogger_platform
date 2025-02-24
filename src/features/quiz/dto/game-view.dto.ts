@@ -76,6 +76,8 @@ export class GameViewDto {
       }
     });
 
+    console.log('GAME_DATA', gameData);
+
     dto.id = String(gameData.id);
     dto.status = gameData.status;
     dto.pairCreatedDate = gameData.created_at;
