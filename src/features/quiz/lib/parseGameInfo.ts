@@ -43,7 +43,12 @@ export const parseGameInfo = (gameData: any) => {
           playerProgresses[playerId].score,
           entry.points,
         );
-        playerProgresses[playerId].score += entry.points;
+
+        const pointsToAdd = [5, 3].includes(entry.points)
+          ? entry.points - 2
+          : entry.points;
+
+        playerProgresses[playerId].score += pointsToAdd;
       }
     }
   });
