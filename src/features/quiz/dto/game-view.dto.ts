@@ -52,6 +52,8 @@ export class GameViewDto {
       };
 
       if (entry.answered_at) {
+        console.log('ADDED_AT', entry.answered_at);
+        console.log('GAME_ID', gameData.id);
         playerProgresses[playerId].answers.push({
           addedAt: entry.answered_at,
           answerStatus: detectCorrectAnswer(entry.points),
