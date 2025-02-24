@@ -1,3 +1,5 @@
+import { GameStatus } from '../domain/game.entity';
+
 export const parseGameInfo = (gameData: any) => {
   const playerProgresses = {};
   const questions = new Map();
@@ -43,9 +45,17 @@ export const parseGameInfo = (gameData: any) => {
       });
 
       if (entry.points) {
-        const pointsToAdd = [3, 2].includes(Number(entry.points))
-          ? entry.points - 1
-          : entry.points;
+        let pointsToAdd: number;
+
+        if (entry.status !== GameStatus.FINISHED) {
+          pointsToAdd = [3, 2].includes(Number(entry.points))
+            ? entry.points - 2
+            : entry.points;
+        } else {
+          pointsToAdd = [3, 2].includes(Number(entry.points))
+            ? entry.points - 1
+            : entry.points;
+        }
 
         playerProgresses[playerId].score += pointsToAdd;
       }
