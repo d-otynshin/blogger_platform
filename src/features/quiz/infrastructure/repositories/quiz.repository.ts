@@ -186,6 +186,7 @@ export class QuizRepository {
       .where('guq.game_id = :gameId', { gameId })
       .where('guq.user_id = :userId', { userId })
       .andWhere('guq.points IS NULL')
+      .limit(5)
       .getMany();
 
     if (guqs.length === 0) {
