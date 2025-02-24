@@ -109,6 +109,8 @@ export class QuizService {
       (qnA: any, qnB: any) => qnA.created_at - qnB.created_at,
     )[0];
 
+    console.log('QUESTION_TO_ANSWER FOR USER', questionToAnswer.id, userId);
+
     const isCorrect = questionToAnswer.correct_answers.includes(dto.answer);
     console.log(
       'IS_CORRECT',
@@ -164,13 +166,10 @@ export class QuizService {
 
       if (opponentQNs.length === 0) {
         // finish game
-        correctPoints = 1;
-        inCorrectPoints = 0;
-
         await this.quizRepository.addAnswerToGame(
           userId,
           questionToAnswer.id,
-          isCorrect ? correctPoints : inCorrectPoints,
+          isCorrect ? 1 : 0,
           addedAt,
         );
 
@@ -190,12 +189,6 @@ export class QuizService {
       isCorrect ? 1 : 0,
       addedAt,
     );
-
-    const log = {
-      questionId: questionToAnswer.id,
-      answerStatus: isCorrect ? 'Correct' : 'Incorrect',
-      addedAt: addedAt.toISOString(),
-    };
 
     return {
       questionId: questionToAnswer.id,

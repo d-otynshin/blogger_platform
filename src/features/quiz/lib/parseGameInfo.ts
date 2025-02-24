@@ -2,6 +2,7 @@ export const parseGameInfo = (gameData: any) => {
   const playerProgresses = {};
   const questions = new Map();
 
+  // SORTED GUQS
   const guqs = gameData.games_users_questions.sort(
     (a, b) => a.created_at - b.created_at,
   );
@@ -65,6 +66,7 @@ export const parseGameInfo = (gameData: any) => {
   }
 
   Object.values(playerProgresses).forEach((entry: any, index) => {
+    // SORTED ANSWERS
     const sortedAnswers = entry.answers.sort((a, b) => a.addedAt - b.addedAt);
     const modifiedEntry = {
       ...entry,
