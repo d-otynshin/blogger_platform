@@ -54,8 +54,7 @@ export class QuizService {
     const isPlaying = await this.quizRepository.isPlaying(userId);
     if (isPlaying) {
       console.log('USER IS ALREADY PLAYING', userId);
-      return this.getActiveGame(userId);
-      // throw ForbiddenDomainException.create('User is already in a game.');
+      throw ForbiddenDomainException.create('User is already in a game.');
     }
 
     const pendingGame = await this.quizRepository.findPendingGame();
