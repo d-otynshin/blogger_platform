@@ -30,10 +30,10 @@ export const parseGameInfo = (gameData: any) => {
     }
 
     const detectCorrectAnswer = (points: number) => {
-      if (points === 3) return false;
+      if (points === 3) return 'Incorrect';
 
-      return Boolean(points);
-    }
+      return points ? 'Correct' : 'Incorrect';
+    };
 
     if (entry.answered_at) {
       playerProgresses[playerId].answers.push({
