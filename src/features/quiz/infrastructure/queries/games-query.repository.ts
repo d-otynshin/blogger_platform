@@ -37,6 +37,22 @@ export class GamesQueryRepository {
 
     const [games, totalCount] = await queryBuilder.getManyAndCount();
 
+    console.log('GAMES', games);
+
+    const test = await this.gamesOrm
+      .createQueryBuilder('game')
+      .innerJoinAndSelect('game.games_users_questions', 'guq')
+      .innerJoinAndSelect('guq.user', 'user')
+      .innerJoinAndSelect('guq.question', 'question')
+      .where(
+        'game.id IN (SELECT guq2.game_id FROM games_users_questions guq2 WHERE guq2.user_id = :userId)',
+        { userId },
+      )
+      .groupBy('game.id')
+      .getMany();
+
+    console.log('TEST GAMES', test);
+
     const items = games
       .map(GameViewDto.mapToView)
       .sort((a, b) => Number(b.id) - Number(a.id));
