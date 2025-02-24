@@ -151,8 +151,8 @@ export class QuizService {
         console.log('game ID', activeGame.id);
         console.log('userId ', userId);
 
-        correctPoints = currentScore > 0 ? 3 : 2;
-        inCorrectPoints = currentScore > 0 ? 1 : 0;
+        correctPoints = currentScore > 0 ? 3 : 1;
+        inCorrectPoints = currentScore > 0 ? 2 : 0;
 
         console.log('POINTS', correctPoints);
 
