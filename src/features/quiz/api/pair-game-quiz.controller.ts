@@ -6,23 +6,31 @@ import {
   UseGuards,
   Controller,
   HttpCode,
-  HttpStatus,
+  HttpStatus, Query
 } from '@nestjs/common';
 
 import { GameDto } from '../dto/game.dto';
 import { QuizService } from '../application/quiz.service';
 import { JwtAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
 import { UserContextDto } from '../../accounts/dto/auth.dto';
+import { GamesQueryRepository } from '../infrastructure/queries/games-query.repository';
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
+import { GetGamesQueryParams } from '../lib/helpers';
 
 @Controller('pair-game-quiz/pairs')
 export class PairGameQuizController {
-  constructor(private readonly quizService: QuizService) {}
+  constructor(
+    private quizService: QuizService,
+    private gamesQueryRepository: GamesQueryRepository,
+  ) {}
 
   @Get('my')
   @UseGuards(JwtAuthGuard)
-  async getGames(@ExtractUserFromRequest() user: UserContextDto) {
-    return this.quizService.getMyGames(user.id);
+  async getGames(
+    @ExtractUserFromRequest() user: UserContextDto,
+    @Query() query: GetGamesQueryParams,
+  ) {
+    return this.gamesQueryRepository.findAll(query, user.id);
   }
 
   @Get('my-current')

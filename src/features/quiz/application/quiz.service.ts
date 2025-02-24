@@ -8,6 +8,7 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
+import { GameViewDto } from '../dto/game-view.dto';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -29,9 +30,9 @@ export class QuizService {
     const games = await this.quizRepository.findGamesByUserId(userId);
     if (!games) throw NotFoundDomainException.create('Games not found');
 
-    console.log('MY ALL GAMES', games.map(parseGameInfo));
+    console.log('MY ALL GAMES', games.map(GameViewDto.mapToView));
 
-    return games.map(parseGameInfo);
+    return games.map(GameViewDto.mapToView);
   }
 
   async findGameById(gameId: string, userId: string) {

@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GamesRepository } from './infrastructure/repositories/games.repository';
 import { QuizRepository } from './infrastructure/repositories/quiz.repository';
 import { QuestionsRepository } from './infrastructure/repositories/qustions.repository';
+import { GamesQueryRepository } from './infrastructure/queries/games-query.repository';
 import { QuestionsQueryRepository } from './infrastructure/queries/questions-query.repository';
 
 /* Controllers */
@@ -29,6 +30,7 @@ import { GameUserQuestion } from './domain/game-user-queston.entity';
     QuizRepository,
     GamesRepository,
     QuestionsRepository,
+    GamesQueryRepository,
     QuestionsQueryRepository,
   ],
   exports: [
