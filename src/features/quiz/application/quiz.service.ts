@@ -121,6 +121,8 @@ export class QuizService {
       userId,
     );
 
+    console.log('QNS LENGTH', questions.length);
+
     const addedAt = new Date();
 
     if (questions.length === 1) {
@@ -154,7 +156,10 @@ export class QuizService {
         correctPoints = currentScore > 0 ? 3 : 1;
         inCorrectPoints = currentScore > 0 ? 2 : 0;
 
-        console.log('ADDED POINTS', isCorrect ? correctPoints : inCorrectPoints);
+        console.log(
+          'ADDED POINTS',
+          isCorrect ? correctPoints : inCorrectPoints,
+        );
 
         await this.quizRepository.addAnswerToGame(
           userId,
