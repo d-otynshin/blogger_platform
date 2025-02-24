@@ -39,7 +39,7 @@ export class GamesQueryRepository {
 
     const items = games
       .map(GameViewDto.mapToView)
-      .sort((a, b) => Number(a.id) - Number(b.id));
+      .sort((a, b) => Number(b.id) - Number(a.id));
 
     console.log('GAMES VIEW DTOs', items);
 
