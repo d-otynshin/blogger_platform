@@ -25,7 +25,7 @@ export class GamesQueryRepository {
         { userId },
       );
 
-    console.log('query.sortBy', query.sortBy);
+    console.log('USER ID', userId);
 
     queryBuilder.orderBy(
       toSnakeCase(`game.${query.sortBy}`),
