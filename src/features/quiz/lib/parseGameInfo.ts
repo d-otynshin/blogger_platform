@@ -29,11 +29,17 @@ export const parseGameInfo = (gameData: any) => {
       });
     }
 
+    const detectCorrectAnswer = (points: number) => {
+      if (points === 3) return false;
+
+      return Boolean(points);
+    }
+
     if (entry.answered_at) {
       playerProgresses[playerId].answers.push({
         questionId: entry.question.id,
         addedAt: entry.answered_at,
-        answerStatus: entry.points ? 'Correct' : 'Incorrect',
+        answerStatus: detectCorrectAnswer(entry.points),
       });
 
       if (entry.points) {
