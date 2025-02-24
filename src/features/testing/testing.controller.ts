@@ -5,7 +5,7 @@ import { CommentsRepository } from '../platform/infrastructure/repositories/comm
 import { BlogsRepository } from '../platform/infrastructure/repositories/blogs.repository';
 import { PostsRepository } from '../platform/infrastructure/repositories/posts.repository';
 import { QuestionsRepository } from '../quiz/infrastructure/repositories/qustions.repository';
-import { GamesRepository } from '../quiz/infrastructure/repositories/games.repository';
+// import { GamesRepository } from '../quiz/infrastructure/repositories/games.repository';
 // import { QuizRepository } from '../quiz/infrastructure/repositories/quiz.repository';
 
 @Controller('testing')
@@ -15,7 +15,7 @@ export class TestingController {
     private usersRepository: UsersRepository,
     private blogsRepository: BlogsRepository,
     private postsRepository: PostsRepository,
-    private gamesRepository: GamesRepository,
+    // private gamesRepository: GamesRepository,
     private commentsRepository: CommentsRepository,
     private securityRepository: SecurityRepository,
     private questionsRepository: QuestionsRepository,
@@ -28,7 +28,7 @@ export class TestingController {
       await this.usersRepository.deleteAll(),
       await this.blogsRepository.deleteAll(),
       await this.postsRepository.deleteAll(),
-      await this.gamesRepository.deleteAll(),
+      // await this.gamesRepository.deleteAll(),
       // await this.quizRepository.deleteAll(),
       await this.securityRepository.deleteAll(),
       await this.commentsRepository.deleteAll(),
