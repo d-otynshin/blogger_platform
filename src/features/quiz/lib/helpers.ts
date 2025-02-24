@@ -6,6 +6,7 @@ export enum QuestionsSortBy {
 
 export enum GamesSortBy {
   PairCreatedAt = 'pairCreatedDate',
+  Status = 'status',
 }
 
 export enum QnPublicationStatus {
@@ -21,7 +22,5 @@ export class GetQuestionsQueryParams extends BaseSortablePaginationParams<Questi
 }
 
 export class GetGamesQueryParams extends BaseSortablePaginationParams<GamesSortBy> {
-  sortBy = GamesSortBy.PairCreatedAt;
-  bodySearchTerm: string | null = null;
-  publishedStatus: QnPublicationStatus | null = QnPublicationStatus.ALL;
+  sortBy = GamesSortBy.Status;
 }
