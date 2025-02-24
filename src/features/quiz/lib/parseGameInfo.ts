@@ -47,7 +47,7 @@ export const parseGameInfo = (gameData: any) => {
       if (entry.points) {
         let pointsToAdd: number;
 
-        if (entry.status === GameStatus.FINISHED) {
+        if (gameData.status === GameStatus.FINISHED) {
           pointsToAdd = [3, 2].includes(Number(entry.points))
             ? entry.points - 1
             : entry.points;
@@ -57,7 +57,7 @@ export const parseGameInfo = (gameData: any) => {
             : entry.points;
         }
 
-        console.log('GAME STATUS', entry.status);
+        console.log('GAME STATUS', gameData.status);
         console.log('POINTS TO ADD', entry.points, pointsToAdd);
 
         playerProgresses[playerId].score += pointsToAdd;
