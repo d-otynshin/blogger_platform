@@ -171,7 +171,7 @@ export class QuizService {
           addedAt,
         );
 
-        await this.quizRepository.finsihGame(activeGame.id);
+        // await this.quizRepository.finsihGame(activeGame.id);
       }
 
       if (opponentQNs.length === 0) {
