@@ -122,6 +122,7 @@ export class QuizService {
     );
 
     console.log('QNS LENGTH', questions.length);
+    console.log('QNS', questions);
 
     const addedAt = new Date();
 
