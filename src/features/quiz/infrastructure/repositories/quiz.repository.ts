@@ -168,7 +168,10 @@ export class QuizRepository {
       .innerJoinAndSelect('game.games_users_questions', 'guq')
       .innerJoinAndSelect('guq.user', 'user')
       .innerJoinAndSelect('guq.question', 'question')
-      .where('user.id = :userId', { userId })
+      .where(
+        'game.id IN (SELECT guq2.game_id FROM games_users_questions guq2 WHERE guq2.user_id = :userId)',
+        { userId },
+      )
       .getMany();
   }
 
