@@ -141,6 +141,8 @@ export class QuizService {
       let correctPoints: number;
       let inCorrectPoints: number;
 
+      console.log('OPPONENTS QNS LENGTH', opponentQNs.length, opponentPlayerId);
+
       if (opponentQNs.length !== 0) {
         // check bonus
         const currentScore: number =
