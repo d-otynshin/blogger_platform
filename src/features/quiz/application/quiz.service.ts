@@ -154,7 +154,7 @@ export class QuizService {
         correctPoints = currentScore > 0 ? 3 : 1;
         inCorrectPoints = currentScore > 0 ? 2 : 0;
 
-        console.log('POINTS', correctPoints);
+        console.log('ADDED POINTS', isCorrect ? correctPoints : inCorrectPoints);
 
         await this.quizRepository.addAnswerToGame(
           userId,
@@ -162,6 +162,8 @@ export class QuizService {
           isCorrect ? correctPoints : inCorrectPoints,
           addedAt,
         );
+
+        await this.quizRepository.finsihGame(activeGame.id);
       }
 
       if (opponentQNs.length === 0) {
