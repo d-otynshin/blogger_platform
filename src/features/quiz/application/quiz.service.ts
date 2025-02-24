@@ -25,6 +25,15 @@ export class QuizService {
     return parseGameInfo(activeGame);
   }
 
+  async getMyGames(userId: string) {
+    const games = await this.quizRepository.findGamesByUserId(userId);
+    if (!games) throw NotFoundDomainException.create('Games not found');
+
+    console.log('MY ALL GAMES', games.map(parseGameInfo));
+
+    return games.map(parseGameInfo);
+  }
+
   async findGameById(gameId: string, userId: string) {
     // TODO: move logic, or change it
     if (uuidRegex.test(String(gameId))) {
@@ -114,14 +123,6 @@ export class QuizService {
     console.log('QUESTION_TO_ANSWER FOR USER', questionToAnswer.id, userId);
 
     const isCorrect = questionToAnswer.correct_answers.includes(dto.answer);
-    console.log(
-      'IS_CORRECT',
-      isCorrect,
-      questionToAnswer.correct_answers,
-      dto.answer,
-      questionToAnswer.id,
-      userId,
-    );
 
     console.log('QNS LENGTH', questions.length);
     console.log('QNS', questions);
@@ -153,18 +154,8 @@ export class QuizService {
             ? parsedGame.firstPlayerProgress.score
             : parsedGame.secondPlayerProgress.score;
 
-        console.log('currentScore', currentScore);
-        console.log('opponentQNs.length', opponentQNs.length);
-        console.log('game ID', activeGame.id);
-        console.log('userId ', userId);
-
         correctPoints = currentScore > 0 ? 3 : 1;
         inCorrectPoints = currentScore > 0 ? 2 : 0;
-
-        console.log(
-          'ADDED POINTS',
-          isCorrect ? correctPoints : inCorrectPoints,
-        );
 
         await this.quizRepository.addAnswerToGame(
           userId,
@@ -172,8 +163,6 @@ export class QuizService {
           isCorrect ? correctPoints : inCorrectPoints,
           addedAt,
         );
-
-        // await this.quizRepository.finsihGame(activeGame.id);
       }
 
       if (opponentQNs.length === 0) {
@@ -185,7 +174,7 @@ export class QuizService {
           addedAt,
         );
 
-        await this.quizRepository.finsihGame(activeGame.id);
+        await this.quizRepository.finishGame(activeGame.id);
       }
 
       return {

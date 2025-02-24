@@ -127,7 +127,7 @@ export class QuizRepository {
       .execute();
   }
 
-  async finsihGame(gameId: number) {
+  async finishGame(gameId: number) {
     return await this.gamesOrm
       .createQueryBuilder('game')
       .update()
@@ -160,6 +160,16 @@ export class QuizRepository {
       .innerJoinAndSelect('guq.question', 'question')
       .where('game.id = :gameId', { gameId })
       .getOne();
+  }
+
+  async findGamesByUserId(userId: string): Promise<Game[] | null> {
+    return this.gamesOrm
+      .createQueryBuilder('game')
+      .innerJoinAndSelect('game.games_users_questions', 'guq')
+      .innerJoinAndSelect('guq.user', 'user')
+      .innerJoinAndSelect('guq.question', 'question')
+      .where('user.id = :userId', { userId })
+      .getMany();
   }
 
   async findGameById(gameId: number): Promise<Game | null> {

@@ -19,6 +19,12 @@ import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-fr
 export class PairGameQuizController {
   constructor(private readonly quizService: QuizService) {}
 
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  async getGames(@ExtractUserFromRequest() user: UserContextDto) {
+    return this.quizService.getMyGames(user.id);
+  }
+
   @Get('my-current')
   @UseGuards(JwtAuthGuard)
   async getCurrentGame(@ExtractUserFromRequest() user: UserContextDto) {

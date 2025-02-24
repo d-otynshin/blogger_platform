@@ -57,9 +57,6 @@ export const parseGameInfo = (gameData: any) => {
             : entry.points;
         }
 
-        console.log('GAME STATUS', gameData.status);
-        console.log('POINTS TO ADD', entry.points, pointsToAdd);
-
         playerProgresses[playerId].score += pointsToAdd;
       }
     }
