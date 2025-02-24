@@ -30,7 +30,7 @@ export const parseGameInfo = (gameData: any) => {
     }
 
     const detectCorrectAnswer = (points: number) => {
-      if (points === 3) return 'Incorrect';
+      if (points === 2) return 'Incorrect';
 
       return points ? 'Correct' : 'Incorrect';
     };
@@ -43,7 +43,7 @@ export const parseGameInfo = (gameData: any) => {
       });
 
       if (entry.points) {
-        const pointsToAdd = [4, 3].includes(Number(entry.points))
+        const pointsToAdd = [2, 3].includes(Number(entry.points))
           ? entry.points - 2
           : entry.points;
 
