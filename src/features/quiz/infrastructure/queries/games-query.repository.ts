@@ -37,7 +37,9 @@ export class GamesQueryRepository {
 
     const [games, totalCount] = await queryBuilder.getManyAndCount();
 
-    const items = games.map(GameViewDto.mapToView);
+    const items = games
+      .map(GameViewDto.mapToView)
+      .sort((a, b) => Number(a.id) - Number(b.id));
 
     console.log('GAMES VIEW DTOs', items);
 
