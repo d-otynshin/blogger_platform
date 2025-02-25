@@ -18,7 +18,7 @@ export class TestingController {
     // private gamesRepository: GamesRepository,
     private commentsRepository: CommentsRepository,
     private securityRepository: SecurityRepository,
-    private questionsRepository: QuestionsRepository,
+    // private questionsRepository: QuestionsRepository,
   ) {}
 
   @Delete('all-data')
@@ -32,7 +32,7 @@ export class TestingController {
       // await this.quizRepository.deleteAll(),
       await this.securityRepository.deleteAll(),
       await this.commentsRepository.deleteAll(),
-      await this.questionsRepository.deleteAll(),
+      // await this.questionsRepository.deleteAll(),
     ]);
   }
 }
