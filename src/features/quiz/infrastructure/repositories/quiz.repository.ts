@@ -305,7 +305,7 @@ export class QuizRepository {
 
     return {
       items,
-      pagesCount: Math.ceil(result.totalCount.totalCount / query.pageSize),
+      pagesCount: Math.ceil(result.totalCount / query.pageSize),
       page: query.pageSize,
       pageSize: query.pageSize,
       totalCount: result.totalCount,
