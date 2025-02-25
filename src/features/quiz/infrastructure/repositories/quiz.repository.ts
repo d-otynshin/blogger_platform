@@ -208,7 +208,7 @@ export class QuizRepository {
               GROUP BY game_id, user_id
           ) AS opponent 
           ON guq.game_id = opponent.game_id AND guq.user_id != opponent.user_id
-          GROUP BY guq.game_id, guq.user_id, opponent.total_score
+          GROUP BY guq.game_id, guq.user_id, u.login, opponent.total_score
       )
       SELECT tgs.user_id AS userId,
              tgs.userLogin AS login,
