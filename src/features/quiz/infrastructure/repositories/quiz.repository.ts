@@ -209,6 +209,7 @@ export class QuizRepository {
   }
 
   async addAnswerToGame(
+    gameId: number,
     userId: string,
     questionId: string,
     points: number,
@@ -220,6 +221,7 @@ export class QuizRepository {
       .set({ answered_at: addedAt, points })
       .where('question_id = :questionId', { questionId })
       .andWhere('user_id = :userId', { userId })
+      .andWhere('game_id = :gameId', { gameId })
       .execute();
   }
 
