@@ -190,6 +190,8 @@ export class QuizService {
       };
     }
 
+    console.log('POINTS', isCorrect ? 1 : 0);
+
     await this.quizRepository.addAnswerToGame(
       userId,
       questionToAnswer.id,
