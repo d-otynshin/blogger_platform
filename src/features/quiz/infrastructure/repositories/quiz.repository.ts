@@ -193,40 +193,7 @@ export class QuizRepository {
     const limit = query.pageSize; // Items per page
     const offset = (page - 1) * limit; // Calculate offset
 
-    const sortings = [];
-
-    // Valid sort columns to prevent SQL injection
-    const validSortColumns = [
-      'sumScore',
-      'gamesCount',
-      'avgScores',
-      'winsCount',
-      'lossesCount',
-      'drawsCount',
-    ];
-
-    // Convert sorting array ["avgScores desc", "sumScore desc"] → "avgScores DESC, sumScore DESC"
-    const additionalSorts = sortings
-      .map((sorting) => {
-        const [column, order] = sorting.split(' ');
-        if (
-          validSortColumns.includes(column) &&
-          (order.toUpperCase() === 'ASC' || order.toUpperCase() === 'DESC')
-        ) {
-          return `${column} ${order.toUpperCase()}`;
-        }
-        return null; // Ignore invalid sortings
-      })
-      .filter(Boolean) // Remove null values
-      .join(', '); // Join with commas
-
     const primarySort = `${query.sortBy} ${query.sortDirection}`;
-
-    // if (query.sortBy || additionalSorts) {
-    //   orderByClause = `${primarySort ? primarySort : ''}${primarySort && additionalSorts ? `, ` : ''}${additionalSorts}`;
-    // } else {
-    //   orderByClause = 'avgScores DESC, sumScore DESC';
-    // }
 
     const sortMappings: Record<string, string> = {
       avgScores: 'ROUND(AVG(tgs.total_score), 2)',
