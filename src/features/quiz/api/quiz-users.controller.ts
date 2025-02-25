@@ -16,7 +16,6 @@ export class QuizUsersController {
   }
 
   @Get('top')
-  @UseGuards(JwtAuthGuard)
   async getPlayers() {
     return this.quizService.getPlayersStats();
   }
