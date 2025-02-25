@@ -288,27 +288,30 @@ export class QuizRepository {
 
     const items = result.map((item: any) => {
       item = {
-        sumScore: item.sumScore,
-        gamesCount: item.gamesCount,
-        avgScores: item.avgScores,
-        winsCount: item.winsCount,
-        lossesCount: item.lossesCount,
-        drawsCount: item.drawsCount,
+        sumScore: Number(item.sumScore),
+        gamesCount: Number(item.gamesCount),
+        avgScores: Number(item.avgScores),
+        winsCount: Number(item.winsCount),
+        lossesCount: Number(item.lossesCount),
+        drawsCount: Number(item.drawsCount),
         player: {
           id: item.userId,
-          login: item.login,
+          login: item.userLogin,
         },
       };
 
       return item;
     });
 
+    console.log('RESULT', result);
+    console.log('QUERY', orderByClause);
+
     return {
-      items,
-      pagesCount: Math.ceil(result.totalCount / query.pageSize),
-      page: query.pageSize,
+      pagesCount: Math.ceil(result.totalItems / query.pageSize),
+      page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: result.totalCount,
+      totalCount: result.totalItems,
+      items,
     };
   }
 
