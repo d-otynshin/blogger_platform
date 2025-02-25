@@ -202,7 +202,7 @@ export class QuizRepository {
               END AS result
           FROM games_users_questions guq
           JOIN users u ON guq.user_id = u.id
-          JOIN (
+          LEFT JOIN (
               SELECT game_id, user_id, SUM(points) + SUM(bonus) AS total_score
               FROM games_users_questions
               GROUP BY game_id, user_id
