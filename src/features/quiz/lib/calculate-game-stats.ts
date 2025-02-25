@@ -36,7 +36,7 @@ export const calculateGameStats = (games: GameViewDto[], userId: string) => {
     gamesCount > 0 ? parseFloat(averageScore.toFixed(2)) : 0;
 
   return {
-    avgScore: formattedAvgScore,
+    avgScores: formattedAvgScore,
     sumScore: totalScore,
     gamesCount,
     winsCount,
