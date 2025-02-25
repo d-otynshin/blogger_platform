@@ -191,26 +191,22 @@ export class QuizRepository {
     return this.dataSource.query(`
       WITH temp_game_stats AS (
           SELECT 
-              guq.game_id as game_id, 
-              guq.user_id as user_id, 
-              SUM(guq.points) AS total_score,
+              guq.game_id, 
+              guq.user_id, 
+              SUM(guq.points) + SUM(guq.bonus) AS total_score,  -- Adjusted sum calculation
               CASE
-                WHEN SUM(guq.points) > (
-                    SELECT SUM(guq2.points) 
-                        FROM games_users_questions guq2 
-                        WHERE guq2.game_id = guq.game_id 
-                        AND guq2.user_id != guq.user_id
-                    ) THEN 1
-                WHEN SUM(guq.points) = (
-                    SELECT SUM(guq2.points) 
-                        FROM games_users_questions guq2 
-                        WHERE guq2.game_id = guq.game_id 
-                        AND guq2.user_id != guq.user_id
-                    ) THEN 0
-                ELSE -1
+                  WHEN SUM(guq.points) + SUM(guq.bonus) > opponent.total_score THEN 1
+                  WHEN SUM(guq.points) + SUM(guq.bonus) = opponent.total_score THEN 0
+                  ELSE -1
               END AS result
           FROM games_users_questions guq
-          GROUP BY guq.game_id, guq.user_id
+          JOIN (
+              SELECT game_id, user_id, SUM(points) + SUM(bonus) AS total_score
+              FROM games_users_questions
+              GROUP BY game_id, user_id
+          ) AS opponent 
+          ON guq.game_id = opponent.game_id AND guq.user_id != opponent.user_id
+          GROUP BY guq.game_id, guq.user_id, opponent.total_score
       )
       SELECT tgs.user_id, 
              SUM(tgs.total_score) AS sum_score, 
