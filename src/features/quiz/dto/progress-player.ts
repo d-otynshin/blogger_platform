@@ -3,7 +3,7 @@ enum AnswerStatus {
   INCORRECT = 'Incorrect',
 }
 
-type TPlayer = {
+export type TPlayer = {
   id: string;
   login: string;
 };

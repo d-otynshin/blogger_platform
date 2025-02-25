@@ -12,6 +12,12 @@ export class QuizUsersController {
   @Get('my-statistic')
   @UseGuards(JwtAuthGuard)
   async getGames(@ExtractUserFromRequest() user: UserContextDto) {
-    return this.quizService.getMyStatistic(user.id);
+    return this.quizService.getMyStats(user.id);
+  }
+
+  @Get('top')
+  @UseGuards(JwtAuthGuard)
+  async getPlayers() {
+    return this.quizService.getPlayersStats();
   }
 }

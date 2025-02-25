@@ -175,6 +175,15 @@ export class QuizRepository {
       .getMany();
   }
 
+  async findAllGames(): Promise<Game[] | null> {
+    return this.gamesOrm
+      .createQueryBuilder('game')
+      .innerJoinAndSelect('game.games_users_questions', 'guq')
+      .innerJoinAndSelect('guq.user', 'user')
+      .innerJoinAndSelect('guq.question', 'question')
+      .getMany();
+  }
+
   async findGameById(gameId: number): Promise<Game | null> {
     return this.gamesOrm
       .createQueryBuilder('game')

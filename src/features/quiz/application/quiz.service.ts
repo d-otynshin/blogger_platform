@@ -9,7 +9,7 @@ import {
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
 import { GameViewDto } from '../dto/game-view.dto';
-import { calculateGameStats } from '../lib/calculate-game-stats';
+import { calculateGameStats, calculateStatsForAllUsers } from '../lib/calculate-game-stats';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -36,12 +36,29 @@ export class QuizService {
     return games.map(GameViewDto.mapToView);
   }
 
-  async getMyStatistic(userId: string) {
+  async getAllGames() {
+    const games = await this.quizRepository.findAllGames();
+    if (!games) throw NotFoundDomainException.create('Games not found');
+
+    console.log('ALL GAMES', games.map(GameViewDto.mapToView));
+
+    return games.map(GameViewDto.mapToView);
+  }
+
+  async getMyStats(userId: string) {
     const games = await this.getMyGames(userId);
 
-    console.log('MY STATISTICS', calculateGameStats(games, userId));
+    console.log('MY STATS', calculateGameStats(games, userId));
 
     return calculateGameStats(games, userId);
+  }
+
+  async getPlayersStats() {
+    const games = await this.getAllGames();
+
+    console.log('PLAYERS STATS', calculateStatsForAllUsers(games));
+
+    return calculateStatsForAllUsers(games);
   }
 
   async findGameById(gameId: string, userId: string) {
