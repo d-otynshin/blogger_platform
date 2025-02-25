@@ -66,11 +66,7 @@ export class QuizService {
 
   async findGameById(gameId: string, userId: string) {
     // TODO: move logic, or change it
-    if (uuidRegex.test(String(gameId))) {
-      throw NotFoundDomainException.create('Invalid game id');
-    }
-
-    if (!Number(gameId)) {
+    if (!uuidRegex.test(String(gameId))) {
       throw BadRequestDomainException.create('Invalid game id');
     }
 
@@ -85,8 +81,6 @@ export class QuizService {
         'User is not participating in this game.',
       );
     }
-
-    console.log('GAME BY ID', parseGameInfo(activeGame));
 
     return parseGameInfo(activeGame);
   }
