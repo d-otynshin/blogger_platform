@@ -311,7 +311,7 @@ export class QuizRepository {
     console.log('QUERY', orderByClause);
 
     return {
-      pagesCount: Math.ceil(result.totalItems / query.pageSize),
+      pagesCount: Math.ceil(totalCount / query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: totalCount,
