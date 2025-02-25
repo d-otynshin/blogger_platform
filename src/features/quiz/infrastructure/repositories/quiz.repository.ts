@@ -276,7 +276,7 @@ export class QuizRepository {
              ROUND(AVG(tgs.total_score), 2) AS "avgScores",             
              SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) AS "winsCount",
              SUM(CASE WHEN result = -1 THEN 1 ELSE 0 END) AS "lossesCount",
-             SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS "drawsCount"
+             SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS "drawsCount",
              COUNT(*) OVER() AS "totalItems"
       FROM temp_game_stats tgs
       GROUP BY tgs.user_id, tgs.userLogin
