@@ -6,7 +6,7 @@ import { UserContextDto } from '../../accounts/dto/auth.dto';
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
 
 @Controller('pair-game-quiz/users')
-export class PairGameQuizController {
+export class QuizUsersController {
   constructor(private quizService: QuizService) {}
 
   @Get('my-statistic')

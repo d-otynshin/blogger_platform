@@ -9,6 +9,7 @@ import { GamesQueryRepository } from './infrastructure/queries/games-query.repos
 import { QuestionsQueryRepository } from './infrastructure/queries/questions-query.repository';
 
 /* Controllers */
+import { QuizUsersController } from './api/quiz-users.controller';
 import { QuizAdminController } from './api/quiz-admin.controller';
 import { PairGameQuizController } from './api/pair-game-quiz.controller';
 
@@ -23,7 +24,11 @@ import { GameUserQuestion } from './domain/game-user-queston.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Question, Game, GameUserQuestion])],
-  controllers: [QuizAdminController, PairGameQuizController],
+  controllers: [
+    QuizUsersController,
+    QuizAdminController,
+    PairGameQuizController,
+  ],
   providers: [
     QuizService,
     QuestionsService,
