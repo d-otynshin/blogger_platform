@@ -121,12 +121,13 @@ export class QuizService {
       (qnA: any, qnB: any) => qnA.created_at - qnB.created_at,
     )[0];
 
-    console.log('QUESTION_TO_ANSWER FOR USER', questionToAnswer.id, userId);
-
     const isCorrect = questionToAnswer.correct_answers.includes(dto.answer);
 
-    console.log('QNS LENGTH', questions.length);
-    console.log('QNS', questions);
+    console.log('IS_CORRECT', isCorrect);
+    console.log('USER_ID', userId);
+    console.log('QUESTION_ID', questionToAnswer.id, userId);
+    console.log('CORRECT_ANSWERS', questionToAnswer.correct_answers);
+    console.log('USER_ANSWER', dto.answer);
 
     const addedAt = new Date();
 
