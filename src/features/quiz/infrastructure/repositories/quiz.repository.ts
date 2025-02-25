@@ -204,7 +204,18 @@ export class QuizRepository {
       drawsCount: 'SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END)',
     };
 
-    const sortByArray = [...query.sort, primarySort];
+    const getSortByArray = (sortArray, primarySort) => {
+      let sortByArray: any;
+      if (Array.isArray(sortArray)) {
+        sortByArray = [...sortArray, primarySort];
+      } else {
+        sortByArray = [sortArray];
+      }
+
+      return sortByArray;
+    };
+
+    const sortByArray = getSortByArray(query.sort, primarySort);
 
     console.log(sortByArray);
 
