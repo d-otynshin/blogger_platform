@@ -286,29 +286,30 @@ export class QuizRepository {
       [limit, offset],
     );
 
-    let totalCount = 0;
+    let totalCount: number;
 
     const items = result.map((item: any) => {
       item = {
-        sumScore: Number(item.sumScore),
         gamesCount: Number(item.gamesCount),
-        avgScores: Number(item.avgScores),
         winsCount: Number(item.winsCount),
         lossesCount: Number(item.lossesCount),
         drawsCount: Number(item.drawsCount),
+        sumScore: Number(item.sumScore),
+        avgScores: Number(item.avgScores),
         player: {
           id: item.userId,
           login: item.userLogin,
         },
       };
 
-      totalCount = Number(item.totalItems);
+      totalCount = item.totalItems;
 
       return item;
     });
 
     console.log('RESULT', result);
     console.log('QUERY', orderByClause);
+    console.log('TOTAL ITEMS', totalCount);
 
     return {
       pagesCount: Math.ceil(totalCount / query.pageSize),
