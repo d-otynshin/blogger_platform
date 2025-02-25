@@ -9,6 +9,7 @@ import {
   NotFoundDomainException,
 } from '../../../../core/exceptions/domain-exceptions';
 import { RecordAnswerDto } from '../../dto/answer.dto';
+import { PlayersQueryParams } from '../../lib/helpers';
 
 @Injectable()
 export class QuizRepository {
@@ -187,8 +188,49 @@ export class QuizRepository {
       .getMany();
   }
 
-  async getStats() {
-    return this.dataSource.query(`
+  async getStats(query: PlayersQueryParams) {
+    const page = query.pageNumber; // Page number
+    const limit = query.pageSize; // Items per page
+    const offset = (page - 1) * limit; // Calculate offset
+
+    const sortings = [];
+
+    // Valid sort columns to prevent SQL injection
+    const validSortColumns = [
+      'sumScore',
+      'gamesCount',
+      'avgScores',
+      'winsCount',
+      'lossesCount',
+      'drawsCount',
+    ];
+
+    // Convert sorting array ["avgScores desc", "sumScore desc"] → "avgScores DESC, sumScore DESC"
+    const additionalSorts = sortings
+      .map((sorting) => {
+        const [column, order] = sorting.split(' ');
+        if (
+          validSortColumns.includes(column) &&
+          (order.toUpperCase() === 'ASC' || order.toUpperCase() === 'DESC')
+        ) {
+          return `${column} ${order.toUpperCase()}`;
+        }
+        return null; // Ignore invalid sortings
+      })
+      .filter(Boolean) // Remove null values
+      .join(', '); // Join with commas
+
+    let orderByClause: string;
+    const primarySort = `${query.sortBy} ${query.sortDirection}`;
+
+    if (query.sortBy || additionalSorts) {
+      orderByClause = `ORDER BY ${primarySort ? primarySort : ''}${primarySort && additionalSorts ? `, ` : ''}${additionalSorts}`;
+    } else {
+      orderByClause = 'ORDER BY avgScores DESC, sumScore DESC';
+    }
+
+    const result = await this.dataSource.query(
+      `
       WITH temp_game_stats AS (
           SELECT 
               guq.game_id,
@@ -219,8 +261,16 @@ export class QuizRepository {
              SUM(CASE WHEN result = -1 THEN 1 ELSE 0 END) AS "lossesCount",
              SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS "drawsCount"
       FROM temp_game_stats tgs
-      GROUP BY tgs.user_id, tgs.userLogin;
-    `);
+      GROUP BY tgs.user_id, tgs.userLogin
+      ${orderByClause ? `ORDER BY ${orderByClause}` : ''}
+      LIMIT $1 OFFSET $2;;
+    `,
+      [limit, offset],
+    );
+
+    console.log(result);
+
+    return result;
   }
 
   async findGameById(gameId: string): Promise<Game | null> {

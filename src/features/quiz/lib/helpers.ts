@@ -35,4 +35,5 @@ export class GetGamesQueryParams extends BaseSortablePaginationParams<GamesSortB
 
 export class PlayersQueryParams extends BaseSortablePaginationParams<PlayersSortBy> {
   sortBy = PlayersSortBy.AVG_SCORES;
+  sort: string[];
 }
