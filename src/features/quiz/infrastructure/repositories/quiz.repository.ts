@@ -246,7 +246,7 @@ export class QuizRepository {
       })
       .join(', ');
 
-    return this.dataSource.query(
+    const result = await this.dataSource.query(
       `
       WITH temp_game_stats AS (
           SELECT 
@@ -277,6 +277,7 @@ export class QuizRepository {
              SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) AS "winsCount",
              SUM(CASE WHEN result = -1 THEN 1 ELSE 0 END) AS "lossesCount",
              SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS "drawsCount"
+             COUNT(*) OVER() AS "totalItems"
       FROM temp_game_stats tgs
       GROUP BY tgs.user_id, tgs.userLogin
       ${orderByClause ? `ORDER BY ${orderByClause}` : ''}
@@ -284,6 +285,31 @@ export class QuizRepository {
     `,
       [limit, offset],
     );
+
+    const items = result.map((item: any) => {
+      item = {
+        sumScore: item.sumScore,
+        gamesCount: item.gamesCount,
+        avgScores: item.avgScores,
+        winsCount: item.winsCount,
+        lossesCount: item.lossesCount,
+        drawsCount: item.drawsCount,
+        player: {
+          id: item.userId,
+          login: item.login,
+        },
+      };
+
+      return item;
+    });
+
+    return {
+      items,
+      pagesCount: Math.ceil(result.totalCount.totalCount / query.pageSize),
+      page: query.pageSize,
+      pageSize: query.pageSize,
+      totalCount: result.totalCount,
+    };
   }
 
   async findGameById(gameId: string): Promise<Game | null> {
