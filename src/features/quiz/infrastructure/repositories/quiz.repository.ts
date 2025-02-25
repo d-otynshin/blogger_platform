@@ -210,9 +210,9 @@ export class QuizRepository {
           ON guq.game_id = opponent.game_id AND guq.user_id != opponent.user_id
           GROUP BY guq.game_id, guq.user_id, u.login, opponent.total_score
       )
-      SELECT tgs.user_id AS userId,
-             tgs.userLogin AS login,
-             SUM(tgs.total_score) AS sumScore, 
+      SELECT tgs.user_id AS "userId",
+             tgs.userLogin AS "userLogin",
+             SUM(tgs.total_score) AS "sumScore", 
              COUNT(tgs.game_id) AS gamesCount,
              ROUND(AVG(tgs.total_score), 2) AS avgScores,             
              SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) AS winsCount,
