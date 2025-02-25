@@ -192,7 +192,7 @@ export class QuizRepository {
       WITH temp_game_stats AS (
           SELECT 
               guq.game_id,
-              u.login,
+              u.login as userLogin,
               guq.user_id, 
               SUM(guq.points) + SUM(guq.bonus) AS total_score,  -- Adjusted sum calculation
               CASE
@@ -211,7 +211,7 @@ export class QuizRepository {
           GROUP BY guq.game_id, guq.user_id, opponent.total_score
       )
       SELECT tgs.user_id AS userId,
-             u.login AS login,
+             tgs.userLogin AS login,
              SUM(tgs.total_score) AS sumScore, 
              COUNT(tgs.game_id) AS gamesCount,
              ROUND(AVG(tgs.total_score), 2) AS avgScores,             
@@ -219,7 +219,7 @@ export class QuizRepository {
              SUM(CASE WHEN result = -1 THEN 1 ELSE 0 END) AS lossesCount,
              SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS drawsCount
       FROM temp_game_stats tgs
-      GROUP BY tgs.user_id;
+      GROUP BY tgs.user_id, tgs.userLogin;
     `);
   }
 
