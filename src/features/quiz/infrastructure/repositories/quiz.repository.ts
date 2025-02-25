@@ -8,6 +8,7 @@ import {
   ForbiddenDomainException,
   NotFoundDomainException,
 } from '../../../../core/exceptions/domain-exceptions';
+import { RecordAnswerDto } from '../../dto/answer.dto';
 
 @Injectable()
 export class QuizRepository {
@@ -188,18 +189,32 @@ export class QuizRepository {
 
   async getStats() {
     return this.dataSource.query(`
-      SELECT 
-        guq.user_id AS "userId",
-        ROUND(AVG(guq.score), 2) AS "averageScore",
-        SUM(guq.score) AS "totalScore",
-        COUNT(guq.id) AS "gamesCount",
-        SUM(CASE WHEN guq.score > opponent.score THEN 1 ELSE 0 END) AS "winsCount",
-        SUM(CASE WHEN guq.score < opponent.score THEN 1 ELSE 0 END) AS "lossesCount",
-        SUM(CASE WHEN guq.score = opponent.score THEN 1 ELSE 0 END) AS "drawsCount"
-      FROM games_users_questions guq
-      INNER JOIN users player ON guq.user_id = player.id
-      INNER JOIN games_users_questions opponent ON guq.game_id = opponent.game_id AND guq.user_id <> opponent.user_id
-      GROUP BY guq.user_id;
+      WITH temp_game_stats AS (
+          SELECT 
+              guq.game_id, 
+              guq.user_id, 
+              SUM(guq.points) AS total_score,
+              COUNT(*) AS games_played,
+              SUM(
+                  CASE 
+                      WHEN guq.points > (
+                          SELECT SUM(guq2.points) 
+                          FROM games_users_questions guq2 
+                          WHERE guq2.game_id = guq.game_id 
+                          AND guq2.user_id != guq.user_id
+                      ) THEN 1
+                      ELSE 0
+                  END
+              ) AS wins
+          FROM games_users_questions guq
+          GROUP BY guq.game_id, guq.user_id
+      )
+      SELECT tgs.user_id, 
+             SUM(tgs.total_score) AS total_score, 
+             COUNT(tgs.games_played) AS games_played, 
+             SUM(tgs.wins) AS total_wins
+      FROM temp_game_stats tgs
+      GROUP BY tgs.user_id;
     `);
   }
 
@@ -236,20 +251,19 @@ export class QuizRepository {
     return guqs.map((guq) => guq.question);
   }
 
-  async addAnswerToGame(
-    gameId: number,
-    userId: string,
-    questionId: string,
-    points: number,
-    addedAt: Date,
-  ): Promise<void> {
+  async recordAnswer(dto: RecordAnswerDto): Promise<void> {
     await this.gameUserQuestionsOrm
       .createQueryBuilder()
       .update()
-      .set({ answered_at: addedAt, points })
-      .where('question_id = :questionId', { questionId })
-      .andWhere('user_id = :userId', { userId })
-      .andWhere('game_id = :gameId', { gameId })
+      .set({
+        answered_at: dto.addedAt,
+        is_correct: dto.isCorrect,
+        points: dto.points,
+        bonus: dto.bonus,
+      })
+      .where('question_id = :questionId', { questionId: dto.questionId })
+      .andWhere('user_id = :userId', { userId: dto.userId })
+      .andWhere('game_id = :gameId', { gameId: dto.gameId })
       .execute();
   }
 

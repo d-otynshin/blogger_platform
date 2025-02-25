@@ -1,7 +1,7 @@
 import { Question } from '../domain/question.entity';
 
 export class QuestionViewDto {
-  id: string;
+  id: number;
   body: string;
   correctAnswers: string[];
   published: boolean;

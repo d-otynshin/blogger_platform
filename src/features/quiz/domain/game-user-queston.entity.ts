@@ -8,15 +8,15 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Question } from './question.entity';
 import { Game } from './game.entity';
+import { Question } from './question.entity';
 import { User } from '../../accounts/domain/user.entity';
 
 @Entity('games_users_questions')
 @Unique(['game', 'user', 'question'])
 export class GameUserQuestion {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  public id: number;
 
   @ManyToOne(() => Game)
   @JoinColumn({ name: 'game_id' })
@@ -37,5 +37,11 @@ export class GameUserQuestion {
   answered_at: Date | null;
 
   @Column({ nullable: true })
+  is_correct: boolean;
+
+  @Column({ nullable: true })
   points: number | null;
+
+  @Column({ nullable: true })
+  bonus: number | null;
 }

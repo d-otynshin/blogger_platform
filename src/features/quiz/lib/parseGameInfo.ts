@@ -1,4 +1,16 @@
 import { GameStatus } from '../domain/game.entity';
+import { TAnswer, TPlayer } from '../dto/progress-player';
+import { Question } from '../domain/question.entity';
+
+interface GameInfo {
+  user: TPlayer;
+  question: Question;
+  answered_at: Date;
+  is_correct: boolean;
+  bonus: number;
+  points: number;
+  answers: TAnswer[];
+}
 
 export const parseGameInfo = (gameData: any) => {
   const playerProgresses = {};
@@ -9,7 +21,7 @@ export const parseGameInfo = (gameData: any) => {
     (a, b) => a.created_at - b.created_at,
   );
 
-  guqs.forEach((entry: any) => {
+  guqs.forEach((entry: GameInfo) => {
     const playerId = entry.user.id;
 
     if (!playerProgresses[playerId]) {
@@ -31,31 +43,18 @@ export const parseGameInfo = (gameData: any) => {
       });
     }
 
-    const detectCorrectAnswer = (points: number) => {
-      if (points === 2) return 'Incorrect';
-
-      return points ? 'Correct' : 'Incorrect';
-    };
-
     if (entry.answered_at) {
       playerProgresses[playerId].answers.push({
         questionId: entry.question.id,
         addedAt: entry.answered_at,
-        answerStatus: detectCorrectAnswer(entry.points),
+        answerStatus: entry.is_correct ? 'Correct' : 'Incorrect',
       });
 
       if (entry.points) {
-        let pointsToAdd: number;
-
-        if (gameData.status === GameStatus.FINISHED) {
-          pointsToAdd = [3, 2].includes(Number(entry.points))
-            ? entry.points - 1
+        const pointsToAdd =
+          gameData.status === GameStatus.FINISHED
+            ? entry.points + entry.bonus
             : entry.points;
-        } else {
-          pointsToAdd = [3, 2].includes(Number(entry.points))
-            ? entry.points - 2
-            : entry.points;
-        }
 
         playerProgresses[playerId].score += pointsToAdd;
       }
@@ -79,9 +78,11 @@ export const parseGameInfo = (gameData: any) => {
     gameViewDto.questions = null;
   }
 
-  Object.values(playerProgresses).forEach((entry: any, index) => {
+  Object.values(playerProgresses).forEach((entry: GameInfo, index) => {
     // SORTED ANSWERS
-    const sortedAnswers = entry.answers.sort((a, b) => a.addedAt - b.addedAt);
+    const sortedAnswers = entry.answers.sort(
+      (a, b) => Number(a.addedAt) - Number(b.addedAt),
+    );
     const modifiedEntry = {
       ...entry,
       answers: sortedAnswers,

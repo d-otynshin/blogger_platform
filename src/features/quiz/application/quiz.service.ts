@@ -9,7 +9,7 @@ import {
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
 import { GameViewDto } from '../dto/game-view.dto';
-import { calculateGameStats, calculateStatsForAllUsers } from '../lib/calculate-game-stats';
+import { calculateGameStats } from '../lib/calculate-game-stats';
 import { PlayersQueryParams } from '../lib/helpers';
 
 const uuidRegex =
@@ -179,9 +179,6 @@ export class QuizService {
         opponentPlayerId,
       );
 
-      let correctPoints: number;
-      let inCorrectPoints: number;
-
       console.log('OPPONENTS QNS LENGTH', opponentQNs.length, opponentPlayerId);
 
       if (opponentQNs.length !== 0) {
@@ -191,27 +188,30 @@ export class QuizService {
             ? parsedGame.firstPlayerProgress.score
             : parsedGame.secondPlayerProgress.score;
 
-        correctPoints = currentScore > 0 ? 3 : 1;
-        inCorrectPoints = currentScore > 0 ? 2 : 0;
+        const hasBonus = currentScore > 0;
 
-        await this.quizRepository.addAnswerToGame(
-          activeGame.id,
-          userId,
-          questionToAnswer.id,
-          isCorrect ? correctPoints : inCorrectPoints,
-          addedAt,
-        );
+        await this.quizRepository.recordAnswer({
+          userId: userId,
+          gameId: activeGame.id,
+          questionId: questionToAnswer.id,
+          addedAt: addedAt,
+          isCorrect: isCorrect,
+          bonus: hasBonus ? 1 : 0,
+          points: isCorrect ? 1 : 0,
+        });
       }
 
       if (opponentQNs.length === 0) {
         // finish game
-        await this.quizRepository.addAnswerToGame(
-          activeGame.id,
-          userId,
-          questionToAnswer.id,
-          isCorrect ? 1 : 0,
-          addedAt,
-        );
+        await this.quizRepository.recordAnswer({
+          userId: userId,
+          gameId: activeGame.id,
+          questionId: questionToAnswer.id,
+          isCorrect: isCorrect,
+          addedAt: addedAt,
+          bonus: 0,
+          points: isCorrect ? 1 : 0,
+        });
 
         await this.quizRepository.finishGame(activeGame.id);
       }
@@ -225,13 +225,15 @@ export class QuizService {
 
     console.log('POINTS', isCorrect ? 1 : 0);
 
-    await this.quizRepository.addAnswerToGame(
-      activeGame.id,
-      userId,
-      questionToAnswer.id,
-      isCorrect ? 1 : 0,
-      addedAt,
-    );
+    await this.quizRepository.recordAnswer({
+      gameId: activeGame.id,
+      userId: userId,
+      questionId: questionToAnswer.id,
+      isCorrect: isCorrect,
+      addedAt: addedAt,
+      bonus: 0,
+      points: isCorrect ? 1 : 0,
+    });
 
     return {
       questionId: questionToAnswer.id,

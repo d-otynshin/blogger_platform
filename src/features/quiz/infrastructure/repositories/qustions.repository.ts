@@ -26,10 +26,6 @@ export class QuestionsRepository {
     return deleteResult.affected > 0;
   }
 
-  async findById(id: string) {
-    return this.questionsTypeOrmRepository.findOne({ where: { id } });
-  }
-
   async updateInstance(questionId: string, dto: CreateQuestionDto) {
     const updateResult = await this.questionsTypeOrmRepository
       .createQueryBuilder()

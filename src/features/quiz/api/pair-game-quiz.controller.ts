@@ -2,11 +2,12 @@ import {
   Get,
   Post,
   Body,
+  Query,
   Param,
   UseGuards,
   Controller,
   HttpCode,
-  HttpStatus, Query
+  HttpStatus,
 } from '@nestjs/common';
 
 import { GameDto } from '../dto/game.dto';

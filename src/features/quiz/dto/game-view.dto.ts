@@ -45,33 +45,18 @@ export class GameViewDto {
         });
       }
 
-      const detectCorrectAnswer = (points: number) => {
-        if (points === 2) return 'Incorrect';
-
-        return points ? 'Correct' : 'Incorrect';
-      };
-
       if (entry.answered_at) {
-        console.log('ADDED_AT', entry.answered_at);
-        console.log('GAME_ID', gameData.id);
         playerProgresses[playerId].answers.push({
           addedAt: entry.answered_at,
-          answerStatus: detectCorrectAnswer(entry.points),
+          answerStatus: entry.is_correct ? 'Correct' : 'Incorrect',
           questionId: entry.question.id,
         });
 
-        if (entry.points) {
-          let pointsToAdd: number;
-
-          if (gameData.status === GameStatus.FINISHED) {
-            pointsToAdd = [3, 2].includes(Number(entry.points))
-              ? entry.points - 1
+        if (entry.is_correct) {
+          const pointsToAdd =
+            gameData.status === GameStatus.FINISHED
+              ? entry.points + entry.bonus
               : entry.points;
-          } else {
-            pointsToAdd = [3, 2].includes(Number(entry.points))
-              ? entry.points - 2
-              : entry.points;
-          }
 
           playerProgresses[playerId].score += pointsToAdd;
         }
