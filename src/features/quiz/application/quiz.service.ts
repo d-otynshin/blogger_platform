@@ -9,6 +9,7 @@ import {
   NotFoundDomainException,
 } from '../../../core/exceptions/domain-exceptions';
 import { GameViewDto } from '../dto/game-view.dto';
+import { calculateGameStats } from '../lib/calculate-game-stats';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -33,6 +34,14 @@ export class QuizService {
     console.log('MY ALL GAMES', games.map(GameViewDto.mapToView));
 
     return games.map(GameViewDto.mapToView);
+  }
+
+  async getMyStatistic(userId: string) {
+    const games = await this.getMyGames(userId);
+
+    console.log('MY STATISTICS', calculateGameStats(games, userId));
+
+    return calculateGameStats(games, userId);
   }
 
   async findGameById(gameId: string, userId: string) {
