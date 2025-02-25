@@ -202,7 +202,7 @@ export class QuizRepository {
                         WHERE guq2.game_id = guq.game_id 
                         AND guq2.user_id != guq.user_id
                     ) THEN 1
-                WHEN guq.points == (
+                WHEN guq.points = (
                     SELECT SUM(guq2.points) 
                         FROM games_users_questions guq2 
                         WHERE guq2.game_id = guq.game_id 
