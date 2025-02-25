@@ -194,18 +194,22 @@ export class QuizRepository {
               guq.game_id, 
               guq.user_id, 
               SUM(guq.points) AS total_score,
-              COUNT(*) AS games_played,
-              SUM(
-                  CASE 
-                      WHEN guq.points > (
-                          SELECT SUM(guq2.points) 
-                          FROM games_users_questions guq2 
-                          WHERE guq2.game_id = guq.game_id 
-                          AND guq2.user_id != guq.user_id
-                      ) THEN 1
-                      ELSE 0
-                  END
-              ) AS wins
+              COUNT(DISTINCT guq.game_id) AS games_played,
+              CASE
+                WHEN guq.points > (
+                    SELECT SUM(guq2.points) 
+                        FROM games_users_questions guq2 
+                        WHERE guq2.game_id = guq.game_id 
+                        AND guq2.user_id != guq.user_id
+                    ) THEN 1
+                WHEN guq.points == (
+                    SELECT SUM(guq2.points) 
+                        FROM games_users_questions guq2 
+                        WHERE guq2.game_id = guq.game_id 
+                        AND guq2.user_id != guq.user_id
+                    ) THEN 0
+                ELSE -1
+              END AS result
           FROM games_users_questions guq
           GROUP BY guq.game_id, guq.user_id
       )
