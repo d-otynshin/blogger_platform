@@ -237,7 +237,7 @@ export class QuizRepository {
       drawsCount: 'SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END)',
     };
 
-    const sortByArray = [primarySort, ...query.sort];
+    const sortByArray = [...query.sort, primarySort];
 
     const orderByClause = sortByArray
       .map((sortItem) => {
@@ -286,6 +286,8 @@ export class QuizRepository {
       [limit, offset],
     );
 
+    let totalCount = 0;
+
     const items = result.map((item: any) => {
       item = {
         sumScore: Number(item.sumScore),
@@ -300,6 +302,8 @@ export class QuizRepository {
         },
       };
 
+      totalCount = Number(item.totalItems);
+
       return item;
     });
 
@@ -310,7 +314,7 @@ export class QuizRepository {
       pagesCount: Math.ceil(result.totalItems / query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: result.totalItems,
+      totalCount: totalCount,
       items,
     };
   }
