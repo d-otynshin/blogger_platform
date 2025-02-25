@@ -206,9 +206,12 @@ export class QuizRepository {
 
     const sortByArray = [...query.sort, primarySort];
 
+    console.log(sortByArray);
+
     const orderByClause = sortByArray
       .map((sortItem) => {
         const [column, order] = sortItem.split(' ');
+        console.log(column, order);
         return `${sortMappings[column] || column} ${order.toUpperCase()}`;
       })
       .join(', ');
