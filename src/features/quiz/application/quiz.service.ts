@@ -59,7 +59,7 @@ export class QuizService {
 
     console.log('QUERY', query);
 
-    const stats = await this.quizRepository.getStats();
+    const stats = await this.quizRepository.getStats(query);
 
     console.log('PLAYERS STATS', stats);
 
