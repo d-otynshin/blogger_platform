@@ -256,6 +256,8 @@ export class QuizRepository {
     let totalCount: number;
 
     const items = result.map((item: any) => {
+      totalCount = item.totalItems;
+
       item = {
         gamesCount: Number(item.gamesCount),
         winsCount: Number(item.winsCount),
@@ -268,8 +270,6 @@ export class QuizRepository {
           login: item.userLogin,
         },
       };
-
-      totalCount = item.totalItems;
 
       return item;
     });
