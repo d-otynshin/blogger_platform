@@ -126,11 +126,14 @@ export class QuizService {
     console.log('GAME_ID', activeGame.id);
     console.log('IS_CORRECT', isCorrect);
     console.log('USER_ID', userId);
-    console.log('QUESTION_ID', questionToAnswer.id, userId);
+    console.log('QUESTION_ID', questionToAnswer.id);
     console.log('CORRECT_ANSWERS', questionToAnswer.correct_answers);
     console.log('USER_ANSWER', dto.answer);
-
+    console.log('------------------------');
     const addedAt = new Date();
+
+    console.log('QNS_LENGTH', questions.length);
+    console.log('ADDED_AT', addedAt);
 
     if (questions.length === 1) {
       const parsedGame = parseGameInfo(activeGame);
