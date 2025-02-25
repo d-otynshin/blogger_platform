@@ -191,7 +191,8 @@ export class QuizRepository {
     return this.dataSource.query(`
       WITH temp_game_stats AS (
           SELECT 
-              guq.game_id, 
+              guq.game_id,
+              u.login,
               guq.user_id, 
               SUM(guq.points) + SUM(guq.bonus) AS total_score,  -- Adjusted sum calculation
               CASE
@@ -200,6 +201,7 @@ export class QuizRepository {
                   ELSE -1
               END AS result
           FROM games_users_questions guq
+          JOIN users u ON guq.user_id = u.id
           JOIN (
               SELECT game_id, user_id, SUM(points) + SUM(bonus) AS total_score
               FROM games_users_questions
@@ -208,12 +210,14 @@ export class QuizRepository {
           ON guq.game_id = opponent.game_id AND guq.user_id != opponent.user_id
           GROUP BY guq.game_id, guq.user_id, opponent.total_score
       )
-      SELECT tgs.user_id, 
-             SUM(tgs.total_score) AS sum_score, 
-             COUNT(tgs.game_id) AS games_played,             
-             SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) AS wins,
-             SUM(CASE WHEN result = -1 THEN 1 ELSE 0 END) AS losses,
-             SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS draws
+      SELECT tgs.user_id AS userId,
+             u.login AS login,
+             SUM(tgs.total_score) AS sumScore, 
+             COUNT(tgs.game_id) AS gamesCount,
+             ROUND(AVG(tgs.total_score), 2) AS avgScores,             
+             SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) AS winsCount,
+             SUM(CASE WHEN result = -1 THEN 1 ELSE 0 END) AS lossesCount,
+             SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS drawsCount
       FROM temp_game_stats tgs
       GROUP BY tgs.user_id;
     `);
