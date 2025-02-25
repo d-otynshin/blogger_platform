@@ -123,6 +123,7 @@ export class QuizService {
 
     const isCorrect = questionToAnswer.correct_answers.includes(dto.answer);
 
+    console.log('GAME_ID', activeGame.id);
     console.log('IS_CORRECT', isCorrect);
     console.log('USER_ID', userId);
     console.log('QUESTION_ID', questionToAnswer.id, userId);
