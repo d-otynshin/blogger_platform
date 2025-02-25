@@ -315,7 +315,7 @@ export class QuizRepository {
       pagesCount: Math.ceil(totalCount / query.pageSize),
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: totalCount,
+      totalCount: Number(totalCount),
       items,
     };
   }
