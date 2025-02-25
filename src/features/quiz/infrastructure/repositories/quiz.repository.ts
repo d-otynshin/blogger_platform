@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game, GameStatus } from '../../domain/game.entity';
@@ -20,6 +20,8 @@ export class QuizRepository {
 
     @InjectRepository(GameUserQuestion)
     private gameUserQuestionsOrm: Repository<GameUserQuestion>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async createGameInstance(): Promise<Game> {
@@ -182,6 +184,23 @@ export class QuizRepository {
       .innerJoinAndSelect('guq.user', 'user')
       .innerJoinAndSelect('guq.question', 'question')
       .getMany();
+  }
+
+  async getStats() {
+    return this.dataSource.query(`
+      SELECT 
+        guq.user_id AS "userId",
+        ROUND(AVG(guq.score), 2) AS "averageScore",
+        SUM(guq.score) AS "totalScore",
+        COUNT(guq.id) AS "gamesCount",
+        SUM(CASE WHEN guq.score > opponent.score THEN 1 ELSE 0 END) AS "winsCount",
+        SUM(CASE WHEN guq.score < opponent.score THEN 1 ELSE 0 END) AS "lossesCount",
+        SUM(CASE WHEN guq.score = opponent.score THEN 1 ELSE 0 END) AS "drawsCount"
+      FROM games_users_questions guq
+      INNER JOIN users player ON guq.user_id = player.id
+      INNER JOIN games_users_questions opponent ON guq.game_id = opponent.game_id AND guq.user_id <> opponent.user_id
+      GROUP BY guq.user_id;
+    `);
   }
 
   async findGameById(gameId: number): Promise<Game | null> {

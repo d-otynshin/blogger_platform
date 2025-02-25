@@ -1,9 +1,10 @@
-import { Get, UseGuards, Controller } from '@nestjs/common';
+import { Get, UseGuards, Controller, Query } from '@nestjs/common';
 
 import { QuizService } from '../application/quiz.service';
 import { JwtAuthGuard } from '../../accounts/guards/bearer/jwt-auth.guard';
 import { UserContextDto } from '../../accounts/dto/auth.dto';
 import { ExtractUserFromRequest } from '../../../core/decorators/extract-user-from-request';
+import { PlayersQueryParams } from '../lib/helpers';
 
 @Controller('pair-game-quiz/users')
 export class QuizUsersController {
@@ -16,7 +17,7 @@ export class QuizUsersController {
   }
 
   @Get('top')
-  async getPlayers() {
-    return this.quizService.getPlayersStats();
+  async getPlayers(@Query() query: PlayersQueryParams) {
+    return this.quizService.getPlayersStats(query);
   }
 }

@@ -10,6 +10,7 @@ import {
 } from '../../../core/exceptions/domain-exceptions';
 import { GameViewDto } from '../dto/game-view.dto';
 import { calculateGameStats, calculateStatsForAllUsers } from '../lib/calculate-game-stats';
+import { PlayersQueryParams } from '../lib/helpers';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -53,12 +54,16 @@ export class QuizService {
     return calculateGameStats(games, userId);
   }
 
-  async getPlayersStats() {
-    const games = await this.getAllGames();
+  async getPlayersStats(query: PlayersQueryParams) {
+    // const games = await this.getAllGames();
 
-    console.log('PLAYERS STATS', calculateStatsForAllUsers(games));
+    console.log('QUERY', query);
 
-    return calculateStatsForAllUsers(games);
+    const stats = await this.quizRepository.getStats();
+
+    console.log('PLAYERS STATS', stats);
+
+    return stats;
   }
 
   async findGameById(gameId: string, userId: string) {
