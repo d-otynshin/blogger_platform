@@ -220,14 +220,31 @@ export class QuizRepository {
       .filter(Boolean) // Remove null values
       .join(', '); // Join with commas
 
-    let orderByClause: string;
     const primarySort = `${query.sortBy} ${query.sortDirection}`;
 
-    if (query.sortBy || additionalSorts) {
-      orderByClause = `${primarySort ? primarySort : ''}${primarySort && additionalSorts ? `, ` : ''}${additionalSorts}`;
-    } else {
-      orderByClause = 'avgScores DESC, sumScore DESC';
-    }
+    // if (query.sortBy || additionalSorts) {
+    //   orderByClause = `${primarySort ? primarySort : ''}${primarySort && additionalSorts ? `, ` : ''}${additionalSorts}`;
+    // } else {
+    //   orderByClause = 'avgScores DESC, sumScore DESC';
+    // }
+
+    const sortMappings: Record<string, string> = {
+      avgScores: 'ROUND(AVG(tgs.total_score), 2)',
+      sumScore: 'SUM(tgs.total_score)',
+      gamesCount: 'COUNT(tgs.game_id)',
+      winsCount: 'SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END)',
+      lossesCount: 'SUM(CASE WHEN result = -1 THEN 1 ELSE 0 END)',
+      drawsCount: 'SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END)',
+    };
+
+    const sortByArray = [primarySort, ...query.sort];
+
+    const orderByClause = sortByArray
+      .map((sortItem) => {
+        const [column, order] = sortItem.split(' ');
+        return `${sortMappings[column] || column} ${order.toUpperCase()}`;
+      })
+      .join(', ');
 
     return this.dataSource.query(
       `
