@@ -224,12 +224,12 @@ export class QuizRepository {
     const primarySort = `${query.sortBy} ${query.sortDirection}`;
 
     if (query.sortBy || additionalSorts) {
-      orderByClause = `ORDER BY ${primarySort ? primarySort : ''}${primarySort && additionalSorts ? `, ` : ''}${additionalSorts}`;
+      orderByClause = `${primarySort ? primarySort : ''}${primarySort && additionalSorts ? `, ` : ''}${additionalSorts}`;
     } else {
-      orderByClause = 'ORDER BY avgScores DESC, sumScore DESC';
+      orderByClause = 'avgScores DESC, sumScore DESC';
     }
 
-    const result = await this.dataSource.query(
+    return this.dataSource.query(
       `
       WITH temp_game_stats AS (
           SELECT 
@@ -267,10 +267,6 @@ export class QuizRepository {
     `,
       [limit, offset],
     );
-
-    console.log(result);
-
-    return result;
   }
 
   async findGameById(gameId: string): Promise<Game | null> {

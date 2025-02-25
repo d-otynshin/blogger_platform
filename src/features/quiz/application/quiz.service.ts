@@ -55,8 +55,6 @@ export class QuizService {
   }
 
   async getPlayersStats(query: PlayersQueryParams) {
-    // const games = await this.getAllGames();
-
     console.log('QUERY', query);
 
     const stats = await this.quizRepository.getStats(query);
