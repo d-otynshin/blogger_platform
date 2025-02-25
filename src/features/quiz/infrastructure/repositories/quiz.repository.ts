@@ -75,7 +75,7 @@ export class QuizRepository {
     return Number(userCount.count);
   }
 
-  async addPlayer({ gameId, userId }) {
+  async addPlayer({ gameId, userId }: { gameId: string; userId: string }) {
     const game = await this.gamesOrm.findOne({ where: { id: gameId } });
     if (!game) throw NotFoundDomainException.create('Game not found');
 
@@ -121,7 +121,7 @@ export class QuizRepository {
     await this.gameUserQuestionsOrm.save(newEntries);
   }
 
-  async updateGameStatus(gameId: number, status: GameStatus) {
+  async updateGameStatus(gameId: string, status: GameStatus) {
     return await this.gamesOrm
       .createQueryBuilder('game')
       .update()
@@ -130,7 +130,7 @@ export class QuizRepository {
       .execute();
   }
 
-  async finishGame(gameId: number) {
+  async finishGame(gameId: string) {
     return await this.gamesOrm
       .createQueryBuilder('game')
       .update()
@@ -218,7 +218,7 @@ export class QuizRepository {
     `);
   }
 
-  async findGameById(gameId: number): Promise<Game | null> {
+  async findGameById(gameId: string): Promise<Game | null> {
     return this.gamesOrm
       .createQueryBuilder('game')
       .innerJoinAndSelect('game.games_users_questions', 'guq')
@@ -235,7 +235,7 @@ export class QuizRepository {
       .getOne();
   }
 
-  async getQuestionsByGameId(gameId: number, userId: string) {
+  async getQuestionsByGameId(gameId: string, userId: string) {
     const guqs = await this.gameUserQuestionsOrm
       .createQueryBuilder('guq')
       .innerJoinAndSelect('guq.question', 'question')

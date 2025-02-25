@@ -76,7 +76,7 @@ export class QuizService {
       throw BadRequestDomainException.create('Invalid game id');
     }
 
-    const activeGame = await this.quizRepository.findGameById(Number(gameId));
+    const activeGame = await this.quizRepository.findGameById(gameId);
 
     const isParticipating = activeGame.games_users_questions.some(
       (entry) => entry.user.id === userId,

@@ -15,8 +15,8 @@ import { User } from '../../accounts/domain/user.entity';
 @Entity('games_users_questions')
 @Unique(['game', 'user', 'question'])
 export class GameUserQuestion {
-  @PrimaryGeneratedColumn('increment')
-  public id: number;
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
 
   @ManyToOne(() => Game)
   @JoinColumn({ name: 'game_id' })

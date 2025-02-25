@@ -7,8 +7,8 @@ import {
 
 @Entity('questions')
 export class Question {
-  @PrimaryGeneratedColumn('increment')
-  public id: number;
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
 
   @Column()
   body: string;

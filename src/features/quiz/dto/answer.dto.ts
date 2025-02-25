@@ -1,7 +1,7 @@
 export class RecordAnswerDto {
-  gameId: number;
+  gameId: string;
   userId: string;
-  questionId: number;
+  questionId: string;
   isCorrect: boolean;
   bonus: number;
   points: number;
