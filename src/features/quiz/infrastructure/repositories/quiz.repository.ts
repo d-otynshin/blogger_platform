@@ -191,18 +191,17 @@ export class QuizRepository {
     return this.dataSource.query(`
       WITH temp_game_stats AS (
           SELECT 
-              guq.game_id, 
-              guq.user_id, 
+              guq.game_id as game_id, 
+              guq.user_id as user_id, 
               SUM(guq.points) AS total_score,
-              COUNT(DISTINCT guq.game_id) AS games_played,
               CASE
-                WHEN guq.points > (
+                WHEN SUM(guq.points) > (
                     SELECT SUM(guq2.points) 
                         FROM games_users_questions guq2 
                         WHERE guq2.game_id = guq.game_id 
                         AND guq2.user_id != guq.user_id
                     ) THEN 1
-                WHEN guq.points = (
+                WHEN SUM(guq.points) = (
                     SELECT SUM(guq2.points) 
                         FROM games_users_questions guq2 
                         WHERE guq2.game_id = guq.game_id 
@@ -214,9 +213,11 @@ export class QuizRepository {
           GROUP BY guq.game_id, guq.user_id
       )
       SELECT tgs.user_id, 
-             SUM(tgs.total_score) AS total_score, 
-             COUNT(tgs.games_played) AS games_played, 
-             SUM(tgs.wins) AS total_wins
+             SUM(tgs.total_score) AS sum_score, 
+             COUNT(tgs.game_id) AS games_played,             
+             SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) AS wins,
+             SUM(CASE WHEN result = -1 THEN 1 ELSE 0 END) AS losses,
+             SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS draws
       FROM temp_game_stats tgs
       GROUP BY tgs.user_id;
     `);
