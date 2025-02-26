@@ -140,7 +140,7 @@ export class QuizRepository {
       .execute();
   }
 
-  async findActiveGameId(userId: string): Promise<string | null> {
+  async findMyActiveGameId(userId: string): Promise<string | null> {
     const gameRow: { game_id: string } | null = await this.gamesOrm
       .createQueryBuilder('game')
       .innerJoin('game.games_users_questions', 'guq')
@@ -154,8 +154,8 @@ export class QuizRepository {
     return gameRow ? gameRow.game_id : null;
   }
 
-  async findActiveGame(userId: string): Promise<Game | null> {
-    const gameId = await this.findActiveGameId(userId);
+  async findMyActiveGame(userId: string): Promise<Game | null> {
+    const gameId = await this.findMyActiveGameId(userId);
 
     return this.gamesOrm
       .createQueryBuilder('game')
@@ -185,6 +185,16 @@ export class QuizRepository {
       .innerJoinAndSelect('game.games_users_questions', 'guq')
       .innerJoinAndSelect('guq.user', 'user')
       .innerJoinAndSelect('guq.question', 'question')
+      .getMany();
+  }
+
+  async findAllGamesByStatus(status: GameStatus): Promise<Game[] | null> {
+    return this.gamesOrm
+      .createQueryBuilder('game')
+      .innerJoinAndSelect('game.games_users_questions', 'guq')
+      .innerJoinAndSelect('guq.user', 'user')
+      .innerJoinAndSelect('guq.question', 'question')
+      .where('game.status = :status', { status })
       .getMany();
   }
 

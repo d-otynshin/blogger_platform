@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
+
 import { GameDto } from '../dto/game.dto';
 import { GameStatus } from '../domain/game.entity';
 import { parseGameInfo } from '../lib/parseGameInfo';
@@ -11,6 +13,7 @@ import {
 import { GameViewDto } from '../dto/game-view.dto';
 import { calculateGameStats } from '../lib/calculate-game-stats';
 import { PlayersQueryParams } from '../lib/helpers';
+import { TProgressPlayer } from '../dto/progress-player';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -20,12 +23,58 @@ export class QuizService {
   constructor(private quizRepository: QuizRepository) {}
 
   async getActiveGame(userId: string) {
-    const activeGame = await this.quizRepository.findActiveGame(userId);
+    const activeGame = await this.quizRepository.findMyActiveGame(userId);
     if (!activeGame) throw NotFoundDomainException.create('Game not found');
 
     console.log('MY CURRENT GAME', parseGameInfo(activeGame));
 
     return parseGameInfo(activeGame);
+  }
+
+  @Cron('* * * * * *') // Runs every second
+  async handleCron() {
+    const activeGames = await this.quizRepository.findAllGamesByStatus(
+      GameStatus.ACTIVE,
+    );
+
+    const hasPlayerFinished = (
+      game: GameViewDto,
+      playerProgress: TProgressPlayer,
+    ) => {
+      return playerProgress.answers.length === game.questions.length;
+    };
+
+    const compareLastAnswer = (playerProgress: TProgressPlayer) => {
+      const sortedAnswers = [...playerProgress.answers].sort(
+        (a, b) => new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime(),
+      );
+
+      const lastAnswered =
+        sortedAnswers.length > 0
+          ? sortedAnswers[sortedAnswers.length - 1]
+          : null;
+
+      if (!lastAnswered) return;
+
+      const lastAnsweredTime = new Date(lastAnswered.addedAt).getTime();
+      const now = Date.now();
+
+      return now - lastAnsweredTime <= 10 * 1000; // 10 seconds in milliseconds
+    };
+
+    const gamesView = activeGames.map(GameViewDto.mapToView);
+
+    for (const gameView of gamesView) {
+      if (hasPlayerFinished(gameView, gameView.firstPlayerProgress)) {
+        const isWithin = compareLastAnswer(gameView.secondPlayerProgress);
+
+        if (!isWithin) {
+          await this.quizRepository.finishGame(gameView.id);
+        }
+      }
+    }
+
+    return;
   }
 
   async getMyGames(userId: string) {
@@ -121,7 +170,7 @@ export class QuizService {
   }
 
   async sendAnswer(dto: GameDto, userId: string) {
-    const activeGame = await this.quizRepository.findActiveGame(userId);
+    const activeGame = await this.quizRepository.findMyActiveGame(userId);
     if (!activeGame) {
       throw ForbiddenDomainException.create('User is not in the game.');
     }
@@ -146,17 +195,7 @@ export class QuizService {
 
     const isCorrect = questionToAnswer.correct_answers.includes(dto.answer);
 
-    console.log('GAME_ID', activeGame.id);
-    console.log('IS_CORRECT', isCorrect);
-    console.log('USER_ID', userId);
-    console.log('QUESTION_ID', questionToAnswer.id);
-    console.log('CORRECT_ANSWERS', questionToAnswer.correct_answers);
-    console.log('USER_ANSWER', dto.answer);
-    console.log('------------------------');
     const addedAt = new Date();
-
-    console.log('QNS_LENGTH', questions.length);
-    console.log('ADDED_AT', addedAt);
 
     if (questions.length === 1) {
       const parsedGame = parseGameInfo(activeGame);
