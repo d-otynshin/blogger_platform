@@ -40,6 +40,12 @@ export class PairGameQuizController {
     return this.quizService.getActiveGame(user.id);
   }
 
+  @Get('run-cron')
+  testCron() {
+    this.quizService.handleCron();
+    return { message: 'Cron job manually triggered' };
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getGameById(

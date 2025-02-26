@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 // import { ThrottlerModule } from '@nestjs/throttler';
 
 import { AppService } from './app.service';
@@ -30,6 +31,7 @@ import { GameUserQuestion } from './features/quiz/domain/game-user-queston.entit
 @Module({
   imports: [
     CqrsModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({}),
     TypeOrmModule.forRoot({
       type: 'postgres',
