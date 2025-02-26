@@ -66,7 +66,7 @@ export class QuizService {
 
     for (const gameView of gamesView) {
       if (hasPlayerFinished(gameView, gameView.firstPlayerProgress)) {
-        const isWithin = compareLastAnswer(gameView.secondPlayerProgress);
+        const isWithin = compareLastAnswer(gameView.firstPlayerProgress);
 
         if (!isWithin) {
           await this.quizRepository.finishGame(gameView.id);
