@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 /* Repositories */
@@ -30,6 +30,7 @@ import { GameUserQuestion } from './domain/game-user-queston.entity';
     PairGameQuizController,
   ],
   providers: [
+    Logger,
     QuizService,
     QuestionsService,
     QuizRepository,

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
 import { GameDto } from '../dto/game.dto';
@@ -20,7 +20,10 @@ const uuidRegex =
 
 @Injectable()
 export class QuizService {
-  constructor(private quizRepository: QuizRepository) {}
+  constructor(
+    private quizRepository: QuizRepository,
+    private logger: Logger,
+  ) {}
 
   async getActiveGame(userId: string) {
     const activeGame = await this.quizRepository.findMyActiveGame(userId);
@@ -33,6 +36,9 @@ export class QuizService {
 
   @Cron('* * * * * *') // Runs every second
   async handleCron() {
+    this.logger.log('Cron job running... Checking game status.');
+    console.log('CRON Logging');
+
     const activeGames = await this.quizRepository.findAllGamesByStatus(
       GameStatus.ACTIVE,
     );
@@ -82,15 +88,6 @@ export class QuizService {
     if (!games) throw NotFoundDomainException.create('Games not found');
 
     console.log('MY ALL GAMES', games.map(GameViewDto.mapToView));
-
-    return games.map(GameViewDto.mapToView);
-  }
-
-  async getAllGames() {
-    const games = await this.quizRepository.findAllGames();
-    if (!games) throw NotFoundDomainException.create('Games not found');
-
-    console.log('ALL GAMES', games.map(GameViewDto.mapToView));
 
     return games.map(GameViewDto.mapToView);
   }
