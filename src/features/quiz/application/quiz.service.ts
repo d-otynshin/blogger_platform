@@ -78,6 +78,14 @@ export class QuizService {
           await this.quizRepository.finishGame(gameView.id);
         }
       }
+
+      if (hasPlayerFinished(gameView, gameView.secondPlayerProgress)) {
+        const isWithin = compareLastAnswer(gameView.secondPlayerProgress);
+
+        if (!isWithin) {
+          await this.quizRepository.finishGame(gameView.id);
+        }
+      }
     }
 
     return;
