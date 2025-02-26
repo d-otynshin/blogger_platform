@@ -128,7 +128,49 @@ export class QuizService {
       );
     }
 
-    console.log(parseGameInfo(activeGame));
+    /*-----------------------------------------*/
+    const activeGames = await this.quizRepository.findAllGamesByStatus(
+      GameStatus.ACTIVE,
+    );
+
+    console.log('ACTIVE GAMES', activeGames);
+
+    const hasPlayerFinished = (
+      game: GameViewDto,
+      playerProgress: TProgressPlayer,
+    ) => {
+      return playerProgress.answers.length === game.questions.length;
+    };
+
+    const compareLastAnswer = (playerProgress: TProgressPlayer) => {
+      const sortedAnswers = [...playerProgress.answers].sort(
+        (a, b) => new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime(),
+      );
+
+      const lastAnswered =
+        sortedAnswers.length > 0
+          ? sortedAnswers[sortedAnswers.length - 1]
+          : null;
+
+      if (!lastAnswered) return;
+
+      const lastAnsweredTime = new Date(lastAnswered.addedAt).getTime();
+      const now = Date.now();
+
+      return now - lastAnsweredTime <= 10 * 1000; // 10 seconds in milliseconds
+    };
+
+    const parsedGame = GameViewDto.mapToView(activeGame);
+
+    if (hasPlayerFinished(parsedGame, parsedGame.firstPlayerProgress)) {
+      const isWithin = compareLastAnswer(parsedGame.firstPlayerProgress);
+
+      if (!isWithin) {
+        console.log('NEEDS TO FINISH');
+        // await this.quizRepository.finishGame(gameView.id);
+      }
+    }
+    /*-----------------------------------------*/
 
     return parseGameInfo(activeGame);
   }
