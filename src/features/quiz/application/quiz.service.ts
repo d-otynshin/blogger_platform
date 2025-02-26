@@ -128,6 +128,8 @@ export class QuizService {
       );
     }
 
+    console.log(parseGameInfo(activeGame));
+
     return parseGameInfo(activeGame);
   }
 
